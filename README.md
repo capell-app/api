@@ -33,25 +33,55 @@ Evidence: [`src/Actions/ResolveApiRequestContextAction.php`](src/Actions/Resolve
 
 Screenshot contract: `docs/screenshots.json`.
 
-![Successful page resolve JSON response](docs/screenshots/page-resolve-success-json.png)
+![Illustrative successful page resolve json response preview](docs/screenshots/page-resolve-success-json.png)
 
 ![Page resolve layout graph JSON response](docs/screenshots/page-resolve-layout-json.png)
 
-- Successful page resolve JSON response (frontend, required).
-- Page resolve layout graph JSON response (frontend, required).
-- Page resolve forbidden JSON response (frontend, optional).
-- Page resolve not found JSON response (frontend, optional).
+- Illustrative successful page resolve json response preview (frontend, required evidence).
+- Page resolve layout graph JSON response (frontend, required evidence).
+- Page resolve forbidden JSON response (frontend, supplementary evidence).
+- Page resolve not found JSON response (frontend, supplementary evidence).
 
 ## Technical Shape
 
-- Service providers: `Capell\Api\Providers\ApiServiceProvider`.
-- Config files: `packages/api/config/capell-api.php`.
-- Route files: `packages/api/routes/api.php`.
-- Actions: `BuildPublicLayoutPayloadAction`, `BuildPublicPagePayloadAction`, `ResolveApiRequestContextAction`, `ValidatePublicLayoutPayloadBoundsAction`.
-- Data objects: `PublicPagePayloadOptionsData`, `ResolveApiRequestContextData`.
-- Manifest contributions: `health-check: Capell\Api\Health\ApiHealthCheck`, `route: Capell\Api\Manifest\ApiRoutesContribution`.
-- Health checks: `Capell\Api\Health\ApiHealthCheck`.
-- Cache tags: `api`, `api:pages`.
+### Service providers
+
+- `Capell\Api\Providers\ApiServiceProvider`
+
+### Config files
+
+- `packages/api/config/capell-api.php`
+
+### Route files
+
+- `packages/api/routes/api.php`
+
+### Actions
+
+- `BuildPublicLayoutPayloadAction`
+- `BuildPublicPagePayloadAction`
+- `ResolveApiRequestContextAction`
+- `ValidatePublicLayoutPayloadBoundsAction`
+
+### Data objects
+
+- `PublicPagePayloadOptionsData`
+- `ResolveApiRequestContextData`
+
+### Manifest contributions
+
+- `health-check: Capell\Api\Health\ApiHealthCheck`
+- `route: Capell\Api\Manifest\ApiRoutesContribution`
+
+### Health checks
+
+- `Capell\Api\Health\ApiHealthCheck`
+
+### Cache tags
+
+- `api`
+- `api:pages`
+
 
 ## Data Model
 
@@ -62,7 +92,7 @@ This package has no schema impact. It extends Capell through `health-check` cont
 - Required packages: `capell-app/core`, `capell-app/layout-builder`.
 - Admin navigation: no admin page or resource contribution is declared.
 - Admin/editor extensions: none declared.
-- Permissions: none declared in `capell.json`.
+- Permissions: no package permission declarations or Shield gates detected; host access rules still apply.
 - Public routes: loads `routes/api.php`; registers `ApiRoutesContribution`.
 - Database changes: no package migrations declared.
 - Config: `config/capell-api.php`.
@@ -90,8 +120,7 @@ This package has no schema impact. It extends Capell through `health-check` cont
 ## Quick Start
 
 1. Install the package: `composer require capell-app/api`.
-2. Review `config/capell-api.php` before enabling the package.
-3. Open the Successful page resolve JSON response and confirm the public output renders without admin state.
+2. Open `/screenshot-fixtures/catalogue/api/page-resolve-success-json` and confirm the public output renders without admin state.
 
 ## Next Steps
 
