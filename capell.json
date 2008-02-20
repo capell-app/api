@@ -5,7 +5,7 @@
     "displayName": "API",
     "kind": "package",
     "capellApiVersion": "^1.0",
-    "version": "1.x-dev",
+    "version": "1.0.0",
     "description": "Versioned public JSON endpoints for published Capell pages and Layout Builder graphs, with sanitized output for headless consumers.",
     "product": {
         "group": "Capell Publishing",
