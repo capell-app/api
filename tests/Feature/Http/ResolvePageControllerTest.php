@@ -5,7 +5,6 @@ declare(strict_types=1);
 use Capell\Api\Providers\ApiServiceProvider;
 use Capell\Core\Database\Factories\TranslationFactory;
 use Capell\Core\Facades\CapellCore;
-use Capell\Core\LayoutBuilder\Contracts\PublicWidgetPayloadResolver;
 use Capell\Core\Models\Language;
 use Capell\Core\Models\Layout;
 use Capell\Core\Models\Page;
@@ -13,6 +12,7 @@ use Capell\Core\Models\PageUrl;
 use Capell\Core\Models\Site;
 use Capell\Core\Models\SiteDomain;
 use Capell\Core\Models\Widget;
+use Capell\LayoutBuilder\Contracts\PublicWidgetPayloadResolver;
 use Illuminate\Support\Facades\URL;
 
 use function Pest\Laravel\getJson;

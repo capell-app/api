@@ -6,6 +6,7 @@
     "require": {
         "php": "^8.2",
         "capell-app/core": "*",
+        "capell-app/layout-builder": "*",
         "spatie/laravel-package-tools": "^1.14.1",
         "symfony/html-sanitizer": "^7.0|^8.0"
     },

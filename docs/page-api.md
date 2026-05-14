@@ -123,6 +123,6 @@ This is a response safety boundary, not an editor validation layer. Do not use t
 
 The endpoint delegates page resolution to `Capell\Core\Actions\ResolvePublicPageByUrlAction`.
 
-Layout output is built by `Capell\Core\LayoutBuilder\Actions\BuildPublicLayoutGraphAction`.
+Layout output is built by `Capell\LayoutBuilder\Actions\BuildPublicLayoutGraphAction`.
 
-To customize widget API payloads, bind `Capell\Core\LayoutBuilder\Contracts\PublicWidgetPayloadResolver` to your own implementation. The default resolver returns widget title and content only, and returns `null` for HTML.
+To customize widget API payloads, bind `Capell\LayoutBuilder\Contracts\PublicWidgetPayloadResolver` to your own implementation. The default resolver returns widget title and content only, and returns `null` for HTML.
