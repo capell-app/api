@@ -240,7 +240,7 @@ final class ResolvePageController
             'key' => $graph->key,
             'meta' => $this->sanitizeHtmlValue($graph->meta),
             'containers' => array_map(
-                fn (PublicLayoutContainerData $container): array => $this->layoutContainer($container),
+                $this->layoutContainer(...),
                 $graph->containers,
             ),
         ];
@@ -255,7 +255,7 @@ final class ResolvePageController
             'key' => $container->key,
             'meta' => $this->sanitizeHtmlValue($container->meta),
             'widgets' => array_map(
-                fn (PublicLayoutWidgetData $widget): array => $this->layoutWidget($widget),
+                $this->layoutWidget(...),
                 $container->widgets,
             ),
         ];

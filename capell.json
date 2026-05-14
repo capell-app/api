@@ -15,9 +15,7 @@
     "namespace": "Capell\\Api",
     "surfaces": ["frontend"],
     "dependencies": {
-        "requires": [
-            "capell-app/core"
-        ],
+        "requires": ["capell-app/core"],
         "optional": [],
         "conflicts": []
     },
@@ -42,9 +40,7 @@
     },
     "settings": [],
     "permissions": [],
-    "capabilities": [
-        "public-page-api"
-    ],
+    "capabilities": ["public-page-api"],
     "performance": {
         "frontendRenderBudgetMs": 20,
         "adminQueryBudget": 0,
@@ -70,9 +66,6 @@
         "categories": ["frontend", "publishing-pro"]
     },
     "contributionTraceability": {
-        "deferredContributions": [
-            "route",
-            "public-api-endpoint"
-        ]
+        "deferredContributions": ["route", "public-api-endpoint"]
     }
 }

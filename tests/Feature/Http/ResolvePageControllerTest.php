@@ -159,7 +159,7 @@ it('includes layout html and sanitizes unsafe html strings', function (): void {
             ];
         }
 
-        public function html(Widget $widget, Page $page, Language $language, string $containerKey, int $occurrence): ?string
+        public function html(Widget $widget, Page $page, Language $language, string $containerKey, int $occurrence): string
         {
             return '<section onclick="alert(6)"><a href="javascript:alert(7)">Hero</a><script>alert(8)</script></section>';
         }
@@ -235,8 +235,8 @@ it('does not hydrate wildcard site domains when an exact host matches', function
     ], domain: 'exact.example.com');
 
     foreach (range(1, 15) as $index) {
-        createPublicApiPage("/wildcard-{$index}", [
-            'title' => "Wildcard {$index}",
+        createPublicApiPage('/wildcard-' . $index, [
+            'title' => 'Wildcard ' . $index,
         ], domain: null);
     }
 
