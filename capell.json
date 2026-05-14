@@ -15,10 +15,7 @@
     "namespace": "Capell\\Api",
     "surfaces": ["frontend"],
     "dependencies": {
-        "requires": [
-            "capell-app/core",
-            "capell-app/layout-builder"
-        ],
+        "requires": ["capell-app/core", "capell-app/layout-builder"],
         "optional": [],
         "conflicts": []
     },

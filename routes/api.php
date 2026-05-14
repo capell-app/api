@@ -6,7 +6,7 @@ use Capell\Api\Http\Controllers\ResolvePageController;
 use Illuminate\Support\Facades\Route;
 
 $configuredMiddleware = static function (mixed $middleware): array {
-    if ($middleware === null || $middleware === false || $middleware === '') {
+    if (in_array($middleware, [null, false, ''], true)) {
         return [];
     }
 
