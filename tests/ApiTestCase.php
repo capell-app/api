@@ -6,6 +6,7 @@ namespace Capell\Api\Tests;
 
 use Capell\Api\Providers\ApiServiceProvider;
 use Capell\Core\Facades\CapellCore;
+use Capell\LayoutBuilder\LayoutBuilderServiceProvider;
 use Capell\Tests\Packages\PackagesTestCase;
 use Illuminate\Foundation\Application;
 use Override;
@@ -21,6 +22,7 @@ abstract class ApiTestCase extends PackagesTestCase
     {
         return [
             ...parent::getPackageProviders($app),
+            LayoutBuilderServiceProvider::class,
             ApiServiceProvider::class,
         ];
     }
@@ -34,5 +36,6 @@ abstract class ApiTestCase extends PackagesTestCase
         parent::getEnvironmentSetUp($app);
 
         CapellCore::forcePackageInstalled(ApiServiceProvider::$packageName);
+        CapellCore::forcePackageInstalled(LayoutBuilderServiceProvider::$packageName);
     }
 }
