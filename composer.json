@@ -4,7 +4,7 @@
     "type": "library",
     "license": "proprietary",
     "require": {
-        "php": "^8.2",
+        "php": "^8.3",
         "capell-app/core": "*",
         "capell-app/layout-builder": "*",
         "spatie/laravel-package-tools": "^1.14.1",
