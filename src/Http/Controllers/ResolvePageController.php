@@ -31,11 +31,11 @@ final class ResolvePageController
 {
     use SanitizesPublicHtml;
 
-    private const API_VERSION = 'v1';
+    private const string API_VERSION = 'v1';
 
-    private const DEFAULT_FIELDS = ['url', 'title', 'content'];
+    private const array DEFAULT_FIELDS = ['url', 'title', 'content'];
 
-    private const ALLOWED_FIELDS = ['url', 'title', 'content', 'meta'];
+    private const array ALLOWED_FIELDS = ['url', 'title', 'content', 'meta'];
 
     private ?SiteDomain $resolvedSiteDomain = null;
 
