@@ -137,7 +137,7 @@ HTML remains off unless `layout.html` is requested.
 
 ## Sanitization
 
-The API sanitizes returned HTML strings with Symfony's HTML sanitizer using safe elements, relative links, and relative media. This removes unsafe executable markup such as scripts, inline event handlers, `javascript:` URL attributes, and `srcdoc` payloads while keeping normal author HTML.
+The API sanitizes returned HTML strings with Symfony's HTML sanitizer using safe blocks, relative links, and relative media. This removes unsafe executable markup such as scripts, inline event handlers, `javascript:` URL attributes, and `srcdoc` payloads while keeping normal author HTML.
 
 Sanitization applies recursively to selected page fields, page meta, layout meta, container meta, widget data, and widget HTML.
 
