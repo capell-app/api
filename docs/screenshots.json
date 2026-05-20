@@ -1,0 +1,57 @@
+{
+    "package": "api",
+    "composerName": "capell-app/api",
+    "generatedFor": "deployment-screenshot-runner",
+    "requiresInstalledPackage": true,
+    "outputDirectory": "public/docs/screenshots/packages/api",
+    "entries": [
+        {
+            "id": "page-resolve-success-json",
+            "title": "Successful page resolve JSON response.",
+            "package": "api",
+            "surface": "frontend",
+            "targetType": "frontend-route",
+            "target": "capell-api.v1.pages.resolve",
+            "required": true,
+            "notes": "Requires API installed, Layout Builder installed, and a seeded published page with a resolvable URL. Capture the JSON body plus `X-Capell-Api-Version` and `X-Capell-Cache-Tags` headers.",
+            "useCase": "A frontend renderer resolves a published Capell page into public JSON for rendering outside the CMS.",
+            "screenshotPath": "public/docs/screenshots/packages/api/page-resolve-success-json.png"
+        },
+        {
+            "id": "page-resolve-not-found-json",
+            "title": "Page resolve not-found JSON response.",
+            "package": "api",
+            "surface": "frontend",
+            "targetType": "frontend-route",
+            "target": "capell-api.v1.pages.resolve",
+            "required": true,
+            "notes": "Use a missing URL on an installed package and verify the response remains generic, with no internal model names, editor markers, or draft content.",
+            "useCase": "An API client receives a predictable not-found response for an unknown public page URL.",
+            "screenshotPath": "public/docs/screenshots/packages/api/page-resolve-not-found-json.png"
+        },
+        {
+            "id": "page-resolve-forbidden-context-json",
+            "title": "Forbidden explicit context response.",
+            "package": "api",
+            "surface": "frontend",
+            "targetType": "frontend-route",
+            "target": "capell-api.v1.pages.resolve",
+            "required": true,
+            "notes": "Request an explicit site or language without a valid context signature and capture the forbidden JSON response.",
+            "useCase": "An API consumer learns that explicit site/language context requires a valid signature.",
+            "screenshotPath": "public/docs/screenshots/packages/api/page-resolve-forbidden-context-json.png"
+        },
+        {
+            "id": "page-resolve-layout-json",
+            "title": "Page resolve layout graph JSON response.",
+            "package": "api",
+            "surface": "frontend",
+            "targetType": "frontend-route",
+            "target": "capell-api.v1.pages.resolve",
+            "required": true,
+            "notes": "Requires Layout Builder and a seeded page with bounded layout content. Verify public JSON does not expose authoring metadata, field paths, or signed editor URLs.",
+            "useCase": "A frontend renderer requests the bounded layout graph for a published page.",
+            "screenshotPath": "public/docs/screenshots/packages/api/page-resolve-layout-json.png"
+        }
+    ]
+}
