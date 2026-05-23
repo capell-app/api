@@ -13,16 +13,23 @@
         "bundle": "publishing-pro"
     },
     "namespace": "Capell\\Api",
-    "surfaces": ["frontend"],
+    "surfaces": [
+        "frontend"
+    ],
     "dependencies": {
-        "requires": ["capell-app/core", "capell-app/layout-builder"],
+        "requires": [
+            "capell-app/core",
+            "capell-app/layout-builder"
+        ],
         "optional": [],
         "conflicts": []
     },
     "providers": {
         "metadata": [],
         "install": [],
-        "runtime": ["Capell\\Api\\Providers\\ApiServiceProvider"],
+        "runtime": [
+            "Capell\\Api\\Providers\\ApiServiceProvider"
+        ],
         "admin": [],
         "frontend": []
     },
@@ -40,14 +47,23 @@
     },
     "settings": [],
     "permissions": [],
-    "capabilities": ["public-page-api", "public-page-api-v1"],
+    "capabilities": [
+        "public-page-api",
+        "public-page-api-v1"
+    ],
     "performance": {
         "frontendRenderBudgetMs": 20,
         "adminQueryBudget": 0,
-        "cacheTags": ["api", "api:pages"],
+        "cacheTags": [
+            "api",
+            "api:pages"
+        ],
         "cacheSafety": {
             "cacheable": false,
-            "variesBy": ["site", "locale"],
+            "variesBy": [
+                "site",
+                "locale"
+            ],
             "sensitiveOutput": false,
             "invalidationSources": [],
             "queueInvalidation": true
@@ -84,10 +100,22 @@
     },
     "marketplace": {
         "summary": "Public JSON delivery of published Capell page data.",
-        "screenshots": [],
-        "categories": ["frontend", "publishing-pro"]
+        "screenshots": [
+            {
+                "path": "docs/assets/marketplace/extension-card.jpg",
+                "alt": "API extension preview image",
+                "caption": "API extension preview"
+            }
+        ],
+        "categories": [
+            "frontend",
+            "publishing-pro"
+        ]
     },
     "contributionTraceability": {
-        "deferredContributions": ["route", "public-api-endpoint"]
+        "deferredContributions": [
+            "route",
+            "public-api-endpoint"
+        ]
     }
 }
