@@ -13,23 +13,16 @@
         "bundle": "publishing-pro"
     },
     "namespace": "Capell\\Api",
-    "surfaces": [
-        "frontend"
-    ],
+    "surfaces": ["frontend"],
     "dependencies": {
-        "requires": [
-            "capell-app/core",
-            "capell-app/layout-builder"
-        ],
-        "optional": [],
+        "requires": ["capell-app/core", "capell-app/layout-builder"],
+        "supports": [],
         "conflicts": []
     },
     "providers": {
         "metadata": [],
         "install": [],
-        "runtime": [
-            "Capell\\Api\\Providers\\ApiServiceProvider"
-        ],
+        "runtime": ["Capell\\Api\\Providers\\ApiServiceProvider"],
         "admin": [],
         "frontend": []
     },
@@ -47,23 +40,14 @@
     },
     "settings": [],
     "permissions": [],
-    "capabilities": [
-        "public-page-api",
-        "public-page-api-v1"
-    ],
+    "capabilities": ["public-page-api", "public-page-api-v1"],
     "performance": {
         "frontendRenderBudgetMs": 20,
         "adminQueryBudget": 0,
-        "cacheTags": [
-            "api",
-            "api:pages"
-        ],
+        "cacheTags": ["api", "api:pages"],
         "cacheSafety": {
             "cacheable": false,
-            "variesBy": [
-                "site",
-                "locale"
-            ],
+            "variesBy": ["site", "locale"],
             "sensitiveOutput": false,
             "invalidationSources": [],
             "queueInvalidation": true
@@ -107,15 +91,9 @@
                 "caption": "API extension preview"
             }
         ],
-        "categories": [
-            "frontend",
-            "publishing-pro"
-        ]
+        "categories": ["frontend", "publishing-pro"]
     },
     "contributionTraceability": {
-        "deferredContributions": [
-            "route",
-            "public-api-endpoint"
-        ]
+        "deferredContributions": ["route", "public-api-endpoint"]
     }
 }

@@ -8,6 +8,7 @@ use Capell\Api\Providers\ApiServiceProvider;
 use Capell\Api\Support\SanitizesPublicHtml;
 use Capell\Core\Actions\LoadSiteDomainFromUrlAction;
 use Capell\Core\Actions\ResolvePublicPageByUrlAction;
+use Capell\Core\Contracts\Pageable;
 use Capell\Core\Data\PublicPageFieldsData;
 use Capell\Core\Enums\ExtensionStatusEnum;
 use Capell\Core\Facades\CapellCore;
@@ -123,7 +124,7 @@ final class ResolvePageController
     /**
      * @return list<string>
      */
-    private function cacheTags(Site $site, Language $language, ?Page $page): array
+    private function cacheTags(Site $site, Language $language, ?Pageable $page): array
     {
         $tags = [
             'api',
@@ -131,7 +132,7 @@ final class ResolvePageController
             'language:' . $language->getKey(),
         ];
 
-        if ($page instanceof Page) {
+        if ($page instanceof Pageable) {
             $tags[] = 'page:' . $page->getKey();
         }
 
