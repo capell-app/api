@@ -93,7 +93,6 @@ it('includes selected layout containers without html', function (): void {
 
     $layout = Layout::factory()->site($page->site)->create([
         'key' => 'article',
-        'blocks' => [$mainWidget->key, $sidebarWidget->key],
         'containers' => [
             'main' => ['blocks' => [['block_key' => $mainWidget->key, 'occurrence' => 1]]],
             'sidebar' => ['blocks' => [['block_key' => $sidebarWidget->key, 'occurrence' => 1]]],
@@ -123,7 +122,6 @@ it('treats all containers as the full layout graph', function (): void {
 
     $layout = Layout::factory()->site($page->site)->create([
         'key' => 'article',
-        'blocks' => [$mainWidget->key, $sidebarWidget->key],
         'containers' => [
             'main' => ['blocks' => [['block_key' => $mainWidget->key, 'occurrence' => 1]]],
             'sidebar' => ['blocks' => [['block_key' => $sidebarWidget->key, 'occurrence' => 1]]],
@@ -157,7 +155,6 @@ it('includes layout html and sanitizes unsafe html strings', function (): void {
     $layout = Layout::factory()->site($page->site)->create([
         'key' => 'article',
         'meta' => ['summary' => '<strong onclick="alert(1)">Layout</strong><script>bad</script>'],
-        'blocks' => [$block->key],
         'containers' => [
             'main' => [
                 'summary' => '<em onmouseover="alert(1)">Container</em><script',
@@ -209,7 +206,6 @@ it('rejects unbounded layout html requests', function (): void {
 
     $layout = Layout::factory()->site($page->site)->create([
         'key' => 'article',
-        'blocks' => [$block->key],
         'containers' => [
             'main' => ['blocks' => [['block_key' => $block->key, 'occurrence' => 1]]],
         ],
