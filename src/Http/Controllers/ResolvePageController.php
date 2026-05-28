@@ -200,15 +200,18 @@ final class ResolvePageController
         $language = is_scalar($language) ? trim((string) $language) : '';
 
         if ($language !== '') {
-            $byId = Language::query()->whereKey($language)->first();
+            $languageQuery = Language::query()->whereIn((new Language)->getKeyName(), $this->siteLanguageIds($site));
+            $byId = (clone $languageQuery)->whereKey($language)->first();
 
             if ($byId instanceof Language) {
                 return $byId;
             }
 
-            return Language::query()
-                ->where('code', $language)
-                ->orWhere('locale', $language)
+            return $languageQuery
+                ->where(function (BuilderContract $query) use ($language): void {
+                    $query->where('code', $language)
+                        ->orWhere('locale', $language);
+                })
                 ->first();
         }
 
@@ -230,7 +233,28 @@ final class ResolvePageController
             }
         }
 
-        return Language::query()->orderBy((new Language)->getKeyName())->first();
+        return null;
+    }
+
+    /**
+     * @return list<int>
+     */
+    private function siteLanguageIds(Site $site): array
+    {
+        $languageIds = collect([$site->getAttribute('language_id')]);
+
+        if ($site->relationLoaded('siteDomains')) {
+            $languageIds = $languageIds->merge($site->siteDomains->pluck('language_id'));
+        } else {
+            $languageIds = $languageIds->merge($site->siteDomains()->pluck('language_id'));
+        }
+
+        return $languageIds
+            ->filter(fn (mixed $languageId): bool => is_int($languageId) || ctype_digit((string) $languageId))
+            ->map(fn (mixed $languageId): int => (int) $languageId)
+            ->unique()
+            ->values()
+            ->all();
     }
 
     /**

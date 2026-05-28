@@ -260,6 +260,17 @@ it('blocks unsigned explicit language selection', function (): void {
         ->assertJsonPath('data.url', $pageUrl->url);
 });
 
+it('scopes signed explicit language selection to the resolved site', function (): void {
+    [$pageUrl] = createPublicApiPage('/terms');
+    [, , $otherLanguage] = createPublicApiPage('/terms', [
+        'title' => 'Other Terms',
+    ], 'other.example.com');
+
+    getJson(apiResolveUrl(['url' => $pageUrl->url, 'language' => $otherLanguage->getKey()], signed: true))
+        ->assertNotFound()
+        ->assertExactJson(['message' => 'Page not found']);
+});
+
 it('uses the requested public URL path when resolving path-prefixed site domains', function (): void {
     [$pageUrl] = createPublicApiPage('/terms', [
         'title' => 'Tenant Terms',
