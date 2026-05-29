@@ -16,7 +16,7 @@
     "surfaces": ["frontend"],
     "dependencies": {
         "requires": ["capell-app/core", "capell-app/layout-builder"],
-        "optional": [],
+        "supports": [],
         "conflicts": []
     },
     "providers": {
@@ -84,7 +84,13 @@
     },
     "marketplace": {
         "summary": "Public JSON delivery of published Capell page data.",
-        "screenshots": [],
+        "screenshots": [
+            {
+                "path": "docs/assets/marketplace/extension-card.jpg",
+                "alt": "API extension preview image",
+                "caption": "API extension preview"
+            }
+        ],
         "categories": ["frontend", "publishing-pro"]
     },
     "contributionTraceability": {

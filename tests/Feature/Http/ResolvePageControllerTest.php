@@ -12,7 +12,7 @@ use Capell\Core\Models\PageUrl;
 use Capell\Core\Models\Site;
 use Capell\Core\Models\SiteDomain;
 use Capell\LayoutBuilder\Contracts\PublicBlockPayloadResolver;
-use Capell\LayoutBuilder\Models\Block;
+use Capell\LayoutBuilder\Models\Widget;
 use Illuminate\Support\Facades\URL;
 
 use function Pest\Laravel\getJson;
@@ -80,8 +80,8 @@ it('includes selected layout containers without html', function (): void {
         'content' => '<p>Terms content</p>',
     ]);
 
-    $mainWidget = Block::factory()->create(['key' => 'main-widget']);
-    $sidebarWidget = Block::factory()->create(['key' => 'sidebar-widget']);
+    $mainWidget = Widget::factory()->create(['key' => 'main-widget']);
+    $sidebarWidget = Widget::factory()->create(['key' => 'sidebar-widget']);
 
     TranslationFactory::new()
         ->translatable($mainWidget)
@@ -93,7 +93,6 @@ it('includes selected layout containers without html', function (): void {
 
     $layout = Layout::factory()->site($page->site)->create([
         'key' => 'article',
-        'blocks' => [$mainWidget->key, $sidebarWidget->key],
         'containers' => [
             'main' => ['blocks' => [['block_key' => $mainWidget->key, 'occurrence' => 1]]],
             'sidebar' => ['blocks' => [['block_key' => $sidebarWidget->key, 'occurrence' => 1]]],
@@ -118,12 +117,11 @@ it('includes selected layout containers without html', function (): void {
 it('treats all containers as the full layout graph', function (): void {
     [$pageUrl, $page] = createPublicApiPage('/terms');
 
-    $mainWidget = Block::factory()->create(['key' => 'main-widget']);
-    $sidebarWidget = Block::factory()->create(['key' => 'sidebar-widget']);
+    $mainWidget = Widget::factory()->create(['key' => 'main-widget']);
+    $sidebarWidget = Widget::factory()->create(['key' => 'sidebar-widget']);
 
     $layout = Layout::factory()->site($page->site)->create([
         'key' => 'article',
-        'blocks' => [$mainWidget->key, $sidebarWidget->key],
         'containers' => [
             'main' => ['blocks' => [['block_key' => $mainWidget->key, 'occurrence' => 1]]],
             'sidebar' => ['blocks' => [['block_key' => $sidebarWidget->key, 'occurrence' => 1]]],
@@ -152,12 +150,11 @@ it('includes layout html and sanitizes unsafe html strings', function (): void {
         ],
     ]);
 
-    $block = Block::factory()->create(['key' => 'hero']);
+    $block = Widget::factory()->create(['key' => 'hero']);
 
     $layout = Layout::factory()->site($page->site)->create([
         'key' => 'article',
         'meta' => ['summary' => '<strong onclick="alert(1)">Layout</strong><script>bad</script>'],
-        'blocks' => [$block->key],
         'containers' => [
             'main' => [
                 'summary' => '<em onmouseover="alert(1)">Container</em><script',
@@ -173,7 +170,7 @@ it('includes layout html and sanitizes unsafe html strings', function (): void {
         /**
          * @return array<string, mixed>
          */
-        public function data(Block $block, Page $page, Language $language, string $containerKey, int $occurrence): array
+        public function data(Widget $block, Page $page, Language $language, string $containerKey, int $occurrence): array
         {
             return [
                 'content' => '<p onmouseover="alert(1)"><a href="javascript:alert(2)">Widget</a></p><script>alert(3)</script>',
@@ -181,7 +178,7 @@ it('includes layout html and sanitizes unsafe html strings', function (): void {
             ];
         }
 
-        public function html(Block $block, Page $page, Language $language, string $containerKey, int $occurrence): string
+        public function html(Widget $block, Page $page, Language $language, string $containerKey, int $occurrence): string
         {
             return '<section onclick="alert(6)"><a href="javascript:alert(7)">Hero</a><script>alert(8)</script></section>';
         }
@@ -205,11 +202,10 @@ it('includes layout html and sanitizes unsafe html strings', function (): void {
 
 it('rejects unbounded layout html requests', function (): void {
     [$pageUrl, $page] = createPublicApiPage('/terms');
-    $block = Block::factory()->create(['key' => 'hero']);
+    $block = Widget::factory()->create(['key' => 'hero']);
 
     $layout = Layout::factory()->site($page->site)->create([
         'key' => 'article',
-        'blocks' => [$block->key],
         'containers' => [
             'main' => ['blocks' => [['block_key' => $block->key, 'occurrence' => 1]]],
         ],
@@ -262,6 +258,17 @@ it('blocks unsigned explicit language selection', function (): void {
     getJson(apiResolveUrl(['url' => $pageUrl->url, 'language' => 'en'], signed: true))
         ->assertOk()
         ->assertJsonPath('data.url', $pageUrl->url);
+});
+
+it('scopes signed explicit language selection to the resolved site', function (): void {
+    [$pageUrl] = createPublicApiPage('/terms');
+    [, , $otherLanguage] = createPublicApiPage('/terms', [
+        'title' => 'Other Terms',
+    ], 'other.example.com');
+
+    getJson(apiResolveUrl(['url' => $pageUrl->url, 'language' => $otherLanguage->getKey()], signed: true))
+        ->assertNotFound()
+        ->assertExactJson(['message' => 'Page not found']);
 });
 
 it('uses the requested public URL path when resolving path-prefixed site domains', function (): void {
