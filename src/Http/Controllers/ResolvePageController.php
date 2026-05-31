@@ -241,20 +241,15 @@ final class ResolvePageController
      */
     private function siteLanguageIds(Site $site): array
     {
-        $languageIds = collect([$site->getAttribute('language_id')]);
+        $languageIds = collect([$site->getAttribute('language_id')])
+            ->merge($site->siteDomains()->pluck('language_id'));
 
-        if ($site->relationLoaded('siteDomains')) {
-            $languageIds = $languageIds->merge($site->siteDomains->pluck('language_id'));
-        } else {
-            $languageIds = $languageIds->merge($site->siteDomains()->pluck('language_id'));
-        }
-
-        return $languageIds
+        return array_values($languageIds
             ->filter(fn (mixed $languageId): bool => is_int($languageId) || ctype_digit((string) $languageId))
             ->map(fn (mixed $languageId): int => (int) $languageId)
             ->unique()
             ->values()
-            ->all();
+            ->all());
     }
 
     /**

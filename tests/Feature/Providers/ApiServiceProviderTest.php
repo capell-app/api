@@ -26,7 +26,11 @@ it('loads host-configurable public api middleware defaults', function (): void {
 });
 
 it('registers the documented capell api rate limiter', function (): void {
-    $limits = RateLimiter::limiter('capell-api')(Request::create('/api/capell/v1/pages/resolve'));
+    $limiter = RateLimiter::limiter('capell-api');
+
+    throw_unless($limiter instanceof Closure, RuntimeException::class, 'Expected API rate limiter to be registered.');
+
+    $limits = $limiter(Request::create('/api/capell/v1/pages/resolve'));
     $limit = is_array($limits) ? $limits[0] : $limits;
 
     expect($limit)->toBeInstanceOf(Limit::class);
