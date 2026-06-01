@@ -38,3 +38,11 @@ Capell API exposes published page content as JSON for public integrations such a
 Start with [Overview](docs/overview.md) for package surfaces and screenshot coverage, then [Page API](docs/page-api.md) for endpoint shape, host-scoped site resolution, fields, layout includes, and HTML sanitization rules.
 
 Screenshots and response captures are generated from [docs/screenshots.json](docs/screenshots.json) during package documentation runs.
+
+## Testing
+
+Run package tests from the repository root:
+
+```bash
+vendor/bin/pest packages/api/tests --configuration=phpunit.xml
+```

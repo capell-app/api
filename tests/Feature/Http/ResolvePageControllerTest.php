@@ -271,6 +271,40 @@ it('scopes signed explicit language selection to the resolved site', function ()
         ->assertExactJson(['message' => 'Page not found']);
 });
 
+it('allows signed explicit language selection for another language on the resolved site', function (): void {
+    [$pageUrl, $page, , $site] = createPublicApiPage('/terms');
+    $french = Language::factory()->french()->create();
+
+    SiteDomain::factory()
+        ->site($site)
+        ->language($french)
+        ->create([
+            'domain' => 'fr.example.com',
+            'path' => null,
+            'scheme' => null,
+        ]);
+
+    TranslationFactory::new()
+        ->translatable($page)
+        ->language($french)
+        ->create([
+            'title' => 'Conditions',
+            'content' => '<p>Conditions en francais</p>',
+            'meta' => ['description' => 'Conditions meta'],
+        ]);
+
+    PageUrl::factory()
+        ->site($site)
+        ->language($french)
+        ->page($page)
+        ->create(['url' => $pageUrl->url]);
+
+    getJson(apiResolveUrl(['url' => $pageUrl->url, 'language' => 'fr'], signed: true))
+        ->assertOk()
+        ->assertJsonPath('data.url', $pageUrl->url)
+        ->assertJsonPath('data.title', 'Conditions');
+});
+
 it('uses the requested public URL path when resolving path-prefixed site domains', function (): void {
     [$pageUrl] = createPublicApiPage('/terms', [
         'title' => 'Tenant Terms',
