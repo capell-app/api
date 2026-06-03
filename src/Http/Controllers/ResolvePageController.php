@@ -19,9 +19,9 @@ use Capell\Core\Models\Page;
 use Capell\Core\Models\Site;
 use Capell\Core\Models\SiteDomain;
 use Capell\LayoutBuilder\Actions\BuildPublicLayoutGraphAction;
+use Capell\LayoutBuilder\Data\PublicLayoutBlockData;
 use Capell\LayoutBuilder\Data\PublicLayoutContainerData;
 use Capell\LayoutBuilder\Data\PublicLayoutGraphData;
-use Capell\LayoutBuilder\Data\PublicLayoutWidgetData;
 use Illuminate\Contracts\Database\Eloquent\Builder as BuilderContract;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
@@ -318,9 +318,9 @@ final class ResolvePageController
         return [
             'key' => $container->key,
             'meta' => $this->sanitizeHtmlValue($container->meta),
-            'widgets' => array_map(
-                $this->layoutWidget(...),
-                $container->widgets,
+            'blocks' => array_map(
+                $this->layoutBlock(...),
+                $container->blocks,
             ),
         ];
     }
@@ -328,17 +328,17 @@ final class ResolvePageController
     /**
      * @return array<string, mixed>
      */
-    private function layoutWidget(PublicLayoutWidgetData $widget): array
+    private function layoutBlock(PublicLayoutBlockData $block): array
     {
         $data = [
-            'key' => $widget->key,
-            'occurrence' => $widget->occurrence,
-            'type' => $widget->type,
-            'data' => $this->sanitizeHtmlValue($widget->data),
+            'key' => $block->key,
+            'occurrence' => $block->occurrence,
+            'type' => $block->type,
+            'data' => $this->sanitizeHtmlValue($block->data),
         ];
 
-        if ($widget->html !== null) {
-            $data['html'] = $this->sanitizeHtmlValue($widget->html);
+        if ($block->html !== null) {
+            $data['html'] = $this->sanitizeHtmlValue($block->html);
         }
 
         return $data;
