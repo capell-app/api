@@ -11,7 +11,7 @@ use Capell\Core\Models\Page;
 use Capell\Core\Models\PageUrl;
 use Capell\Core\Models\Site;
 use Capell\Core\Models\SiteDomain;
-use Capell\LayoutBuilder\Contracts\PublicBlockPayloadResolver;
+use Capell\LayoutBuilder\Contracts\PublicWidgetPayloadResolver;
 use Capell\LayoutBuilder\Models\Widget;
 use Illuminate\Support\Facades\URL;
 
@@ -94,8 +94,8 @@ it('includes selected layout containers without html', function (): void {
     $layout = Layout::factory()->site($page->site)->create([
         'key' => 'article',
         'containers' => [
-            'main' => ['blocks' => [['block_key' => $mainWidget->key, 'occurrence' => 1]]],
-            'sidebar' => ['blocks' => [['block_key' => $sidebarWidget->key, 'occurrence' => 1]]],
+            'main' => ['widgets' => [['widget_key' => $mainWidget->key, 'occurrence' => 1]]],
+            'sidebar' => ['widgets' => [['widget_key' => $sidebarWidget->key, 'occurrence' => 1]]],
         ],
     ]);
 
@@ -110,8 +110,8 @@ it('includes selected layout containers without html', function (): void {
         ->assertJsonPath('data.layout.key', 'article')
         ->assertJsonPath('data.layout.containers.0.key', 'main')
         ->assertJsonCount(1, 'data.layout.containers')
-        ->assertJsonPath('data.layout.containers.0.blocks.0.key', 'main-widget')
-        ->assertJsonMissingPath('data.layout.containers.0.blocks.0.html');
+        ->assertJsonPath('data.layout.containers.0.widgets.0.key', 'main-widget')
+        ->assertJsonMissingPath('data.layout.containers.0.widgets.0.html');
 });
 
 it('treats all containers as the full layout graph', function (): void {
@@ -123,8 +123,8 @@ it('treats all containers as the full layout graph', function (): void {
     $layout = Layout::factory()->site($page->site)->create([
         'key' => 'article',
         'containers' => [
-            'main' => ['blocks' => [['block_key' => $mainWidget->key, 'occurrence' => 1]]],
-            'sidebar' => ['blocks' => [['block_key' => $sidebarWidget->key, 'occurrence' => 1]]],
+            'main' => ['widgets' => [['widget_key' => $mainWidget->key, 'occurrence' => 1]]],
+            'sidebar' => ['widgets' => [['widget_key' => $sidebarWidget->key, 'occurrence' => 1]]],
         ],
     ]);
 
@@ -158,14 +158,14 @@ it('includes layout html and sanitizes unsafe html strings', function (): void {
         'containers' => [
             'main' => [
                 'summary' => '<em onmouseover="alert(1)">Container</em><script',
-                'blocks' => [['block_key' => $block->key, 'occurrence' => 1]],
+                'widgets' => [['widget_key' => $block->key, 'occurrence' => 1]],
             ],
         ],
     ]);
 
     $page->update(['layout_id' => $layout->id]);
 
-    app()->bind(PublicBlockPayloadResolver::class, fn (): PublicBlockPayloadResolver => new class implements PublicBlockPayloadResolver
+    app()->bind(PublicWidgetPayloadResolver::class, fn (): PublicWidgetPayloadResolver => new class implements PublicWidgetPayloadResolver
     {
         /**
          * @return array<string, mixed>
@@ -195,9 +195,9 @@ it('includes layout html and sanitizes unsafe html strings', function (): void {
         ->assertJsonPath('data.meta.description', '<span><a>Meta</a></span>')
         ->assertJsonPath('data.layout.meta', [])
         ->assertJsonPath('data.layout.containers.0.meta', [])
-        ->assertJsonPath('data.layout.containers.0.blocks.0.data.content', '<p><a>Widget</a></p>')
-        ->assertJsonPath('data.layout.containers.0.blocks.0.data.nested.content', '<div>Nested</div>')
-        ->assertJsonPath('data.layout.containers.0.blocks.0.html', '<section><a>Hero</a></section>');
+        ->assertJsonPath('data.layout.containers.0.widgets.0.data.content', '<p><a>Widget</a></p>')
+        ->assertJsonPath('data.layout.containers.0.widgets.0.data.nested.content', '<div>Nested</div>')
+        ->assertJsonPath('data.layout.containers.0.widgets.0.html', '<section><a>Hero</a></section>');
 });
 
 it('rejects unbounded layout html requests', function (): void {
@@ -207,7 +207,7 @@ it('rejects unbounded layout html requests', function (): void {
     $layout = Layout::factory()->site($page->site)->create([
         'key' => 'article',
         'containers' => [
-            'main' => ['blocks' => [['block_key' => $block->key, 'occurrence' => 1]]],
+            'main' => ['widgets' => [['widget_key' => $block->key, 'occurrence' => 1]]],
         ],
     ]);
 
