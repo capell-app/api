@@ -40,7 +40,7 @@ it('serves the v1 route and emits public api contract headers', function (): voi
         'content' => '<p>Terms content</p>',
     ]);
 
-    URL::forceRootUrl('https://example.com');
+    URL::useOrigin('https://example.com');
 
     getJson(route('capell-api.v1.pages.resolve', ['url' => $pageUrl->url]))
         ->assertOk()
@@ -401,7 +401,7 @@ function createPublicApiPage(string $url, array $translation = [], ?string $doma
  */
 function apiResolveUrl(array $parameters = [], string $host = 'example.com', bool $signed = false): string
 {
-    URL::forceRootUrl('https://' . $host);
+    URL::useOrigin('https://' . $host);
 
     if ($signed) {
         $signedUrl = URL::signedRoute('capell-api.pages.resolve', array_diff_key($parameters, array_flip(['fields', 'include', 'containers'])));
