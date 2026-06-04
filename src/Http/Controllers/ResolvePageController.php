@@ -4,12 +4,12 @@ declare(strict_types=1);
 
 namespace Capell\Api\Http\Controllers;
 
+use Capell\Api\Actions\BuildPublicPagePayloadAction;
+use Capell\Api\Data\PublicPagePayloadOptionsData;
 use Capell\Api\Providers\ApiServiceProvider;
-use Capell\Api\Support\SanitizesPublicHtml;
 use Capell\Core\Actions\LoadSiteDomainFromUrlAction;
 use Capell\Core\Actions\ResolvePublicPageByUrlAction;
 use Capell\Core\Contracts\Pageable;
-use Capell\Core\Data\PublicPageFieldsData;
 use Capell\Core\Enums\ExtensionStatusEnum;
 use Capell\Core\Facades\CapellCore;
 use Capell\Core\Models\CapellExtension;
@@ -18,10 +18,6 @@ use Capell\Core\Models\Layout;
 use Capell\Core\Models\Page;
 use Capell\Core\Models\Site;
 use Capell\Core\Models\SiteDomain;
-use Capell\LayoutBuilder\Actions\BuildPublicLayoutGraphAction;
-use Capell\LayoutBuilder\Data\PublicLayoutContainerData;
-use Capell\LayoutBuilder\Data\PublicLayoutGraphData;
-use Capell\LayoutBuilder\Data\PublicLayoutWidgetData;
 use Illuminate\Contracts\Database\Eloquent\Builder as BuilderContract;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
@@ -30,13 +26,7 @@ use Throwable;
 
 final class ResolvePageController
 {
-    use SanitizesPublicHtml;
-
     private const string API_VERSION = 'v1';
-
-    private const array DEFAULT_FIELDS = ['url', 'title', 'content'];
-
-    private const array ALLOWED_FIELDS = ['url', 'title', 'content', 'meta'];
 
     private ?SiteDomain $resolvedSiteDomain = null;
 
@@ -81,16 +71,22 @@ final class ResolvePageController
             return $this->notFound();
         }
 
-        $this->cacheTags = $this->cacheTags($site, $language, $resolution->page);
-        $data = $this->fields($request, $resolution->fields);
+        $options = PublicPagePayloadOptionsData::fromRequest($request);
 
-        if ($this->shouldIncludeLayout($request) && $resolution->layout instanceof Layout && $resolution->page instanceof Page) {
-            if ($this->requestsUnboundedLayoutHtml($request)) {
+        if ($options->shouldIncludeLayout() && $resolution->layout instanceof Layout && $resolution->page instanceof Page) {
+            if ($options->requestsUnboundedLayoutHtml()) {
                 return $this->badRequest('layout.html requires explicit bounded containers.');
             }
-
-            $data['layout'] = $this->layout($request, $resolution->layout, $resolution->page, $language);
         }
+
+        $this->cacheTags = $this->cacheTags($site, $language, $resolution->page);
+        $data = BuildPublicPagePayloadAction::run(
+            fields: $resolution->fields,
+            options: $options,
+            layout: $resolution->layout,
+            page: $resolution->page instanceof Page ? $resolution->page : null,
+            language: $language,
+        );
 
         return $this->json(['data' => $data]);
     }
@@ -250,151 +246,6 @@ final class ResolvePageController
             ->unique()
             ->values()
             ->all());
-    }
-
-    /**
-     * @return array<string, mixed>
-     */
-    private function fields(Request $request, PublicPageFieldsData $fields): array
-    {
-        $requestedFields = $this->requestedList($request, 'fields');
-        $selectedFields = $requestedFields === []
-            ? self::DEFAULT_FIELDS
-            : array_values(array_intersect($requestedFields, self::ALLOWED_FIELDS));
-
-        $data = [];
-
-        foreach ($selectedFields as $field) {
-            $value = match ($field) {
-                'url' => $fields->url,
-                'title' => $fields->title,
-                'content' => $fields->content,
-                'meta' => $fields->meta,
-                default => null,
-            };
-
-            $data[$field] = $this->sanitizeHtmlValue($value);
-        }
-
-        return $data;
-    }
-
-    /**
-     * @return array<string, mixed>
-     */
-    private function layout(Request $request, Layout $layout, Page $page, Language $language): array
-    {
-        $graph = BuildPublicLayoutGraphAction::run(
-            layout: $layout,
-            page: $page,
-            language: $language,
-            containers: $this->requestedContainers($request),
-            includeHtml: in_array('layout.html', $this->requestedList($request, 'include'), true),
-        );
-
-        return $this->layoutGraph($graph);
-    }
-
-    /**
-     * @return array<string, mixed>
-     */
-    private function layoutGraph(PublicLayoutGraphData $graph): array
-    {
-        return [
-            'key' => $graph->key,
-            'meta' => $this->sanitizeHtmlValue($graph->meta),
-            'containers' => array_map(
-                $this->layoutContainer(...),
-                $graph->containers,
-            ),
-        ];
-    }
-
-    /**
-     * @return array<string, mixed>
-     */
-    private function layoutContainer(PublicLayoutContainerData $container): array
-    {
-        return [
-            'key' => $container->key,
-            'meta' => $this->sanitizeHtmlValue($container->meta),
-            'widgets' => array_map(
-                $this->layoutWidget(...),
-                $container->widgets,
-            ),
-        ];
-    }
-
-    /**
-     * @return array<string, mixed>
-     */
-    private function layoutWidget(PublicLayoutWidgetData $widget): array
-    {
-        $data = [
-            'key' => $widget->key,
-            'occurrence' => $widget->occurrence,
-            'type' => $widget->type,
-            'data' => $this->sanitizeHtmlValue($widget->data),
-        ];
-
-        if ($widget->html !== null) {
-            $data['html'] = $this->sanitizeHtmlValue($widget->html);
-        }
-
-        return $data;
-    }
-
-    private function shouldIncludeLayout(Request $request): bool
-    {
-        $include = $this->requestedList($request, 'include');
-
-        return in_array('layout', $include, true) || in_array('layout.html', $include, true);
-    }
-
-    private function requestsUnboundedLayoutHtml(Request $request): bool
-    {
-        $include = $this->requestedList($request, 'include');
-
-        if (! in_array('layout.html', $include, true)) {
-            return false;
-        }
-
-        $containers = $this->requestedList($request, 'containers');
-
-        return $containers === [] || in_array('all', $containers, true);
-    }
-
-    /**
-     * @return array<int, string>
-     */
-    private function requestedList(Request $request, string $key): array
-    {
-        $value = $request->query($key);
-
-        if (! is_string($value)) {
-            return [];
-        }
-
-        return collect(explode(',', $value))
-            ->map(fn (string $item): string => trim($item))
-            ->filter(fn (string $item): bool => $item !== '')
-            ->unique()
-            ->values()
-            ->all();
-    }
-
-    /**
-     * @return array<int, string>
-     */
-    private function requestedContainers(Request $request): array
-    {
-        $containers = $this->requestedList($request, 'containers');
-
-        if (in_array('all', $containers, true)) {
-            return ['*'];
-        }
-
-        return $containers;
     }
 
     private function queryString(Request $request, string $key, string $default): string
