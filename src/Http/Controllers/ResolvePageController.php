@@ -73,10 +73,8 @@ final class ResolvePageController
 
         $options = PublicPagePayloadOptionsData::fromRequest($request);
 
-        if ($options->shouldIncludeLayout() && $resolution->layout instanceof Layout && $resolution->page instanceof Page) {
-            if ($options->requestsUnboundedLayoutHtml()) {
-                return $this->badRequest('layout.html requires explicit bounded containers.');
-            }
+        if ($options->shouldIncludeLayout() && $resolution->layout instanceof Layout && $resolution->page instanceof Page && $options->requestsUnboundedLayoutHtml()) {
+            return $this->badRequest('layout.html requires explicit bounded containers.');
         }
 
         $this->cacheTags = $this->cacheTags($site, $language, $resolution->page);
