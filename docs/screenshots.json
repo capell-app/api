@@ -17,7 +17,8 @@
             "required": true,
             "notes": "Requires API installed, Layout Builder installed, and a seeded published page with a resolvable URL. Capture the JSON body plus `X-Capell-Api-Version` and `X-Capell-Cache-Tags` headers.",
             "useCase": "A frontend renderer resolves a published Capell page into public JSON for rendering outside the CMS.",
-            "screenshotPath": "packages/api/docs/screenshots/page-resolve-success-json.png"
+            "screenshotPath": "packages/api/docs/screenshots/page-resolve-success-json.png",
+            "darkScreenshotPath": "packages/api/docs/screenshots/page-resolve-success-json-dark.png"
         },
         {
             "id": "page-resolve-not-found-json",
@@ -59,7 +60,8 @@
             "required": true,
             "notes": "Requires Layout Builder and a seeded page with bounded layout content. Verify public JSON does not expose authoring metadata, field paths, or signed editor URLs.",
             "useCase": "A frontend renderer requests the bounded layout graph for a published page.",
-            "screenshotPath": "packages/api/docs/screenshots/page-resolve-layout-json.png"
+            "screenshotPath": "packages/api/docs/screenshots/page-resolve-layout-json.png",
+            "darkScreenshotPath": "packages/api/docs/screenshots/page-resolve-layout-json-dark.png"
         }
     ]
 }
