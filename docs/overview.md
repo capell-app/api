@@ -32,10 +32,12 @@ Both routes resolve a published page from the request context and can include se
 
 ## Screenshot Plan
 
-- Successful page resolve JSON response.
-- Not-found page resolve JSON response.
-- Forbidden explicit context response without a valid signature.
-- Layout graph JSON response with bounded containers.
+- Successful page resolve JSON response at `/api/capell/v1/pages/resolve?url=/`.
+- Not-found page resolve JSON response at `/api/capell/v1/pages/resolve?url=/missing-api-screenshot-page`.
+- Forbidden explicit context response without a valid signature at `/api/capell/v1/pages/resolve?url=/&site=1`.
+- Layout graph JSON response with bounded containers at `/api/capell/v1/pages/resolve?url=/&include=layout&containers=main`.
+
+The current Capell screenshot runner rejects intentional 403/404 JSON responses before it can screenshot the body, so marketplace promotion remains blocked until the runner supports allowed non-2xx response captures or a dedicated JSON response-rendering scenario.
 
 ## Known Risks
 
