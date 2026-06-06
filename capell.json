@@ -89,26 +89,6 @@
                 "path": "docs/assets/marketplace/extension-card.jpg",
                 "alt": "API extension preview image",
                 "caption": "API extension preview"
-            },
-            {
-                "path": "docs/screenshots/page-resolve-success-json.png",
-                "alt": "Capell API successful page resolve JSON response",
-                "caption": "Resolve published Capell page content as public JSON for external renderers"
-            },
-            {
-                "path": "docs/screenshots/page-resolve-layout-json.png",
-                "alt": "Capell API page resolve response with layout JSON",
-                "caption": "Request bounded Layout Builder containers without exposing authoring metadata"
-            },
-            {
-                "path": "docs/screenshots/page-resolve-success-json-dark.png",
-                "alt": "Capell API successful page resolve JSON response in dark mode",
-                "caption": "Successful public JSON response captured through the Capell screenshot runner"
-            },
-            {
-                "path": "docs/screenshots/page-resolve-layout-json-dark.png",
-                "alt": "Capell API layout JSON response in dark mode",
-                "caption": "Layout payload JSON response captured through the Capell screenshot runner"
             }
         ],
         "categories": ["frontend", "publishing-pro"]
