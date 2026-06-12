@@ -41,6 +41,24 @@
     "settings": [],
     "permissions": [],
     "capabilities": ["public-page-api", "public-page-api-v1"],
+    "security": {
+        "riskTier": "standard",
+        "publicSurface": {
+            "routeNames": ["pages.resolve", "v1.pages.resolve"],
+            "auth": "public",
+            "csrfExemptRoutes": [],
+            "signedRoutes": [],
+            "tokenizedRoutes": [],
+            "webhookRoutes": [],
+            "throttledRoutes": ["pages.resolve", "v1.pages.resolve"]
+        },
+        "publicOutput": {
+            "cacheSafe": true,
+            "forbidAuthoringSurface": true,
+            "forbidSecrets": true,
+            "forbidPublicBladeQueries": true
+        }
+    },
     "performance": {
         "frontendRenderBudgetMs": 20,
         "adminQueryBudget": 0,
