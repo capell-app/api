@@ -21,34 +21,6 @@
             "darkScreenshotPath": "packages/api/docs/screenshots/page-resolve-success-json-dark.png"
         },
         {
-            "id": "page-resolve-not-found-json",
-            "title": "Page resolve not-found JSON response.",
-            "package": "api",
-            "surface": "frontend",
-            "targetType": "frontend-route",
-            "target": "capell-api.v1.pages.resolve",
-            "url": "/api/capell/v1/pages/resolve?url=/missing-api-screenshot-page",
-            "waitFor": "body",
-            "required": false,
-            "notes": "Use a missing URL on an installed package and verify the response remains generic, with no internal model names, editor markers, or draft content. Optional until the Capell screenshot runner supports allowed non-2xx JSON body captures.",
-            "useCase": "An API client receives a predictable not-found response for an unknown public page URL.",
-            "screenshotPath": "packages/api/docs/screenshots/page-resolve-not-found-json.png"
-        },
-        {
-            "id": "page-resolve-forbidden-context-json",
-            "title": "Forbidden explicit context response.",
-            "package": "api",
-            "surface": "frontend",
-            "targetType": "frontend-route",
-            "target": "capell-api.v1.pages.resolve",
-            "url": "/api/capell/v1/pages/resolve?url=/&site=1",
-            "waitFor": "body",
-            "required": false,
-            "notes": "Request an explicit site or language without a valid context signature and capture the forbidden JSON response. Optional until the Capell screenshot runner supports allowed non-2xx JSON body captures.",
-            "useCase": "An API consumer learns that explicit site/language context requires a valid signature.",
-            "screenshotPath": "packages/api/docs/screenshots/page-resolve-forbidden-context-json.png"
-        },
-        {
             "id": "page-resolve-layout-json",
             "title": "Page resolve layout graph JSON response.",
             "package": "api",

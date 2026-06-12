@@ -28,6 +28,21 @@ Capell API exposes published page content as JSON for public integrations such a
 - Optional layout payload inclusion for integrations that need structured page content.
 - HTML sanitization rules for public API responses.
 
+## Boundaries
+
+Capell API only exposes published public content. It must not return drafts, admin-only fields, authoring metadata, signed editor URLs, package internals, permission names, or unsanitized HTML.
+
+Layout payloads are built through package Actions. Public API controllers should not query layout/widget relationships ad hoc or bypass `SanitizesPublicHtml`.
+
+## Runtime Surface
+
+- Provider: `src/Providers/ApiServiceProvider.php`
+- Actions: `src/Actions/BuildPublicPagePayloadAction.php`, `src/Actions/BuildPublicLayoutPayloadAction.php`
+- Data objects: `src/Data/PublicPagePayloadOptionsData.php`
+- HTML safety: `src/Support/SanitizesPublicHtml.php`
+- Health check: `src/Health/ApiHealthCheck.php`
+- Tests: `packages/api/tests`
+
 ## Docs
 
 - [docs index](docs/README.md)
