@@ -20,7 +20,8 @@ final class ApiServiceProvider extends AbstractPackageServiceProvider
     {
         $package
             ->name(self::$name)
-            ->hasConfigFile();
+            ->hasConfigFile()
+            ->hasTranslations();
 
         if (file_exists(__DIR__ . '/../../routes/api.php')) {
             $package->hasRoute('api');

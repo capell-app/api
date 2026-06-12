@@ -27,7 +27,7 @@ $configuredMiddleware = static function (mixed $middleware): array {
 $apiMiddleware = [
     ...$configuredMiddleware(config('capell-api.middleware', ['api'])),
     ...$configuredMiddleware(config('capell-api.public_pages.auth_middleware')),
-    ...$configuredMiddleware(config('capell-api.public_pages.rate_limit_middleware')),
+    ...$configuredMiddleware(config('capell-api.public_pages.rate_limit_middleware', 'throttle:capell-api')),
     ...$configuredMiddleware(config('capell-api.public_pages.middleware', [])),
 ];
 
