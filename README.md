@@ -1,71 +1,94 @@
-# Capell API
+# API
 
-Capell API exposes published page content as JSON for public integrations such as terms pop-ups, headless fragments, and lightweight client-side content fetches.
+<!-- prettier-ignore-start -->
 
-## At A Glance
+## What This Plugin Adds
 
-- Package: `capell-app/api`
-- Namespace: `Capell\Api\`
-- Surfaces: public HTTP JSON endpoints
-- Service providers: `packages/api/src/Providers/ApiServiceProvider.php`
-- Capell dependencies: `capell-app/core`, `capell-app/layout-builder`
+API is an **Available**, **No schema impact** Capell package in the **Capell Publishing Pro** product group. It ships as `capell-app/api` and extends these surfaces: frontend.
 
-## Why It Helps Your Capell Workflow
+Public JSON delivery of published Capell page data.
 
-- Exposes published Capell page data as public JSON for headless fragments, popups, terms content, and lightweight integrations.
-- Keeps API output scoped to published content so integrations do not need admin access or internal page models.
-- Gives developers a stable public delivery surface while preserving the rule that authoring state never appears in public responses.
+After install, the package affects public rendering, public routes, or frontend runtime behaviour.
 
-## Best Used With
+Status details:
 
-- [Layout Builder](../layout-builder/README.md)
-- [Frontend Authoring](../frontend-authoring/README.md)
-- [HTML Cache](../html-cache/README.md)
+- Status: Available
+- Tier: premium
+- Bundle: publishing-pro
+- Composer package: `capell-app/api`
+- Namespace: `Capell\Api`
+- Theme key: not applicable
 
-## What It Adds
+## Why It Matters
 
-- Host-scoped JSON delivery for published pages.
-- Optional layout payload inclusion for integrations that need structured page content.
-- HTML sanitization rules for public API responses.
+**For developers:** The package gives developers package-owned service providers, Actions, Data objects, and Laravel routes instead of pushing this behaviour into core or application code.
 
-## Boundaries
+**For teams:** Public JSON delivery of published Capell page data.
 
-Capell API only exposes published public content. It must not return drafts, admin-only fields, authoring metadata, signed editor URLs, package internals, permission names, or unsanitized HTML.
+## Screens And Workflow
 
-Layout payloads are built through package Actions. Public API controllers should not query layout/widget relationships ad hoc or bypass `SanitizesPublicHtml`.
+Screenshot contract: `docs/screenshots.json`.
 
-## Runtime Surface
+- Successful page resolve JSON response (frontend, required).
+- Page resolve layout graph JSON response (frontend, required).
 
-- Provider: `src/Providers/ApiServiceProvider.php`
-- Actions: `src/Actions/BuildPublicPagePayloadAction.php`, `src/Actions/BuildPublicLayoutPayloadAction.php`
-- Data objects: `src/Data/PublicPagePayloadOptionsData.php`
-- HTML safety: `src/Support/SanitizesPublicHtml.php`
-- Health check: `src/Health/ApiHealthCheck.php`
-- Tests: `packages/api/tests`
+## Technical Shape
 
-## Docs
+- Service providers: `Capell\Api\Providers\ApiServiceProvider`.
+- Config files: `packages/api/config/capell-api.php`.
+- Route files: `packages/api/routes/api.php`.
+- Actions: `BuildPublicLayoutPayloadAction`, `BuildPublicPagePayloadAction`.
+- Data objects: `PublicPagePayloadOptionsData`.
+- Health checks: `Capell\Api\Health\ApiHealthCheck`.
+- Cache tags: `api`, `api:pages`.
 
-- [docs index](docs/README.md)
-- [overview.md](docs/overview.md)
-- [page-api.md](docs/page-api.md)
-- [screenshots.json](docs/screenshots.json)
+## Data Model
 
-Start with [Overview](docs/overview.md) for package surfaces and screenshot coverage, then [Page API](docs/page-api.md) for endpoint shape, host-scoped site resolution, fields, layout includes, and HTML sanitization rules.
+This package has no schema impact. It does not declare package-owned migrations or required tables.
 
-Screenshots and response captures are generated from [docs/screenshots.json](docs/screenshots.json) during package documentation runs.
+Docs gap: document extension points here if the package delegates persistence to a host package.
 
-## Testing
+## Install Impact
 
-Run package tests from the repository root:
+- Admin navigation: no admin surface declared.
+- Permissions: none declared in `capell.json`.
+- Public routes: route files exist and must be reviewed before public enablement.
+- Database changes: no package migrations declared.
+- Settings: no package settings declared.
+- Queues or schedules: none detected in standard package paths.
+- Cache tags: `api`, `api:pages`.
+- Commands: none declared.
 
-```bash
-vendor/bin/pest packages/api/tests --configuration=phpunit.xml
-```
+## Common Pitfalls
+
+- Review route middleware, throttling, signed URLs, and public-output safety before exposing routes.
+- Keep public Blade and cached HTML free of authoring markers, model IDs, permissions, signed editor URLs, and lazy database queries.
+- Keep `composer.json`, `composer.local.json`, `capell.json`, docs, screenshots, and tests aligned when the package surface changes.
 
 ## Troubleshooting
 
-| Symptom                                  | Likely cause                                                             | Check                                                                                 | Fix                                                                                           |
-| ---------------------------------------- | ------------------------------------------------------------------------ | ------------------------------------------------------------------------------------- | --------------------------------------------------------------------------------------------- |
-| JSON endpoint returns no page payload    | The host or path does not resolve to a published page                    | Request the endpoint for a known published page on the expected host                  | Publish the page for that site/locale, then repeat the API request                            |
-| Layout data is missing from the response | The request did not ask for layout data or Layout Builder is unavailable | Check the endpoint query/options and confirm `capell-app/layout-builder` is installed | Enable the layout include only for integrations that need it and rerun the package tests      |
-| Response exposes unsafe HTML             | A controller or Action bypassed `SanitizesPublicHtml`                    | Run `vendor/bin/pest packages/api/tests --configuration=phpunit.xml`                  | Route public HTML through `BuildPublicPagePayloadAction` or the sanitizer before returning it |
+| Symptom | Likely cause | Check | Fix |
+| --- | --- | --- | --- |
+| Package surface is missing after install | Provider or manifest is not loaded | Confirm `capell.json`, package `composer.json`, and provider registration | Reinstall the package, refresh Composer autoload, and clear host caches |
+| Route returns unexpected output | Route cache, middleware, or signed URL setup does not match the package route file | Check the route files listed in `Technical Shape` | Clear route cache and verify middleware before exposing public routes |
+| Public output leaks unexpected state | Render data, cache variation, or authoring boundary has regressed | Check public Blade, cache tags, and public-output safety tests | Move data loading out of Blade and rerun the package public-output tests |
+
+## Quick Start
+
+1. Install the package: `composer require capell-app/api`.
+2. Run the required setup: no package migrations are declared; clear cached config and routes if the host app uses caches.
+3. Verify the package provider is registered and the related frontend, command, or extension point is active.
+
+## Next Steps
+
+- [Package docs](docs/README.md)
+- [Overview](docs/overview.md)
+- [Screenshot contract](docs/screenshots.json)
+- [Marketplace assets](docs/assets/marketplace/)
+- [Capell content language plan](../../docs/CONTENT_LANGUAGE_PLAN.md)
+- [Capell documentation design system](../../docs/DESIGN_SYSTEM.md)
+- [Capell and package ERD notes](../../docs/erd/capell-and-package-erds.md)
+- Related packages: [Layout Builder](../layout-builder/README.md).
+- Focused tests: `vendor/bin/pest packages/api/tests --configuration=phpunit.xml`.
+
+<!-- prettier-ignore-end -->

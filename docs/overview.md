@@ -1,51 +1,93 @@
 # API
 
-Status: **Available, route-only** · Kind: **package** · Tier: **premium** · Bundle: **publishing-pro** · Contexts: **frontend** · Product group: **Capell Publishing Pro**
+<!-- prettier-ignore-start -->
 
-API exposes published Capell page data as public JSON for external renderers, previews, static build systems, and integrations.
+## What This Plugin Adds
 
-## What This Package Adds
+API is an **Available**, **No schema impact** Capell package in the **Capell Publishing Pro** product group. It ships as `capell-app/api` and extends these surfaces: frontend.
 
-- Public page resolution endpoints at `/api/capell/pages/resolve` and `/api/capell/v1/pages/resolve`.
-- JSON responses with `X-Capell-Api-Version` and `X-Capell-Cache-Tags` headers.
-- Optional layout graph output through Layout Builder.
-- HTML sanitization for public content fields.
-- Context signature enforcement for explicit site/language resolution.
+Public JSON delivery of published Capell page data.
 
-## Install Flow
+After install, the package affects public rendering, public routes, or frontend runtime behaviour.
 
+Status details:
+
+- Status: Available
+- Tier: premium
+- Bundle: publishing-pro
 - Composer package: `capell-app/api`
-- Hard dependencies: `capell-app/core`, `capell-app/layout-builder`
-- Optional dependencies: none declared.
-- Run `capell:extension-install capell-app/api` after Composer install so endpoint responses pass the installed-package guard.
+- Namespace: `Capell\Api`
+- Theme key: not applicable
 
-## Admin Surfaces
+## Why It Matters
 
-This package adds no Filament resources, pages, widgets, relation managers, or settings screens by itself.
+**For developers:** The package gives developers package-owned service providers, Actions, Data objects, and Laravel routes instead of pushing this behaviour into core or application code.
 
-## Frontend Surfaces
+**For teams:** Public JSON delivery of published Capell page data.
 
-- `GET /api/capell/pages/resolve`
-- `GET /api/capell/v1/pages/resolve`
+## Screens And Workflow
 
-Both routes resolve a published page from the request context and can include selected fields, metadata, and bounded layout output.
+Screenshot contract: `screenshots.json`.
 
-## Screenshot Plan
+- Successful page resolve JSON response (frontend, required).
+- Page resolve layout graph JSON response (frontend, required).
 
-- Capture contract: successful page resolve JSON response at `/api/capell/v1/pages/resolve?url=/`.
-- Capture contract: layout graph JSON response with bounded containers at `/api/capell/v1/pages/resolve?url=/&include=layout&containers=main`.
-- Optional contract entry: not-found page resolve JSON response at `/api/capell/v1/pages/resolve?url=/missing-api-screenshot-page`.
-- Optional contract entry: forbidden explicit context response without a valid signature at `/api/capell/v1/pages/resolve?url=/&site=1`.
+## Technical Shape
 
-The 2026-06-06 Capell screenshot run captured the successful and layout JSON responses in light and dark mode, but those raw JSON captures are retained as runner evidence only and are not promoted into buyer-facing Marketplace media. The current runner still rejects intentional 403/404 JSON responses before it can screenshot the body, so the not-found and forbidden response captures remain optional until the runner supports allowed non-2xx response captures or a dedicated styled JSON response-rendering scenario.
+- Service providers: `Capell\Api\Providers\ApiServiceProvider`.
+- Config files: `packages/api/config/capell-api.php`.
+- Route files: `packages/api/routes/api.php`.
+- Actions: `BuildPublicLayoutPayloadAction`, `BuildPublicPagePayloadAction`.
+- Data objects: `PublicPagePayloadOptionsData`.
+- Health checks: `Capell\Api\Health\ApiHealthCheck`.
+- Cache tags: `api`, `api:pages`.
 
-## Known Risks
+## Data Model
 
-- Route responses are only useful after the package is marked installed and the host app has published pages to resolve.
-- Layout output depends on `capell-app/layout-builder`; final captures should install only core baseline, Layout Builder, and API.
+This package has no schema impact. It does not declare package-owned migrations or required tables.
 
-## Feature Suggestions
+Docs gap: document extension points here if the package delegates persistence to a host package.
 
-- Add a small admin API diagnostics page showing route status, installed flag, middleware stack, and a sample signed context URL.
-- Add response shape fixtures to the docs so frontend consumers can build typed clients without reading controller internals.
-- Add an optional endpoint explorer command that resolves a selected site/language/page and writes a redacted JSON example for documentation.
+## Install Impact
+
+- Admin navigation: no admin surface declared.
+- Permissions: none declared in `capell.json`.
+- Public routes: route files exist and must be reviewed before public enablement.
+- Database changes: no package migrations declared.
+- Settings: no package settings declared.
+- Queues or schedules: none detected in standard package paths.
+- Cache tags: `api`, `api:pages`.
+- Commands: none declared.
+
+## Common Pitfalls
+
+- Review route middleware, throttling, signed URLs, and public-output safety before exposing routes.
+- Keep public Blade and cached HTML free of authoring markers, model IDs, permissions, signed editor URLs, and lazy database queries.
+- Keep `composer.json`, `composer.local.json`, `capell.json`, docs, screenshots, and tests aligned when the package surface changes.
+
+## Troubleshooting
+
+| Symptom | Likely cause | Check | Fix |
+| --- | --- | --- | --- |
+| Package surface is missing after install | Provider or manifest is not loaded | Confirm `capell.json`, package `composer.json`, and provider registration | Reinstall the package, refresh Composer autoload, and clear host caches |
+| Route returns unexpected output | Route cache, middleware, or signed URL setup does not match the package route file | Check the route files listed in `Technical Shape` | Clear route cache and verify middleware before exposing public routes |
+| Public output leaks unexpected state | Render data, cache variation, or authoring boundary has regressed | Check public Blade, cache tags, and public-output safety tests | Move data loading out of Blade and rerun the package public-output tests |
+
+## Quick Start
+
+1. Install the package: `composer require capell-app/api`.
+2. Run the required setup: no package migrations are declared; clear cached config and routes if the host app uses caches.
+3. Verify the package provider is registered and the related frontend, command, or extension point is active.
+
+## Next Steps
+
+- [Package docs index](README.md)
+- [Screenshot contract](screenshots.json)
+- [Marketplace assets](assets/marketplace/)
+- [Capell content language plan](../../../docs/CONTENT_LANGUAGE_PLAN.md)
+- [Capell documentation design system](../../../docs/DESIGN_SYSTEM.md)
+- [Capell and package ERD notes](../../../docs/erd/capell-and-package-erds.md)
+- Related packages: [Layout Builder](../../layout-builder/README.md).
+- Focused tests: `vendor/bin/pest packages/api/tests --configuration=phpunit.xml`.
+
+<!-- prettier-ignore-end -->
