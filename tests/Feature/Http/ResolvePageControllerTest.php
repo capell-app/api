@@ -45,14 +45,14 @@ it('serves the v1 route and emits public api contract headers', function (): voi
     getJson(route('capell-api.v1.pages.resolve', ['url' => $pageUrl->url]))
         ->assertOk()
         ->assertHeader('X-Capell-Api-Version', 'v1')
-        ->assertHeader('X-Capell-Cache-Tags', sprintf('api,site:%s,language:%s,page:%s', $site->getKey(), $language->getKey(), $page->getKey()))
+        ->assertHeader('X-Capell-Cache-Tags', apiExpectedCacheTags($site, $language, $page))
         ->assertJsonPath('data.url', '/terms')
         ->assertJsonPath('data.title', 'Terms');
 
     getJson(route('capell-api.pages.resolve', ['url' => $pageUrl->url]))
         ->assertOk()
         ->assertHeader('X-Capell-Api-Version', 'v1')
-        ->assertHeader('X-Capell-Cache-Tags', sprintf('api,site:%s,language:%s,page:%s', $site->getKey(), $language->getKey(), $page->getKey()))
+        ->assertHeader('X-Capell-Cache-Tags', apiExpectedCacheTags($site, $language, $page))
         ->assertJsonPath('data.url', '/terms');
 });
 
@@ -394,6 +394,21 @@ function createPublicApiPage(string $url, array $translation = [], ?string $doma
         ->create(['url' => $url]);
 
     return [$pageUrl, $page, $language, $site];
+}
+
+function apiExpectedCacheTags(Site $site, Language $language, Page $page): string
+{
+    return sprintf(
+        'api,site:%s,language:%s,page:%s',
+        apiScalarKey($site->getKey()),
+        apiScalarKey($language->getKey()),
+        apiScalarKey($page->getKey()),
+    );
+}
+
+function apiScalarKey(mixed $key): string
+{
+    return is_scalar($key) ? (string) $key : '';
 }
 
 /**
