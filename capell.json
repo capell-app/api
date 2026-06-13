@@ -42,20 +42,18 @@
     "permissions": [],
     "capabilities": ["public-page-api", "public-page-api-v1"],
     "security": {
-        "riskTier": "standard",
+        "riskTier": "critical",
         "publicSurface": {
             "routeNames": [
                 "capell-api.pages.resolve",
-                "capell-api.v1.pages.resolve",
-                "pages.resolve",
-                "v1.pages.resolve"
+                "capell-api.v1.pages.resolve"
             ],
             "auth": "public",
             "csrfExemptRoutes": [],
             "signedRoutes": [],
             "tokenizedRoutes": [],
             "webhookRoutes": [],
-            "throttledRoutes": ["pages.resolve", "v1.pages.resolve"]
+            "throttledRoutes": []
         },
         "sensitiveData": {
             "encryptedFields": [],
