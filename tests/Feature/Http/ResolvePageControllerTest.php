@@ -17,6 +17,8 @@ use Illuminate\Support\Facades\URL;
 
 use function Pest\Laravel\getJson;
 
+require_once dirname(__DIR__, 5) . '/tests/Packages/Support/PublicOutputSafety.php';
+
 it('returns default page fields without layout', function (): void {
     [$pageUrl] = createPublicApiPage('/terms', [
         'title' => 'Terms',
@@ -42,18 +44,22 @@ it('serves the v1 route and emits public api contract headers', function (): voi
 
     URL::useOrigin('https://example.com');
 
-    getJson(route('capell-api.v1.pages.resolve', ['url' => $pageUrl->url]))
+    $v1Response = getJson(route('capell-api.v1.pages.resolve', ['url' => $pageUrl->url]))
         ->assertOk()
         ->assertHeader('X-Capell-Api-Version', 'v1')
-        ->assertHeader('X-Capell-Cache-Tags', sprintf('api,site:%s,language:%s,page:%s', $site->getKey(), $language->getKey(), $page->getKey()))
+        ->assertHeader('X-Capell-Cache-Tags', apiExpectedCacheTags($site, $language, $page))
         ->assertJsonPath('data.url', '/terms')
         ->assertJsonPath('data.title', 'Terms');
 
-    getJson(route('capell-api.pages.resolve', ['url' => $pageUrl->url]))
+    assertCapellPublicOutputIsSafe($v1Response, 'Capell API v1 page resolve response');
+
+    $legacyResponse = getJson(route('capell-api.pages.resolve', ['url' => $pageUrl->url]))
         ->assertOk()
         ->assertHeader('X-Capell-Api-Version', 'v1')
-        ->assertHeader('X-Capell-Cache-Tags', sprintf('api,site:%s,language:%s,page:%s', $site->getKey(), $language->getKey(), $page->getKey()))
+        ->assertHeader('X-Capell-Cache-Tags', apiExpectedCacheTags($site, $language, $page))
         ->assertJsonPath('data.url', '/terms');
+
+    assertCapellPublicOutputIsSafe($legacyResponse, 'Capell API legacy page resolve response');
 });
 
 it('returns only requested fields', function (): void {
@@ -184,7 +190,7 @@ it('includes layout html and sanitizes unsafe html strings', function (): void {
         }
     });
 
-    getJson(apiResolveUrl([
+    $response = getJson(apiResolveUrl([
         'url' => $pageUrl->url,
         'fields' => 'url,title,content,meta',
         'include' => 'layout.html',
@@ -198,6 +204,8 @@ it('includes layout html and sanitizes unsafe html strings', function (): void {
         ->assertJsonPath('data.layout.containers.0.widgets.0.data.content', '<p><a>Widget</a></p>')
         ->assertJsonPath('data.layout.containers.0.widgets.0.data.nested.content', '<div>Nested</div>')
         ->assertJsonPath('data.layout.containers.0.widgets.0.html', '<section><a>Hero</a></section>');
+
+    assertCapellPublicOutputIsSafe($response, 'Capell API layout HTML response');
 });
 
 it('rejects unbounded layout html requests', function (): void {
@@ -394,6 +402,21 @@ function createPublicApiPage(string $url, array $translation = [], ?string $doma
         ->create(['url' => $url]);
 
     return [$pageUrl, $page, $language, $site];
+}
+
+function apiExpectedCacheTags(Site $site, Language $language, Page $page): string
+{
+    return sprintf(
+        'api,site:%s,language:%s,page:%s',
+        apiScalarKey($site->getKey()),
+        apiScalarKey($language->getKey()),
+        apiScalarKey($page->getKey()),
+    );
+}
+
+function apiScalarKey(mixed $key): string
+{
+    return is_scalar($key) ? (string) $key : '';
 }
 
 /**

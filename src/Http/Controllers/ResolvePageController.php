@@ -122,15 +122,20 @@ final class ResolvePageController
     {
         $tags = [
             'api',
-            'site:' . $site->getKey(),
-            'language:' . $language->getKey(),
+            'site:' . $this->cacheTagKey($site->getKey()),
+            'language:' . $this->cacheTagKey($language->getKey()),
         ];
 
         if ($page instanceof Pageable) {
-            $tags[] = 'page:' . $page->getKey();
+            $tags[] = 'page:' . $this->cacheTagKey($page->getKey());
         }
 
         return $tags;
+    }
+
+    private function cacheTagKey(mixed $key): string
+    {
+        return is_scalar($key) ? (string) $key : '';
     }
 
     private function packageIsInstalled(): bool
@@ -239,7 +244,7 @@ final class ResolvePageController
             ->merge($site->siteDomains()->pluck('language_id'));
 
         return array_values($languageIds
-            ->filter(fn (mixed $languageId): bool => is_int($languageId) || ctype_digit((string) $languageId))
+            ->filter(fn (mixed $languageId): bool => is_int($languageId) || (is_string($languageId) && ctype_digit($languageId)))
             ->map(fn (mixed $languageId): int => (int) $languageId)
             ->unique()
             ->values()

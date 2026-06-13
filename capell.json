@@ -41,6 +41,42 @@
     "settings": [],
     "permissions": [],
     "capabilities": ["public-page-api", "public-page-api-v1"],
+    "security": {
+        "riskTier": "critical",
+        "publicSurface": {
+            "routeNames": [
+                "capell-api.pages.resolve",
+                "capell-api.v1.pages.resolve"
+            ],
+            "auth": "public",
+            "csrfExemptRoutes": [],
+            "signedRoutes": [],
+            "tokenizedRoutes": [],
+            "webhookRoutes": [],
+            "throttledRoutes": []
+        },
+        "sensitiveData": {
+            "encryptedFields": [],
+            "hashedTokenFields": [],
+            "redactedOutputClasses": [],
+            "plaintextJustifications": []
+        },
+        "publicOutput": {
+            "cacheSafe": true,
+            "forbidAuthoringSurface": true,
+            "forbidSecrets": true,
+            "forbidPublicBladeQueries": true
+        },
+        "externalHttpClients": {
+            "requiresTimeouts": false,
+            "requiresSecretRedaction": false,
+            "clients": []
+        },
+        "adminSurface": {
+            "authorization": "none",
+            "permissions": []
+        }
+    },
     "performance": {
         "frontendRenderBudgetMs": 20,
         "adminQueryBudget": 0,

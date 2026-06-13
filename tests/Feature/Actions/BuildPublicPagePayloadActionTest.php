@@ -95,8 +95,69 @@ it('can include inertia widget component names without changing the default api 
         language: $language,
     );
 
-    expect($defaultPayload['layout']['containers'][0]['widgets'][0])->not->toHaveKey('component')
-        ->and($inertiaPayload['layout']['containers'][0]['widgets'][0]['component'])->toBe('Theme/Widgets/Hero')
-        ->and($inertiaPayload['layout']['containers'][0]['widgets'][0]['data']['headline'])->toBe('<strong>Appointments</strong>')
-        ->and($inertiaPayload['layout']['containers'][0]['widgets'][0])->not->toHaveKey('html');
+    $defaultWidget = apiTestFirstLayoutWidget($defaultPayload);
+    $inertiaWidget = apiTestFirstLayoutWidget($inertiaPayload);
+    $inertiaWidgetData = apiTestWidgetData($inertiaWidget);
+
+    expect($defaultWidget)->not->toHaveKey('component')
+        ->and($inertiaWidget['component'])->toBe('Theme/Widgets/Hero')
+        ->and($inertiaWidgetData['headline'])->toBe('<strong>Appointments</strong>')
+        ->and($inertiaWidget)->not->toHaveKey('html');
 });
+
+/**
+ * @return array<mixed, mixed>
+ */
+function apiTestFirstLayoutWidget(mixed $payload): array
+{
+    if (! is_array($payload)) {
+        throw new RuntimeException('Expected API payload to be an array.');
+    }
+
+    $layout = $payload['layout'] ?? null;
+
+    if (! is_array($layout)) {
+        throw new RuntimeException('Expected API payload to include a layout array.');
+    }
+
+    $containers = $layout['containers'] ?? null;
+
+    if (! is_array($containers)) {
+        throw new RuntimeException('Expected API layout payload to include containers.');
+    }
+
+    $firstContainer = $containers[0] ?? null;
+
+    if (! is_array($firstContainer)) {
+        throw new RuntimeException('Expected API layout payload to include a first container.');
+    }
+
+    $widgets = $firstContainer['widgets'] ?? null;
+
+    if (! is_array($widgets)) {
+        throw new RuntimeException('Expected API layout container to include widgets.');
+    }
+
+    $firstWidget = $widgets[0] ?? null;
+
+    if (! is_array($firstWidget)) {
+        throw new RuntimeException('Expected API layout container to include a first widget.');
+    }
+
+    return $firstWidget;
+}
+
+/**
+ * @param  array<mixed, mixed>  $widget
+ * @return array<mixed, mixed>
+ */
+function apiTestWidgetData(array $widget): array
+{
+    $data = $widget['data'] ?? null;
+
+    if (! is_array($data)) {
+        throw new RuntimeException('Expected API layout widget to include data.');
+    }
+
+    return $data;
+}
