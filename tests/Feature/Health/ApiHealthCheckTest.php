@@ -86,9 +86,8 @@ it('fails the header diagnostic when the resolve route stops returning api contr
             ->and($result->passed)->toBeFalse()
             ->and(ApiHealthCheck::passed())->toBeFalse();
     } finally {
-        app('router')->setRoutes($routes);
-
         if ($routes instanceof RouteCollection) {
+            app('router')->setRoutes($routes);
             app('url')->setRoutes($routes);
         }
     }

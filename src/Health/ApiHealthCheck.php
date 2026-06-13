@@ -220,7 +220,7 @@ final class ApiHealthCheck implements ChecksExtensionHealth
         $container = app();
         $middlewareDisableWasBound = $container->bound('middleware.disable');
         $previousMiddlewareDisable = $middlewareDisableWasBound
-            ? $container->make('middleware.disable')
+            ? $container->make('middleware.disable') === true
             : null;
 
         $container->instance('middleware.disable', true);
