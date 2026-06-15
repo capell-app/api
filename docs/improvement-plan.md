@@ -65,6 +65,8 @@ API should be positioned as developer infrastructure for headless/public Capell 
 
 Implementation slice 2 closed the stale `public-api-endpoint` deferral. The API package now keeps its Laravel route contribution as the runtime marker and adds explicit public API endpoint metadata for the canonical v1 resolver plus the legacy compatibility resolver. The manifest also reports no deferred contributions, and README/overview/page API docs describe the public, read-only, throttled, sanitized endpoint contract for developers, buyers, and operators.
 
+Implementation slice 3 closed the JSON media policy row. README and overview docs now state that raw JSON captures are deployment-runner evidence, not buyer-facing media, and the manifest requirements test prevents marketplace screenshots from pointing at the runner output directory.
+
 ## 8. Verification
 
 Implementation slice 1 collapsed duplicate health-check manifest entries into one package-health entry and exposed the shipped public resolve routes as route contributions. Verify with:
@@ -86,6 +88,7 @@ vendor/bin/pest packages/api/tests/Feature/Actions/BuildPublicPagePayloadActionT
 - [x] Capell audience pass completed for API developers, operators, and buyers.
 - [x] Approved implementation slice 1 shipped: route contribution metadata and health manifest de-duplication.
 - [x] Implementation slice 2 shipped: public API endpoint metadata added and stale `public-api-endpoint` deferral removed.
-- [ ] Focused API verification passed.
-- [ ] Package tests passed.
+- [x] Implementation slice 3 shipped: raw JSON screenshot captures documented and guarded as runner evidence only.
+- [x] Focused API verification passed.
+- [x] Package tests passed.
 - [ ] Repo preflight passed for changed files.

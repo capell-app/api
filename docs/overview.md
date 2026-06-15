@@ -32,6 +32,10 @@ Screenshot contract: `screenshots.json`.
 - Successful page resolve JSON response (frontend, required).
 - Page resolve layout graph JSON response (frontend, required).
 
+These JSON captures are deployment-runner evidence for the public endpoint
+contract. Marketplace media should keep using styled extension assets from
+`assets/marketplace/` unless a first-party endpoint explorer is added.
+
 ## Technical Shape
 
 - Service providers: `Capell\Api\Providers\ApiServiceProvider`.
