@@ -52,9 +52,9 @@ API should be positioned as developer infrastructure for headless/public Capell 
 | Item                                                     | Bucket | Effort | Impact | Section ref |
 | -------------------------------------------------------- | ------ | ------ | ------ | ----------- |
 | Remove duplicate health check entries from `capell.json` | Now    | S      | High   | §2.1, §4.1  |
-| Add public payload safety tests for authoring/secrets    | Now    | M      | High   | §2.2, §4.2  |
+| Add public payload safety tests for authoring/secrets    | Done   | M      | High   | §2.2, §4.2  |
 | Document v1 canonical route and legacy compatibility     | Now    | S      | Medium | §2.3, §4.3  |
-| Keep JSON screenshots documented as runner evidence only | Now    | S      | Medium | §2.4, §4.4  |
+| Keep JSON screenshots documented as runner evidence only | Done   | S      | Medium | §2.4, §4.4  |
 | Add OpenAPI/schema documentation                         | Next   | M      | Medium | §3, §5      |
 | Add ETag/conditional request support                     | Next   | M      | Medium | §3          |
 | Add non-2xx JSON screenshot runner support               | Next   | M      | Medium | §3          |
