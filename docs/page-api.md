@@ -8,6 +8,9 @@ GET /api/capell/v1/pages/resolve?url=/terms
 
 The versioned route name is `capell-api.v1.pages.resolve`. The legacy route
 `/api/capell/pages/resolve` remains available as `capell-api.pages.resolve`.
+Both routes are declared in `capell.json` as public, read-only API endpoints
+under the package route contribution. Marketplace and install tooling should
+treat the v1 route as canonical and the legacy route as compatibility only.
 
 All responses include:
 

@@ -6,7 +6,7 @@
     "kind": "package",
     "capellApiVersion": "^4.0",
     "version": "4.x-dev",
-    "description": "Public JSON delivery of published Capell page data.",
+    "description": "Versioned public JSON endpoints for published Capell pages and Layout Builder graphs, with sanitized output for headless consumers.",
     "product": {
         "group": "Capell Publishing Pro",
         "tier": "premium",
@@ -35,7 +35,44 @@
                 "capell-api.v1.pages.resolve"
             ],
             "prefix": "api",
-            "middleware": ["api", "throttle:capell-api"]
+            "middleware": ["api", "throttle:capell-api"],
+            "apiEndpoints": [
+                {
+                    "type": "public-api-endpoint",
+                    "name": "public-page-resolve-v1",
+                    "routeName": "capell-api.v1.pages.resolve",
+                    "method": "GET",
+                    "path": "/api/capell/v1/pages/resolve",
+                    "version": "v1",
+                    "auth": "public",
+                    "readOnly": true,
+                    "canonical": true,
+                    "signedContextParameters": ["site", "language"],
+                    "publicSafety": [
+                        "sanitized-html",
+                        "no-authoring-surface",
+                        "no-secrets"
+                    ]
+                },
+                {
+                    "type": "public-api-endpoint",
+                    "name": "public-page-resolve-legacy",
+                    "routeName": "capell-api.pages.resolve",
+                    "method": "GET",
+                    "path": "/api/capell/pages/resolve",
+                    "version": "v1",
+                    "auth": "public",
+                    "readOnly": true,
+                    "canonical": false,
+                    "compatibility": "legacy",
+                    "signedContextParameters": ["site", "language"],
+                    "publicSafety": [
+                        "sanitized-html",
+                        "no-authoring-surface",
+                        "no-secrets"
+                    ]
+                }
+            ]
         },
         {
             "type": "health-check",
@@ -120,7 +157,7 @@
         "privateDocsRequested": true
     },
     "marketplace": {
-        "summary": "Public JSON delivery of published Capell page data.",
+        "summary": "Versioned public JSON endpoints for published Capell pages and layout graphs, with sanitized output for headless consumers.",
         "screenshots": [
             {
                 "path": "docs/assets/marketplace/extension-card.jpg",
@@ -131,6 +168,6 @@
         "categories": ["frontend", "publishing-pro"]
     },
     "contributionTraceability": {
-        "deferredContributions": ["public-api-endpoint"]
+        "deferredContributions": []
     }
 }
