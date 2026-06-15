@@ -63,7 +63,7 @@ API should be positioned as developer infrastructure for headless/public Capell 
 
 ## 7. Verification
 
-Plan-writing review only; no commands were run for this package in this pass. First implementation slice should start with:
+Implementation slice 1 collapsed duplicate health-check manifest entries into one package-health entry and exposed the shipped public resolve routes as route contributions. Verify with:
 
 ```bash
 vendor/bin/pest packages/api/tests --configuration=phpunit.xml
@@ -80,7 +80,7 @@ vendor/bin/pest packages/api/tests/Feature/Actions/BuildPublicPagePayloadActionT
 - [x] Package plan created from current code, manifest, docs, screenshots, and tests.
 - [x] Comprehensive local review pass completed for routes, health, payload Actions, sanitizer, docs, and screenshots.
 - [x] Capell audience pass completed for API developers, operators, and buyers.
-- [ ] Approved implementation slices shipped.
+- [x] Approved implementation slice 1 shipped: route contribution metadata and health manifest de-duplication.
 - [ ] Focused API verification passed.
 - [ ] Package tests passed.
 - [ ] Repo preflight passed for changed files.
