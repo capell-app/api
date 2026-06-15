@@ -41,6 +41,8 @@ it('documents the public page resolver contract in openapi', function (): void {
         )
         ->and(data_get($openApi, 'components.responses.PageResolved.headers.X-Capell-Api-Version.$ref'))->toBe('#/components/headers/ApiVersion')
         ->and(data_get($openApi, 'components.responses.PageResolved.headers.X-Capell-Cache-Tags.$ref'))->toBe('#/components/headers/CacheTags')
+        ->and(data_get($openApi, 'components.responses.PageResolved.headers.ETag.$ref'))->toBe('#/components/headers/ETag')
+        ->and(data_get($openApi, 'components.responses.NotModified.headers.ETag.$ref'))->toBe('#/components/headers/ETag')
         ->and(data_get($openApi, 'components.responses.PageNotFound.content.application/json.schema.$ref'))->toBe('#/components/schemas/ErrorResponse')
         ->and(data_get($openApi, 'components.responses.InvalidLayoutHtmlRequest.content.application/json.examples.unboundedLayoutHtml.value.message'))->toBe('layout.html requires explicit bounded containers.')
         ->and($pageApiDocs)->toContain('openapi.yaml')

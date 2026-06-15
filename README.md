@@ -41,7 +41,8 @@ The canonical route is `GET /api/capell/v1/pages/resolve`. The legacy
 and returns the same sanitized public contract. New integrations should use the
 v1 route and pin behavior from the documented response headers.
 
-Machine-readable contract: `docs/openapi.yaml`.
+Machine-readable contract: `docs/openapi.yaml`. Successful responses include
+`ETag`, and matching `If-None-Match` requests return `304 Not Modified`.
 
 ## Technical Shape
 

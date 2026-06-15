@@ -42,7 +42,8 @@ existing integrations. Both routes resolve the same sanitized published-page
 payload, but new clients should use the v1 route and treat the legacy path as a
 migration bridge.
 
-Machine-readable contract: `openapi.yaml`.
+Machine-readable contract: `openapi.yaml`. Successful responses include `ETag`,
+and matching `If-None-Match` requests return `304 Not Modified`.
 
 ## Technical Shape
 

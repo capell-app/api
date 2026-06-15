@@ -15,7 +15,7 @@
             "url": "/api/capell/v1/pages/resolve?url=/",
             "waitFor": "body",
             "required": true,
-            "notes": "Requires API installed, Layout Builder installed, and a seeded published page with a resolvable URL. Capture the JSON body plus `X-Capell-Api-Version` and `X-Capell-Cache-Tags` headers.",
+            "notes": "Requires API installed, Layout Builder installed, and a seeded published page with a resolvable URL. Capture the JSON body plus `X-Capell-Api-Version`, `X-Capell-Cache-Tags`, and `ETag` headers.",
             "useCase": "A frontend renderer resolves a published Capell page into public JSON for rendering outside the CMS.",
             "screenshotPath": "packages/api/docs/screenshots/page-resolve-success-json.png",
             "darkScreenshotPath": "packages/api/docs/screenshots/page-resolve-success-json-dark.png"
