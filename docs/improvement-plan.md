@@ -49,17 +49,17 @@ API should be positioned as developer infrastructure for headless/public Capell 
 
 ## 6. Prioritized Roadmap
 
-| Item                                                       | Bucket | Effort | Impact | Section ref |
-| ---------------------------------------------------------- | ------ | ------ | ------ | ----------- |
-| Remove duplicate health check entries from `capell.json`   | Now    | S      | High   | §2.1, §4.1  |
-| Add public payload safety tests for authoring/secrets      | Now    | M      | High   | §2.2, §4.2  |
-| Document v1 canonical route and legacy compatibility       | Now    | S      | Medium | §2.3, §4.3  |
-| Keep JSON screenshots documented as runner evidence only   | Now    | S      | Medium | §2.4, §4.4  |
-| Add OpenAPI/schema documentation                           | Next   | M      | Medium | §3, §5      |
-| Add ETag/conditional request support                       | Next   | M      | Medium | §3          |
-| Add non-2xx JSON screenshot runner support                 | Next   | M      | Medium | §3          |
-| Add optional signed/private API token mode                 | Later  | L      | Medium | §3          |
-| Build styled endpoint explorer for Marketplace proof       | Later  | L      | Medium | §5          |
+| Item                                                     | Bucket | Effort | Impact | Section ref |
+| -------------------------------------------------------- | ------ | ------ | ------ | ----------- |
+| Remove duplicate health check entries from `capell.json` | Now    | S      | High   | §2.1, §4.1  |
+| Add public payload safety tests for authoring/secrets    | Now    | M      | High   | §2.2, §4.2  |
+| Document v1 canonical route and legacy compatibility     | Now    | S      | Medium | §2.3, §4.3  |
+| Keep JSON screenshots documented as runner evidence only | Now    | S      | Medium | §2.4, §4.4  |
+| Add OpenAPI/schema documentation                         | Next   | M      | Medium | §3, §5      |
+| Add ETag/conditional request support                     | Next   | M      | Medium | §3          |
+| Add non-2xx JSON screenshot runner support               | Next   | M      | Medium | §3          |
+| Add optional signed/private API token mode               | Later  | L      | Medium | §3          |
+| Build styled endpoint explorer for Marketplace proof     | Later  | L      | Medium | §5          |
 
 ## 7. Verification
 
