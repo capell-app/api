@@ -36,6 +36,12 @@ These JSON captures are deployment-runner evidence for the public endpoint
 contract. Marketplace media should keep using styled extension assets from
 `assets/marketplace/` unless a first-party endpoint explorer is added.
 
+The canonical public route is `GET /api/capell/v1/pages/resolve`; the older
+`GET /api/capell/pages/resolve` route is retained as legacy compatibility for
+existing integrations. Both routes resolve the same sanitized published-page
+payload, but new clients should use the v1 route and treat the legacy path as a
+migration bridge.
+
 ## Technical Shape
 
 - Service providers: `Capell\Api\Providers\ApiServiceProvider`.
@@ -68,6 +74,7 @@ Docs gap: document extension points here if the package delegates persistence to
 
 - Review route middleware, throttling, signed URLs, and public-output safety before exposing routes.
 - Keep public Blade and cached HTML free of authoring markers, model IDs, permissions, signed editor URLs, and lazy database queries.
+- Point new integrations at `capell-api.v1.pages.resolve`; keep the legacy route only for compatibility.
 - Keep `composer.json`, `composer.local.json`, `capell.json`, docs, screenshots, and tests aligned when the package surface changes.
 
 ## Troubleshooting
