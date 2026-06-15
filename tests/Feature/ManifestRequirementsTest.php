@@ -18,7 +18,11 @@ it('declares shipped api manifest surfaces without duplicate health classes', fu
 
     (new ManifestValidator)->validate($manifest, $composer, 'capell-app/api', $packagePath . '/capell.json');
 
-    $healthClasses = collect(data_get($manifest, 'healthChecks', []))
+    $healthChecks = data_get($manifest, 'healthChecks', []);
+
+    throw_unless(is_array($healthChecks), RuntimeException::class, 'Expected API manifest health checks.');
+
+    $healthClasses = collect($healthChecks)
         ->pluck('class')
         ->filter()
         ->values()

@@ -39,6 +39,7 @@ Screenshot contract: `docs/screenshots.json`.
 - Route files: `packages/api/routes/api.php`.
 - Actions: `BuildPublicLayoutPayloadAction`, `BuildPublicPagePayloadAction`.
 - Data objects: `PublicPagePayloadOptionsData`.
+- Manifest contributions: `health-check: Capell\Api\Health\ApiHealthCheck`, `route: Capell\Api\Manifest\ApiRoutesContribution`.
 - Health checks: `Capell\Api\Health\ApiHealthCheck`.
 - Cache tags: `api`, `api:pages`.
 
