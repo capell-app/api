@@ -21,7 +21,7 @@ Status details:
 
 ## Why It Matters
 
-**For developers:** The package gives developers package-owned service providers, Actions, Data objects, and Laravel routes instead of pushing this behaviour into core or application code. The canonical public endpoint is `GET /api/capell/v1/pages/resolve`; the legacy `/api/capell/pages/resolve` route remains available for compatibility.
+**For developers:** The package gives developers package-owned service providers, Actions, Data objects, Laravel routes, and a maintained OpenAPI contract instead of pushing this behaviour into core or application code. The canonical public endpoint is `GET /api/capell/v1/pages/resolve`; the legacy `/api/capell/pages/resolve` route remains available for compatibility.
 
 **For teams:** Published Capell content can feed headless frontends and other public consumers without exposing editor controls, admin URLs, signed editor links, or unsanitized authoring HTML.
 
@@ -41,11 +41,14 @@ The canonical route is `GET /api/capell/v1/pages/resolve`. The legacy
 and returns the same sanitized public contract. New integrations should use the
 v1 route and pin behavior from the documented response headers.
 
+Machine-readable contract: `docs/openapi.yaml`.
+
 ## Technical Shape
 
 - Service providers: `Capell\Api\Providers\ApiServiceProvider`.
 - Config files: `packages/api/config/capell-api.php`.
 - Route files: `packages/api/routes/api.php`.
+- OpenAPI contract: `packages/api/docs/openapi.yaml`.
 - Actions: `BuildPublicLayoutPayloadAction`, `BuildPublicPagePayloadAction`.
 - Data objects: `PublicPagePayloadOptionsData`.
 - Manifest contributions: `health-check: Capell\Api\Health\ApiHealthCheck`, `route: Capell\Api\Manifest\ApiRoutesContribution` with public API endpoint metadata for the canonical v1 and legacy page resolver routes.
@@ -94,6 +97,7 @@ Docs gap: document extension points here if the package delegates persistence to
 
 - [Package docs](docs/README.md)
 - [Overview](docs/overview.md)
+- [OpenAPI contract](docs/openapi.yaml)
 - [Screenshot contract](docs/screenshots.json)
 - [Marketplace assets](docs/assets/marketplace/)
 - [Capell content language plan](../../docs/CONTENT_LANGUAGE_PLAN.md)

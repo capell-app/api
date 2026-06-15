@@ -12,6 +12,10 @@ Both routes are declared in `capell.json` as public, read-only API endpoints
 under the package route contribution. Marketplace and install tooling should
 treat the v1 route as canonical and the legacy route as compatibility only.
 
+The machine-readable contract is maintained in [`openapi.yaml`](openapi.yaml).
+Keep that document aligned with `capell.json`, this guide, and the controller
+response headers whenever the public API changes.
+
 All responses include:
 
 | Header                 | Value | Notes                                             |
@@ -76,6 +80,10 @@ schema is:
 
 Error responses use a top-level `message` string and still include the API
 version header.
+
+The OpenAPI document defines the same `PageResponse`, `PageData`, `LayoutGraph`,
+`LayoutContainer`, `LayoutWidget`, and `ErrorResponse` schemas for code
+generation and contract tests.
 
 ## Site Resolution
 
