@@ -93,7 +93,11 @@ class BuildPublicLayoutPayloadAction
         }
 
         if ($widget->html !== null) {
-            $data['html'] = $this->sanitizeHtmlValue($widget->html);
+            $html = $this->sanitizeHtmlValue($widget->html);
+
+            if (is_string($html)) {
+                $data['html'] = $html;
+            }
         }
 
         return $data;
