@@ -95,6 +95,9 @@ it('declares shipped api manifest surfaces without duplicate health classes', fu
             ],
         ],
     ]);
+    $publicRouteNames = data_get($manifest, 'security.publicSurface.routeNames', []);
+
+    throw_unless(is_iterable($publicRouteNames), RuntimeException::class, 'Expected API public route names to be iterable.');
 
     expect($apiEndpoints)
         ->toHaveCount(2)
@@ -102,9 +105,9 @@ it('declares shipped api manifest surfaces without duplicate health classes', fu
             'capell-api.v1.pages.resolve',
             'capell-api.pages.resolve',
         ])
-        ->and(collect($apiEndpoints)->pluck('routeName')->all())->each->toBeIn(data_get($manifest, 'security.publicSurface.routeNames'))
+        ->and(collect($apiEndpoints)->pluck('routeName')->all())->each->toBeIn($publicRouteNames)
         ->and(collect($apiEndpoints)->pluck('type')->unique()->values()->all())->toBe(['public-api-endpoint'])
-        ->and(collect($apiEndpoints)->firstWhere('canonical', true)['routeName'] ?? null)->toBe('capell-api.v1.pages.resolve');
+        ->and(data_get(collect($apiEndpoints)->firstWhere('canonical', true), 'routeName'))->toBe('capell-api.v1.pages.resolve');
 
     expect($contributions)
         ->toContain([
