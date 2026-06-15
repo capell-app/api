@@ -185,6 +185,9 @@ it('strips authoring metadata and secrets from public page and layout payloads',
     $widgetPayload = apiTestFirstLayoutWidget($payload);
     $widgetData = apiTestWidgetData($widgetPayload);
     $serializedPayload = json_encode($payload, JSON_THROW_ON_ERROR);
+
+    throw_unless(is_array($payload), RuntimeException::class, 'Expected API public page payload array.');
+
     $content = $payload['content'] ?? null;
     $meta = $payload['meta'] ?? null;
 
