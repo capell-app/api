@@ -6,7 +6,7 @@
 
 API is an **Available**, **No schema impact** Capell package in the **Capell Publishing Pro** product group. It ships as `capell-app/api` and extends these surfaces: frontend.
 
-Public JSON delivery of published Capell page data.
+Versioned public JSON endpoints for published Capell pages and Layout Builder graphs, with sanitized output for headless consumers.
 
 After install, the package affects public rendering, public routes, or frontend runtime behaviour.
 
@@ -21,9 +21,9 @@ Status details:
 
 ## Why It Matters
 
-**For developers:** The package gives developers package-owned service providers, Actions, Data objects, and Laravel routes instead of pushing this behaviour into core or application code.
+**For developers:** The package gives developers package-owned service providers, Actions, Data objects, and Laravel routes instead of pushing this behaviour into core or application code. The canonical public endpoint is `GET /api/capell/v1/pages/resolve`; the legacy `/api/capell/pages/resolve` route remains available for compatibility.
 
-**For teams:** Public JSON delivery of published Capell page data.
+**For teams:** Published Capell content can feed headless frontends and other public consumers without exposing editor controls, admin URLs, signed editor links, or unsanitized authoring HTML.
 
 ## Screens And Workflow
 
@@ -39,7 +39,7 @@ Screenshot contract: `screenshots.json`.
 - Route files: `packages/api/routes/api.php`.
 - Actions: `BuildPublicLayoutPayloadAction`, `BuildPublicPagePayloadAction`.
 - Data objects: `PublicPagePayloadOptionsData`.
-- Manifest contributions: `health-check: Capell\Api\Health\ApiHealthCheck`, `route: Capell\Api\Manifest\ApiRoutesContribution`.
+- Manifest contributions: `health-check: Capell\Api\Health\ApiHealthCheck`, `route: Capell\Api\Manifest\ApiRoutesContribution` with public API endpoint metadata for the canonical v1 and legacy page resolver routes.
 - Health checks: `Capell\Api\Health\ApiHealthCheck`.
 - Cache tags: `api`, `api:pages`.
 
@@ -53,7 +53,7 @@ Docs gap: document extension points here if the package delegates persistence to
 
 - Admin navigation: no admin surface declared.
 - Permissions: none declared in `capell.json`.
-- Public routes: route files exist and must be reviewed before public enablement.
+- Public routes: `capell-api.v1.pages.resolve` is the canonical public read-only endpoint; `capell-api.pages.resolve` is legacy compatibility. Both use the API middleware stack and `throttle:capell-api` by default.
 - Database changes: no package migrations declared.
 - Settings: no package settings declared.
 - Queues or schedules: none detected in standard package paths.

@@ -61,7 +61,11 @@ API should be positioned as developer infrastructure for headless/public Capell 
 | Add optional signed/private API token mode               | Later  | L      | Medium | §3          |
 | Build styled endpoint explorer for Marketplace proof     | Later  | L      | Medium | §5          |
 
-## 7. Verification
+## 7. Shipped Slice Notes
+
+Implementation slice 2 closed the stale `public-api-endpoint` deferral. The API package now keeps its Laravel route contribution as the runtime marker and adds explicit public API endpoint metadata for the canonical v1 resolver plus the legacy compatibility resolver. The manifest also reports no deferred contributions, and README/overview/page API docs describe the public, read-only, throttled, sanitized endpoint contract for developers, buyers, and operators.
+
+## 8. Verification
 
 Implementation slice 1 collapsed duplicate health-check manifest entries into one package-health entry and exposed the shipped public resolve routes as route contributions. Verify with:
 
@@ -75,12 +79,13 @@ For payload safety changes, include:
 vendor/bin/pest packages/api/tests/Feature/Actions/BuildPublicPagePayloadActionTest.php packages/api/tests/Feature/Http/ResolvePageControllerTest.php --configuration=phpunit.xml
 ```
 
-## 8. Completion Checklist
+## 9. Completion Checklist
 
 - [x] Package plan created from current code, manifest, docs, screenshots, and tests.
 - [x] Comprehensive local review pass completed for routes, health, payload Actions, sanitizer, docs, and screenshots.
 - [x] Capell audience pass completed for API developers, operators, and buyers.
 - [x] Approved implementation slice 1 shipped: route contribution metadata and health manifest de-duplication.
+- [x] Implementation slice 2 shipped: public API endpoint metadata added and stale `public-api-endpoint` deferral removed.
 - [ ] Focused API verification passed.
 - [ ] Package tests passed.
 - [ ] Repo preflight passed for changed files.
