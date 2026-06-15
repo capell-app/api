@@ -26,7 +26,22 @@
         "admin": [],
         "frontend": []
     },
-    "contributes": [],
+    "contributes": [
+        {
+            "type": "route",
+            "class": "Capell\\Api\\Manifest\\ApiRoutesContribution",
+            "routes": [
+                "capell-api.pages.resolve",
+                "capell-api.v1.pages.resolve"
+            ],
+            "prefix": "api",
+            "middleware": ["api", "throttle:capell-api"]
+        },
+        {
+            "type": "health-check",
+            "class": "Capell\\Api\\Health\\ApiHealthCheck"
+        }
+    ],
     "database": {
         "migrations": false,
         "settings": false,
@@ -91,24 +106,10 @@
     },
     "healthChecks": [
         {
-            "key": "api.v1.route",
-            "label": "V1 page resolve route is registered",
+            "key": "api.package-health",
+            "label": "API route, middleware, and response header diagnostics are discoverable by Diagnostics.",
             "class": "Capell\\Api\\Health\\ApiHealthCheck",
             "severity": "critical",
-            "surface": "frontend"
-        },
-        {
-            "key": "api.middleware.config",
-            "label": "Host middleware configuration is publishable",
-            "class": "Capell\\Api\\Health\\ApiHealthCheck",
-            "severity": "warning",
-            "surface": "frontend"
-        },
-        {
-            "key": "api.cache.headers",
-            "label": "API responses expose version and cache-tag headers",
-            "class": "Capell\\Api\\Health\\ApiHealthCheck",
-            "severity": "warning",
             "surface": "frontend"
         }
     ],
@@ -130,6 +131,6 @@
         "categories": ["frontend", "publishing-pro"]
     },
     "contributionTraceability": {
-        "deferredContributions": ["route", "public-api-endpoint"]
+        "deferredContributions": ["public-api-endpoint"]
     }
 }
