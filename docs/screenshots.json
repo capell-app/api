@@ -14,6 +14,7 @@
             "target": "capell-api.v1.pages.resolve",
             "url": "/api/capell/v1/pages/resolve?url=/",
             "waitFor": "body",
+            "expectedStatus": 200,
             "required": true,
             "notes": "Requires API installed, Layout Builder installed, and a seeded published page with a resolvable URL. Capture the JSON body plus `X-Capell-Api-Version`, `X-Capell-Cache-Tags`, and `ETag` headers.",
             "useCase": "A frontend renderer resolves a published Capell page into public JSON for rendering outside the CMS.",
@@ -29,11 +30,44 @@
             "target": "capell-api.v1.pages.resolve",
             "url": "/api/capell/v1/pages/resolve?url=/&include=layout&containers=main",
             "waitFor": "body",
+            "expectedStatus": 200,
             "required": true,
             "notes": "Requires Layout Builder and a seeded page with bounded layout content. Verify public JSON does not expose authoring metadata, field paths, or signed editor URLs.",
             "useCase": "A frontend renderer requests the bounded layout graph for a published page.",
             "screenshotPath": "packages/api/docs/screenshots/page-resolve-layout-json.png",
             "darkScreenshotPath": "packages/api/docs/screenshots/page-resolve-layout-json-dark.png"
+        },
+        {
+            "id": "page-resolve-forbidden-json",
+            "title": "Page resolve forbidden JSON response.",
+            "package": "api",
+            "surface": "frontend",
+            "targetType": "frontend-route",
+            "target": "capell-api.v1.pages.resolve",
+            "url": "/api/capell/v1/pages/resolve?url=/&language=en",
+            "waitFor": "body",
+            "expectedStatus": 403,
+            "required": false,
+            "notes": "Optional non-2xx runner evidence. Requires a seeded published page and a runner that treats `expectedStatus` as the successful capture status for public JSON errors.",
+            "useCase": "A developer verifies unsigned explicit language selection returns the documented JSON error instead of leaking context.",
+            "screenshotPath": "packages/api/docs/screenshots/page-resolve-forbidden-json.png",
+            "darkScreenshotPath": "packages/api/docs/screenshots/page-resolve-forbidden-json-dark.png"
+        },
+        {
+            "id": "page-resolve-not-found-json",
+            "title": "Page resolve not found JSON response.",
+            "package": "api",
+            "surface": "frontend",
+            "targetType": "frontend-route",
+            "target": "capell-api.v1.pages.resolve",
+            "url": "/api/capell/v1/pages/resolve?url=/missing",
+            "waitFor": "body",
+            "expectedStatus": 404,
+            "required": false,
+            "notes": "Optional non-2xx runner evidence. Requires a runner that treats `expectedStatus` as the successful capture status for public JSON errors.",
+            "useCase": "A developer verifies unresolved pages return the documented JSON error contract.",
+            "screenshotPath": "packages/api/docs/screenshots/page-resolve-not-found-json.png",
+            "darkScreenshotPath": "packages/api/docs/screenshots/page-resolve-not-found-json-dark.png"
         }
     ]
 }

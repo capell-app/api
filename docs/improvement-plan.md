@@ -4,7 +4,7 @@
 
 ## 1. Snapshot
 
-API exposes public JSON delivery for published Capell page data and Layout Builder graphs. It ships versioned resolve routes, middleware/rate-limit config, payload Actions, HTML sanitization, response health checks, a maintained OpenAPI contract, ETag/conditional request support, route/controller tests, and runner JSON screenshots. The implementation is stronger than the manifest suggests, but non-2xx screenshot evidence still needs follow-up.
+API exposes public JSON delivery for published Capell page data and Layout Builder graphs. It ships versioned resolve routes, middleware/rate-limit config, payload Actions, HTML sanitization, response health checks, a maintained OpenAPI contract, ETag/conditional request support, route/controller tests, runner JSON screenshots, and optional non-2xx screenshot evidence contracts. The implementation is now aligned with its current Now/Next roadmap; remaining rows are Later product depth.
 
 ## 2. Improvements (existing functionality)
 
@@ -22,7 +22,7 @@ Capabilities declared: `public-page-api` and `public-page-api-v1`.
 
 - **Done/Shipped: OpenAPI/schema document.** Developers have a stable `docs/openapi.yaml` contract for query params, fields, includes, containers, headers, and response shapes.
 - **Done/Shipped: ETag/conditional request support.** Public API consumers receive payload-specific ETags and can use `If-None-Match` for 304 responses.
-- **No explicit error response contract in screenshots.** The runner currently does not promote 403/404 JSON body captures.
+- **Done/Shipped: explicit error response screenshot contracts.** The screenshot manifest declares optional 403/404 JSON captures with `expectedStatus` metadata so runners can capture non-2xx bodies intentionally.
 - **No signed/private API mode.** This package is public-only; future premium API clients may need token scopes.
 
 ## 4. Issues / Risks
@@ -57,7 +57,7 @@ API should be positioned as developer infrastructure for headless/public Capell 
 | Keep JSON screenshots documented as runner evidence only | Done   | S      | Medium | §2.4, §4.4  |
 | Add OpenAPI/schema documentation                         | Done   | M      | Medium | §3, §5      |
 | Add ETag/conditional request support                     | Done   | M      | Medium | §3          |
-| Add non-2xx JSON screenshot runner support               | Next   | M      | Medium | §3          |
+| Add non-2xx JSON screenshot runner support               | Done   | M      | Medium | §3          |
 | Add optional signed/private API token mode               | Later  | L      | Medium | §3          |
 | Build styled endpoint explorer for Marketplace proof     | Later  | L      | Medium | §5          |
 
@@ -70,6 +70,8 @@ Implementation slice 3 closed the JSON media policy row. README and overview doc
 Implementation slice 4 closed the OpenAPI/schema documentation row. `docs/openapi.yaml` now documents the canonical v1 and legacy compatibility resolver paths, query parameters, response headers, success/error responses, and page/layout schemas, with a focused contract test comparing documented paths against manifest endpoint metadata.
 
 Implementation slice 5 closed the ETag/conditional request row. Successful page resolver responses now emit a strong ETag derived from the selected sanitized payload, matching `If-None-Match` requests return 304 with contract headers, and docs/OpenAPI describe the validator behavior.
+
+Implementation slice 6 closed the non-2xx JSON screenshot runner row. `docs/screenshots.json` and the aggregate screenshot manifest now declare 403 and 404 JSON capture entries with explicit `expectedStatus` metadata, while keeping those raw error captures optional runner evidence outside buyer-facing marketplace media.
 
 ## 8. Verification
 
@@ -95,6 +97,7 @@ vendor/bin/pest packages/api/tests/Feature/Actions/BuildPublicPagePayloadActionT
 - [x] Implementation slice 3 shipped: raw JSON screenshot captures documented and guarded as runner evidence only.
 - [x] Implementation slice 4 shipped: OpenAPI/schema contract documented and guarded.
 - [x] Implementation slice 5 shipped: ETag/conditional request support added and documented.
+- [x] Implementation slice 6 shipped: non-2xx JSON screenshot contracts added and guarded.
 - [x] Focused API verification passed.
 - [x] Package tests passed.
 - [x] Repo preflight passed for changed files.
