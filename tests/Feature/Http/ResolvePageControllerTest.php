@@ -62,6 +62,39 @@ it('serves the v1 route and emits public api contract headers', function (): voi
     assertCapellPublicOutputIsSafe($legacyResponse, 'Capell API legacy page resolve response');
 });
 
+it('emits deterministic etags and honors conditional requests', function (): void {
+    [$pageUrl] = createPublicApiPage('/terms', [
+        'title' => 'Terms',
+        'content' => '<p>Terms content</p>',
+    ]);
+
+    $response = getJson(apiResolveUrl(['url' => $pageUrl->url]))
+        ->assertOk()
+        ->assertHeader('X-Capell-Api-Version', 'v1')
+        ->assertHeader('ETag');
+
+    $etag = $response->headers->get('ETag');
+
+    expect($etag)->toBeString()
+        ->and($etag)->not->toBe('');
+
+    getJson(apiResolveUrl(['url' => $pageUrl->url]), ['If-None-Match' => $etag])
+        ->assertStatus(304)
+        ->assertHeader('ETag', $etag)
+        ->assertHeader('X-Capell-Api-Version', 'v1')
+        ->assertContent('');
+
+    $changedProjectionResponse = getJson(apiResolveUrl([
+        'url' => $pageUrl->url,
+        'fields' => 'title',
+    ]), ['If-None-Match' => $etag])
+        ->assertOk()
+        ->assertHeader('X-Capell-Api-Version', 'v1')
+        ->assertJsonPath('data.title', 'Terms');
+
+    expect($changedProjectionResponse->headers->get('ETag'))->not->toBe($etag);
+});
+
 it('returns only requested fields', function (): void {
     [$pageUrl] = createPublicApiPage('/terms', [
         'title' => 'Terms',

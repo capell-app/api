@@ -86,7 +86,7 @@ final class ResolvePageController
             language: $language,
         );
 
-        return $this->json(['data' => $data]);
+        return $this->jsonWithEtag($request, ['data' => $data]);
     }
 
     private function notFound(): JsonResponse
@@ -113,6 +113,23 @@ final class ResolvePageController
             ->json($payload, $status)
             ->header('X-Capell-Api-Version', self::API_VERSION)
             ->header('X-Capell-Cache-Tags', implode(',', $this->cacheTags));
+    }
+
+    /**
+     * @param  array<string, mixed>  $payload
+     */
+    private function jsonWithEtag(Request $request, array $payload): JsonResponse
+    {
+        $response = $this->json($payload);
+        $responseContent = $response->getContent();
+
+        $response->setEtag(hash('sha256', is_string($responseContent) ? $responseContent : ''));
+
+        if ($response->isNotModified($request)) {
+            return $response;
+        }
+
+        return $response;
     }
 
     /**

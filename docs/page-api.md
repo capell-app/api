@@ -12,12 +12,17 @@ Both routes are declared in `capell.json` as public, read-only API endpoints
 under the package route contribution. Marketplace and install tooling should
 treat the v1 route as canonical and the legacy route as compatibility only.
 
+The machine-readable contract is maintained in [`openapi.yaml`](openapi.yaml).
+Keep that document aligned with `capell.json`, this guide, and the controller
+response headers whenever the public API changes.
+
 All responses include:
 
-| Header                 | Value | Notes                                             |
-| ---------------------- | ----- | ------------------------------------------------- |
-| `X-Capell-Api-Version` | `v1`  | Explicit public response contract version.        |
-| `X-Capell-Cache-Tags`  | `api` | Coarse cache tag for downstream API integrations. |
+| Header                 | Value    | Notes                                                  |
+| ---------------------- | -------- | ------------------------------------------------------ |
+| `X-Capell-Api-Version` | `v1`     | Explicit public response contract version.             |
+| `X-Capell-Cache-Tags`  | `api`    | Coarse cache tag for downstream API integrations.      |
+| `ETag`                 | `"hash"` | Strong validator for the selected sanitized JSON body. |
 
 ## Default Response
 
@@ -76,6 +81,26 @@ schema is:
 
 Error responses use a top-level `message` string and still include the API
 version header.
+
+The OpenAPI document defines the same `PageResponse`, `PageData`, `LayoutGraph`,
+`LayoutContainer`, `LayoutWidget`, and `ErrorResponse` schemas for code
+generation and contract tests.
+
+## Conditional Requests
+
+Successful page responses include an `ETag` computed from the selected sanitized
+JSON payload. Send that value back with `If-None-Match` to avoid downloading an
+unchanged response body:
+
+```http
+GET /api/capell/v1/pages/resolve?url=/terms
+If-None-Match: "previous-response-etag"
+```
+
+When the payload still matches, the endpoint returns HTTP `304` with the same
+API version, cache tag, and ETag headers and no JSON body. Different field,
+include, or container selections produce a different ETag because the payload
+shape changes.
 
 ## Site Resolution
 

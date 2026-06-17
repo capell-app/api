@@ -161,3 +161,38 @@ it('keeps raw json screenshots as runner evidence instead of marketplace media',
             static fn (string $path): bool => str_starts_with($path, 'docs/assets/marketplace/'),
         ))->toBeTrue();
 });
+
+it('declares non-2xx json runner evidence with explicit expected statuses', function (): void {
+    $packagePath = dirname(__DIR__, 2);
+    $screenshotContract = capell_json_file_array($packagePath . '/docs/screenshots.json');
+    $screenshotEntries = data_get($screenshotContract, 'entries', []);
+
+    throw_unless(is_array($screenshotEntries), RuntimeException::class, 'Expected screenshot contract entries.');
+
+    $entriesById = collect($screenshotEntries)->keyBy('id');
+
+    expect($entriesById->get('page-resolve-success-json'))->toMatchArray([
+        'expectedStatus' => 200,
+        'required' => true,
+    ])
+        ->and($entriesById->get('page-resolve-layout-json'))->toMatchArray([
+            'expectedStatus' => 200,
+            'required' => true,
+        ])
+        ->and($entriesById->get('page-resolve-forbidden-json'))->toMatchArray([
+            'expectedStatus' => 403,
+            'required' => false,
+        ])
+        ->and($entriesById->get('page-resolve-not-found-json'))->toMatchArray([
+            'expectedStatus' => 404,
+            'required' => false,
+        ])
+        ->and(collect([
+            $entriesById->get('page-resolve-forbidden-json'),
+            $entriesById->get('page-resolve-not-found-json'),
+        ])->every(
+            static fn (mixed $entry): bool => is_array($entry)
+                && is_string($entry['notes'] ?? null)
+                && str_contains($entry['notes'], 'expectedStatus'),
+        ))->toBeTrue();
+});
