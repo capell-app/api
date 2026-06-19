@@ -46,6 +46,42 @@ migration bridge.
 Machine-readable contract: `openapi.yaml`. Successful responses include `ETag`,
 and matching `If-None-Match` requests return `304 Not Modified`.
 
+## Screenshot Evidence
+
+These captures are the package-owned visual contract for the admin pages, public pages, actions, workflows, and feature surfaces described above. Keep this section aligned with `docs/screenshots.json` whenever the package surface changes.
+
+### Successful page resolve JSON response
+
+![Successful page resolve JSON response](screenshots/page-resolve-success-json.png)
+
+- Surface: frontend · Target: capell-api.v1.pages.resolve.
+- Documents: A frontend renderer resolves a published Capell page into public JSON for rendering outside the CMS.
+- Capture notes: Requires API installed, Layout Builder installed, and a seeded published page with a resolvable URL. Capture the JSON body plus `X-Capell-Api-Version`, `X-Capell-Cache-Tags`, and `ETag` headers.
+
+### Page resolve layout graph JSON response
+
+![Page resolve layout graph JSON response](screenshots/page-resolve-layout-json.png)
+
+- Surface: frontend · Target: capell-api.v1.pages.resolve.
+- Documents: A frontend renderer requests the bounded layout graph for a published page.
+- Capture notes: Requires Layout Builder and a seeded page with bounded layout content. Verify public JSON does not expose authoring metadata, field paths, or signed editor URLs.
+
+### Page resolve forbidden JSON response
+
+![Page resolve forbidden JSON response](screenshots/page-resolve-forbidden-json.png)
+
+- Surface: frontend · Target: capell-api.v1.pages.resolve.
+- Documents: A developer verifies unsigned explicit language selection returns the documented JSON error instead of leaking context.
+- Capture notes: Optional non-2xx runner evidence. Requires a seeded published page and a runner that treats `expectedStatus` as the successful capture status for public JSON errors.
+
+### Page resolve not found JSON response
+
+![Page resolve not found JSON response](screenshots/page-resolve-not-found-json.png)
+
+- Surface: frontend · Target: capell-api.v1.pages.resolve.
+- Documents: A developer verifies unresolved pages return the documented JSON error contract.
+- Capture notes: Optional non-2xx runner evidence. Requires a runner that treats `expectedStatus` as the successful capture status for public JSON errors.
+
 ## Technical Shape
 
 - Service providers: `Capell\Api\Providers\ApiServiceProvider`.
