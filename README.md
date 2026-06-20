@@ -21,9 +21,9 @@ Status details:
 
 ## Why It Matters
 
-**For developers:** The package gives developers package-owned service providers, Actions, Data objects, Laravel routes, and a maintained OpenAPI contract instead of pushing this behaviour into core or application code. The canonical public endpoint is `GET /api/capell/v1/pages/resolve`; the legacy `/api/capell/pages/resolve` route remains available for compatibility.
+**For developers:** The package gives developers package-owned service providers, Actions, Data objects, and Laravel routes instead of pushing this behaviour into core or application code.
 
-**For teams:** Published Capell content can feed headless frontends and other public consumers without exposing editor controls, admin URLs, signed editor links, or unsanitized authoring HTML.
+**For teams:** Versioned public JSON endpoints for published Capell pages and layout graphs, with sanitized output for headless consumers.
 
 ## Screens And Workflow
 
@@ -31,29 +31,17 @@ Screenshot contract: `docs/screenshots.json`.
 
 - Successful page resolve JSON response (frontend, required).
 - Page resolve layout graph JSON response (frontend, required).
-- Forbidden and not-found JSON responses with `expectedStatus` metadata (frontend, optional).
-
-These JSON captures are deployment-runner evidence for the public endpoint
-contract. Marketplace media should keep using styled extension assets from
-`docs/assets/marketplace/` unless a first-party endpoint explorer is added.
-
-The canonical route is `GET /api/capell/v1/pages/resolve`. The legacy
-`GET /api/capell/pages/resolve` route remains available for existing consumers
-and returns the same sanitized public contract. New integrations should use the
-v1 route and pin behavior from the documented response headers.
-
-Machine-readable contract: `docs/openapi.yaml`. Successful responses include
-`ETag`, and matching `If-None-Match` requests return `304 Not Modified`.
+- Page resolve forbidden JSON response (frontend, optional).
+- Page resolve not found JSON response (frontend, optional).
 
 ## Technical Shape
 
 - Service providers: `Capell\Api\Providers\ApiServiceProvider`.
 - Config files: `packages/api/config/capell-api.php`.
 - Route files: `packages/api/routes/api.php`.
-- OpenAPI contract: `packages/api/docs/openapi.yaml`.
 - Actions: `BuildPublicLayoutPayloadAction`, `BuildPublicPagePayloadAction`.
 - Data objects: `PublicPagePayloadOptionsData`.
-- Manifest contributions: `health-check: Capell\Api\Health\ApiHealthCheck`, `route: Capell\Api\Manifest\ApiRoutesContribution` with public API endpoint metadata for the canonical v1 and legacy page resolver routes.
+- Manifest contributions: `health-check: Capell\Api\Health\ApiHealthCheck`, `route: Capell\Api\Manifest\ApiRoutesContribution`.
 - Health checks: `Capell\Api\Health\ApiHealthCheck`.
 - Cache tags: `api`, `api:pages`.
 
@@ -67,7 +55,7 @@ Docs gap: document extension points here if the package delegates persistence to
 
 - Admin navigation: no admin surface declared.
 - Permissions: none declared in `capell.json`.
-- Public routes: `capell-api.v1.pages.resolve` is the canonical public read-only endpoint; `capell-api.pages.resolve` is legacy compatibility. Both use the API middleware stack and `throttle:capell-api` by default.
+- Public routes: route files exist and must be reviewed before public enablement.
 - Database changes: no package migrations declared.
 - Settings: no package settings declared.
 - Queues or schedules: none detected in standard package paths.
@@ -78,7 +66,6 @@ Docs gap: document extension points here if the package delegates persistence to
 
 - Review route middleware, throttling, signed URLs, and public-output safety before exposing routes.
 - Keep public Blade and cached HTML free of authoring markers, model IDs, permissions, signed editor URLs, and lazy database queries.
-- Prefer `capell-api.v1.pages.resolve` for new consumers; keep `capell-api.pages.resolve` only as a compatibility path.
 - Keep `composer.json`, `composer.local.json`, `capell.json`, docs, screenshots, and tests aligned when the package surface changes.
 
 ## Troubleshooting
@@ -99,7 +86,6 @@ Docs gap: document extension points here if the package delegates persistence to
 
 - [Package docs](docs/README.md)
 - [Overview](docs/overview.md)
-- [OpenAPI contract](docs/openapi.yaml)
 - [Screenshot contract](docs/screenshots.json)
 - [Marketplace assets](docs/assets/marketplace/)
 - [Capell content language plan](../../docs/CONTENT_LANGUAGE_PLAN.md)

@@ -11,7 +11,7 @@ use Capell\Core\Models\Page;
 use Capell\Core\Models\PageUrl;
 use Capell\Core\Models\Site;
 use Capell\Core\Models\SiteDomain;
-use Capell\LayoutBuilder\Contracts\PublicWidgetPayloadResolver;
+use Capell\LayoutBuilder\Contracts\PublicLayoutWidgetPayloadResolver;
 use Capell\LayoutBuilder\Models\Widget;
 use Illuminate\Support\Facades\URL;
 
@@ -204,7 +204,7 @@ it('includes layout html and sanitizes unsafe html strings', function (): void {
 
     $page->update(['layout_id' => $layout->id]);
 
-    app()->bind(PublicWidgetPayloadResolver::class, fn (): PublicWidgetPayloadResolver => new class implements PublicWidgetPayloadResolver
+    app()->bind(PublicLayoutWidgetPayloadResolver::class, fn (): PublicLayoutWidgetPayloadResolver => new class implements PublicLayoutWidgetPayloadResolver
     {
         /**
          * @return array<string, mixed>
