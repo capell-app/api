@@ -65,7 +65,7 @@ class BuildPublicLayoutPayloadAction
         return [
             'key' => $container->key,
             'meta' => $this->sanitizeHtmlValue($container->meta),
-            'layout_widgets' => array_map(
+            'widgets' => array_map(
                 fn (PublicLayoutWidgetData $widget): array => $this->layoutWidget($widget, $options),
                 $container->widgets,
             ),

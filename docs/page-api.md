@@ -131,7 +131,7 @@ This adds `data.layout` with layout key, containers, and public widget data. Lay
                 {
                     "key": "main",
                     "meta": {},
-                    "layout_widgets": [
+                    "widgets": [
                         {
                             "key": "page-content",
                             "occurrence": 1,

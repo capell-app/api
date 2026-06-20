@@ -52,7 +52,7 @@ it('can include inertia widget component names without changing the default api 
         'key' => 'booking-page',
         'containers' => [
             'main' => [
-                'layout_widgets' => [
+                'widgets' => [
                     ['widget_key' => $widget->key, 'occurrence' => 1],
                 ],
             ],
@@ -122,7 +122,7 @@ it('strips authoring metadata and secrets from public page and layout payloads',
         'key' => 'booking-page',
         'containers' => [
             'main' => [
-                'layout_widgets' => [
+                'widgets' => [
                     ['widget_key' => $widget->key, 'occurrence' => 1],
                 ],
             ],
@@ -241,7 +241,7 @@ function apiTestFirstLayoutWidget(mixed $payload): array
         throw new RuntimeException('Expected API layout payload to include a first container.');
     }
 
-    $widgets = $firstContainer['layout_widgets'] ?? null;
+    $widgets = $firstContainer['widgets'] ?? null;
 
     if (! is_array($widgets)) {
         throw new RuntimeException('Expected API layout container to include widgets.');

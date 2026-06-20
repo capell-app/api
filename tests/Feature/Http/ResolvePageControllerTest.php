@@ -133,8 +133,8 @@ it('includes selected layout containers without html', function (): void {
     $layout = Layout::factory()->site($page->site)->create([
         'key' => 'article',
         'containers' => [
-            'main' => ['layout_widgets' => [['widget_key' => $mainWidget->key, 'occurrence' => 1]]],
-            'sidebar' => ['layout_widgets' => [['widget_key' => $sidebarWidget->key, 'occurrence' => 1]]],
+            'main' => ['widgets' => [['widget_key' => $mainWidget->key, 'occurrence' => 1]]],
+            'sidebar' => ['widgets' => [['widget_key' => $sidebarWidget->key, 'occurrence' => 1]]],
         ],
     ]);
 
@@ -162,8 +162,8 @@ it('treats all containers as the full layout graph', function (): void {
     $layout = Layout::factory()->site($page->site)->create([
         'key' => 'article',
         'containers' => [
-            'main' => ['layout_widgets' => [['widget_key' => $mainWidget->key, 'occurrence' => 1]]],
-            'sidebar' => ['layout_widgets' => [['widget_key' => $sidebarWidget->key, 'occurrence' => 1]]],
+            'main' => ['widgets' => [['widget_key' => $mainWidget->key, 'occurrence' => 1]]],
+            'sidebar' => ['widgets' => [['widget_key' => $sidebarWidget->key, 'occurrence' => 1]]],
         ],
     ]);
 
@@ -197,7 +197,7 @@ it('includes layout html and sanitizes unsafe html strings', function (): void {
         'containers' => [
             'main' => [
                 'summary' => '<em onmouseover="alert(1)">Container</em><script',
-                'layout_widgets' => [['widget_key' => $block->key, 'occurrence' => 1]],
+                'widgets' => [['widget_key' => $block->key, 'occurrence' => 1]],
             ],
         ],
     ]);
@@ -248,7 +248,7 @@ it('rejects unbounded layout html requests', function (): void {
     $layout = Layout::factory()->site($page->site)->create([
         'key' => 'article',
         'containers' => [
-            'main' => ['layout_widgets' => [['widget_key' => $block->key, 'occurrence' => 1]]],
+            'main' => ['widgets' => [['widget_key' => $block->key, 'occurrence' => 1]]],
         ],
     ]);
 
