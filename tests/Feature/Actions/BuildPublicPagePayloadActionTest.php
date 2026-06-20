@@ -5,16 +5,16 @@ declare(strict_types=1);
 use Capell\Api\Actions\BuildPublicPagePayloadAction;
 use Capell\Api\Data\PublicPagePayloadOptionsData;
 use Capell\Core\Data\PublicPageFieldsData;
-use Capell\Core\Data\Widgets\WidgetDefinitionData;
 use Capell\Core\Models\Blueprint;
 use Capell\Core\Models\Language;
 use Capell\Core\Models\Layout;
 use Capell\Core\Models\Page;
 use Capell\Core\Models\Site;
-use Capell\Core\Support\Widgets\WidgetRegistry;
-use Capell\LayoutBuilder\Contracts\PublicWidgetPayloadResolver;
+use Capell\LayoutBuilder\Contracts\PublicLayoutWidgetPayloadResolver;
+use Capell\LayoutBuilder\Data\LayoutWidgets\LayoutWidgetDefinitionData;
 use Capell\LayoutBuilder\Enums\LayoutTypeEnum;
 use Capell\LayoutBuilder\Models\Widget;
+use Capell\LayoutBuilder\Support\LayoutWidgets\LayoutWidgetRegistry;
 
 require_once dirname(__DIR__, 5) . '/tests/Packages/Support/PublicOutputSafety.php';
 
@@ -52,19 +52,19 @@ it('can include inertia widget component names without changing the default api 
         'key' => 'booking-page',
         'containers' => [
             'main' => [
-                'widgets' => [
+                'layout_widgets' => [
                     ['widget_key' => $widget->key, 'occurrence' => 1],
                 ],
             ],
         ],
     ]);
 
-    resolve(WidgetRegistry::class)->registerDefinition(WidgetDefinitionData::frontendInertia(
+    resolve(LayoutWidgetRegistry::class)->registerDefinition(LayoutWidgetDefinitionData::frontendInertia(
         key: 'hero',
         component: 'Theme/Widgets/Hero',
     ));
 
-    app()->bind(PublicWidgetPayloadResolver::class, fn (): PublicWidgetPayloadResolver => new class implements PublicWidgetPayloadResolver
+    app()->bind(PublicLayoutWidgetPayloadResolver::class, fn (): PublicLayoutWidgetPayloadResolver => new class implements PublicLayoutWidgetPayloadResolver
     {
         /**
          * @return array<string, mixed>
@@ -122,14 +122,14 @@ it('strips authoring metadata and secrets from public page and layout payloads',
         'key' => 'booking-page',
         'containers' => [
             'main' => [
-                'widgets' => [
+                'layout_widgets' => [
                     ['widget_key' => $widget->key, 'occurrence' => 1],
                 ],
             ],
         ],
     ]);
 
-    app()->bind(PublicWidgetPayloadResolver::class, fn (): PublicWidgetPayloadResolver => new class implements PublicWidgetPayloadResolver
+    app()->bind(PublicLayoutWidgetPayloadResolver::class, fn (): PublicLayoutWidgetPayloadResolver => new class implements PublicLayoutWidgetPayloadResolver
     {
         /**
          * @return array<string, mixed>
@@ -241,7 +241,7 @@ function apiTestFirstLayoutWidget(mixed $payload): array
         throw new RuntimeException('Expected API layout payload to include a first container.');
     }
 
-    $widgets = $firstContainer['widgets'] ?? null;
+    $widgets = $firstContainer['layout_widgets'] ?? null;
 
     if (! is_array($widgets)) {
         throw new RuntimeException('Expected API layout container to include widgets.');

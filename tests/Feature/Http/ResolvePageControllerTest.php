@@ -11,7 +11,7 @@ use Capell\Core\Models\Page;
 use Capell\Core\Models\PageUrl;
 use Capell\Core\Models\Site;
 use Capell\Core\Models\SiteDomain;
-use Capell\LayoutBuilder\Contracts\PublicWidgetPayloadResolver;
+use Capell\LayoutBuilder\Contracts\PublicLayoutWidgetPayloadResolver;
 use Capell\LayoutBuilder\Models\Widget;
 use Illuminate\Support\Facades\URL;
 
@@ -133,8 +133,8 @@ it('includes selected layout containers without html', function (): void {
     $layout = Layout::factory()->site($page->site)->create([
         'key' => 'article',
         'containers' => [
-            'main' => ['widgets' => [['widget_key' => $mainWidget->key, 'occurrence' => 1]]],
-            'sidebar' => ['widgets' => [['widget_key' => $sidebarWidget->key, 'occurrence' => 1]]],
+            'main' => ['layout_widgets' => [['widget_key' => $mainWidget->key, 'occurrence' => 1]]],
+            'sidebar' => ['layout_widgets' => [['widget_key' => $sidebarWidget->key, 'occurrence' => 1]]],
         ],
     ]);
 
@@ -162,8 +162,8 @@ it('treats all containers as the full layout graph', function (): void {
     $layout = Layout::factory()->site($page->site)->create([
         'key' => 'article',
         'containers' => [
-            'main' => ['widgets' => [['widget_key' => $mainWidget->key, 'occurrence' => 1]]],
-            'sidebar' => ['widgets' => [['widget_key' => $sidebarWidget->key, 'occurrence' => 1]]],
+            'main' => ['layout_widgets' => [['widget_key' => $mainWidget->key, 'occurrence' => 1]]],
+            'sidebar' => ['layout_widgets' => [['widget_key' => $sidebarWidget->key, 'occurrence' => 1]]],
         ],
     ]);
 
@@ -197,14 +197,14 @@ it('includes layout html and sanitizes unsafe html strings', function (): void {
         'containers' => [
             'main' => [
                 'summary' => '<em onmouseover="alert(1)">Container</em><script',
-                'widgets' => [['widget_key' => $block->key, 'occurrence' => 1]],
+                'layout_widgets' => [['widget_key' => $block->key, 'occurrence' => 1]],
             ],
         ],
     ]);
 
     $page->update(['layout_id' => $layout->id]);
 
-    app()->bind(PublicWidgetPayloadResolver::class, fn (): PublicWidgetPayloadResolver => new class implements PublicWidgetPayloadResolver
+    app()->bind(PublicLayoutWidgetPayloadResolver::class, fn (): PublicLayoutWidgetPayloadResolver => new class implements PublicLayoutWidgetPayloadResolver
     {
         /**
          * @return array<string, mixed>
@@ -248,7 +248,7 @@ it('rejects unbounded layout html requests', function (): void {
     $layout = Layout::factory()->site($page->site)->create([
         'key' => 'article',
         'containers' => [
-            'main' => ['widgets' => [['widget_key' => $block->key, 'occurrence' => 1]]],
+            'main' => ['layout_widgets' => [['widget_key' => $block->key, 'occurrence' => 1]]],
         ],
     ]);
 

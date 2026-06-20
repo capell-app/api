@@ -83,7 +83,7 @@ Error responses use a top-level `message` string and still include the API
 version header.
 
 The OpenAPI document defines the same `PageResponse`, `PageData`, `LayoutGraph`,
-`LayoutContainer`, `LayoutWidget`, and `ErrorResponse` schemas for code
+`LayoutContainer`, `Widget`, and `ErrorResponse` schemas for code
 generation and contract tests.
 
 ## Conditional Requests
@@ -131,7 +131,7 @@ This adds `data.layout` with layout key, containers, and public widget data. Lay
                 {
                     "key": "main",
                     "meta": {},
-                    "widgets": [
+                    "layout_widgets": [
                         {
                             "key": "page-content",
                             "occurrence": 1,
@@ -155,7 +155,7 @@ Limit output to selected containers:
 GET /api/capell/pages/resolve?url=/terms&include=layout&containers=main
 ```
 
-Use `include=layout.html` when a registered public widget payload resolver supports rendered HTML:
+Use `include=layout.html` when a registered public layout widget payload resolver supports rendered HTML:
 
 ```http
 GET /api/capell/pages/resolve?url=/terms&include=layout.html
@@ -197,4 +197,4 @@ The endpoint delegates page resolution to `Capell\Core\Actions\ResolvePublicPage
 
 Layout output is built by `Capell\LayoutBuilder\Actions\BuildPublicLayoutGraphAction`.
 
-To customize widget API payloads, bind `Capell\LayoutBuilder\Contracts\PublicWidgetPayloadResolver` to your own implementation. The default resolver returns widget title and content only, and returns `null` for HTML.
+To customize widget API payloads, bind `Capell\LayoutBuilder\Contracts\PublicLayoutWidgetPayloadResolver` to your own implementation. The default resolver returns widget title and content only, and returns `null` for HTML.

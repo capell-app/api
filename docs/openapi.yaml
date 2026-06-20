@@ -18,23 +18,23 @@ paths:
       tags:
         - Public Pages
       parameters:
-        - $ref: "#/components/parameters/Url"
-        - $ref: "#/components/parameters/Site"
-        - $ref: "#/components/parameters/Language"
-        - $ref: "#/components/parameters/Fields"
-        - $ref: "#/components/parameters/Include"
-        - $ref: "#/components/parameters/Containers"
+        - $ref: '#/components/parameters/Url'
+        - $ref: '#/components/parameters/Site'
+        - $ref: '#/components/parameters/Language'
+        - $ref: '#/components/parameters/Fields'
+        - $ref: '#/components/parameters/Include'
+        - $ref: '#/components/parameters/Containers'
       responses:
-        "200":
-          $ref: "#/components/responses/PageResolved"
-        "304":
-          $ref: "#/components/responses/NotModified"
-        "403":
-          $ref: "#/components/responses/Forbidden"
-        "404":
-          $ref: "#/components/responses/PageNotFound"
-        "422":
-          $ref: "#/components/responses/InvalidLayoutHtmlRequest"
+        '200':
+          $ref: '#/components/responses/PageResolved'
+        '304':
+          $ref: '#/components/responses/NotModified'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/PageNotFound'
+        '422':
+          $ref: '#/components/responses/InvalidLayoutHtmlRequest'
   /api/capell/pages/resolve:
     get:
       operationId: resolvePublicPageLegacy
@@ -43,23 +43,23 @@ paths:
       tags:
         - Public Pages
       parameters:
-        - $ref: "#/components/parameters/Url"
-        - $ref: "#/components/parameters/Site"
-        - $ref: "#/components/parameters/Language"
-        - $ref: "#/components/parameters/Fields"
-        - $ref: "#/components/parameters/Include"
-        - $ref: "#/components/parameters/Containers"
+        - $ref: '#/components/parameters/Url'
+        - $ref: '#/components/parameters/Site'
+        - $ref: '#/components/parameters/Language'
+        - $ref: '#/components/parameters/Fields'
+        - $ref: '#/components/parameters/Include'
+        - $ref: '#/components/parameters/Containers'
       responses:
-        "200":
-          $ref: "#/components/responses/PageResolved"
-        "304":
-          $ref: "#/components/responses/NotModified"
-        "403":
-          $ref: "#/components/responses/Forbidden"
-        "404":
-          $ref: "#/components/responses/PageNotFound"
-        "422":
-          $ref: "#/components/responses/InvalidLayoutHtmlRequest"
+        '200':
+          $ref: '#/components/responses/PageResolved'
+        '304':
+          $ref: '#/components/responses/NotModified'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/PageNotFound'
+        '422':
+          $ref: '#/components/responses/InvalidLayoutHtmlRequest'
 components:
   parameters:
     Url:
@@ -109,7 +109,7 @@ components:
         enum:
           - layout
           - layout.html
-      description: "Optional layout graph include. Rendered widget HTML is only included when `layout.html` is requested."
+      description: 'Optional layout graph include. Rendered widget HTML is only included when `layout.html` is requested.'
     Containers:
       name: containers
       in: query
@@ -119,41 +119,41 @@ components:
         examples:
           - main
           - main,sidebar
-      description: "Comma-separated layout container keys. Required to bound `layout.html` requests."
+      description: 'Comma-separated layout container keys. Required to bound `layout.html` requests.'
   responses:
     PageResolved:
       description: Published page resolved.
       headers:
         X-Capell-Api-Version:
-          $ref: "#/components/headers/ApiVersion"
+          $ref: '#/components/headers/ApiVersion'
         X-Capell-Cache-Tags:
-          $ref: "#/components/headers/CacheTags"
+          $ref: '#/components/headers/CacheTags'
         ETag:
-          $ref: "#/components/headers/ETag"
+          $ref: '#/components/headers/ETag'
       content:
         application/json:
           schema:
-            $ref: "#/components/schemas/PageResponse"
+            $ref: '#/components/schemas/PageResponse'
     NotModified:
       description: The current sanitized payload matches the supplied `If-None-Match` validator.
       headers:
         X-Capell-Api-Version:
-          $ref: "#/components/headers/ApiVersion"
+          $ref: '#/components/headers/ApiVersion'
         X-Capell-Cache-Tags:
-          $ref: "#/components/headers/CacheTags"
+          $ref: '#/components/headers/CacheTags'
         ETag:
-          $ref: "#/components/headers/ETag"
+          $ref: '#/components/headers/ETag'
     Forbidden:
       description: Explicit site or language context was requested without a valid signature.
       headers:
         X-Capell-Api-Version:
-          $ref: "#/components/headers/ApiVersion"
+          $ref: '#/components/headers/ApiVersion'
         X-Capell-Cache-Tags:
-          $ref: "#/components/headers/CacheTags"
+          $ref: '#/components/headers/CacheTags'
       content:
         application/json:
           schema:
-            $ref: "#/components/schemas/ErrorResponse"
+            $ref: '#/components/schemas/ErrorResponse'
           examples:
             forbidden:
               value:
@@ -162,28 +162,28 @@ components:
       description: Package, site, language, or page could not be resolved.
       headers:
         X-Capell-Api-Version:
-          $ref: "#/components/headers/ApiVersion"
+          $ref: '#/components/headers/ApiVersion'
         X-Capell-Cache-Tags:
-          $ref: "#/components/headers/CacheTags"
+          $ref: '#/components/headers/CacheTags'
       content:
         application/json:
           schema:
-            $ref: "#/components/schemas/ErrorResponse"
+            $ref: '#/components/schemas/ErrorResponse'
           examples:
             notFound:
               value:
                 message: Page not found
     InvalidLayoutHtmlRequest:
-      description: "`layout.html` was requested without explicit bounded containers."
+      description: '`layout.html` was requested without explicit bounded containers.'
       headers:
         X-Capell-Api-Version:
-          $ref: "#/components/headers/ApiVersion"
+          $ref: '#/components/headers/ApiVersion'
         X-Capell-Cache-Tags:
-          $ref: "#/components/headers/CacheTags"
+          $ref: '#/components/headers/CacheTags'
       content:
         application/json:
           schema:
-            $ref: "#/components/schemas/ErrorResponse"
+            $ref: '#/components/schemas/ErrorResponse'
           examples:
             unboundedLayoutHtml:
               value:
@@ -210,7 +210,7 @@ components:
       additionalProperties: false
       properties:
         data:
-          $ref: "#/components/schemas/PageData"
+          $ref: '#/components/schemas/PageData'
     PageData:
       type: object
       additionalProperties: false
@@ -222,11 +222,11 @@ components:
         title:
           type:
             - string
-            - "null"
+            - 'null'
         content:
           type:
             - string
-            - "null"
+            - 'null'
           description: Sanitized public HTML.
         meta:
           type:
@@ -234,7 +234,7 @@ components:
             - array
           description: Optional sanitized public page metadata.
         layout:
-          $ref: "#/components/schemas/LayoutGraph"
+          $ref: '#/components/schemas/LayoutGraph'
     LayoutGraph:
       type: object
       required:
@@ -251,7 +251,7 @@ components:
         containers:
           type: array
           items:
-            $ref: "#/components/schemas/LayoutContainer"
+            $ref: '#/components/schemas/LayoutContainer'
     LayoutContainer:
       type: object
       required:
@@ -268,8 +268,8 @@ components:
         widgets:
           type: array
           items:
-            $ref: "#/components/schemas/LayoutWidget"
-    LayoutWidget:
+            $ref: '#/components/schemas/Widget'
+    Widget:
       type: object
       required:
         - key
@@ -286,7 +286,7 @@ components:
         type:
           type:
             - string
-            - "null"
+            - 'null'
         data:
           type:
             - object
@@ -294,14 +294,14 @@ components:
             - string
             - number
             - boolean
-            - "null"
+            - 'null'
           description: Sanitized public widget payload.
         component:
           type: string
           description: Optional frontend component identifier when enabled by the host application.
         html:
           type: string
-          description: "Optional sanitized rendered widget HTML for bounded `layout.html` requests."
+          description: 'Optional sanitized rendered widget HTML for bounded `layout.html` requests.'
     ErrorResponse:
       type: object
       required:

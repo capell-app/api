@@ -6,15 +6,15 @@ namespace Capell\Api\Actions;
 
 use Capell\Api\Data\PublicPagePayloadOptionsData;
 use Capell\Api\Support\SanitizesPublicHtml;
-use Capell\Core\Enums\WidgetTarget;
 use Capell\Core\Models\Language;
 use Capell\Core\Models\Layout;
 use Capell\Core\Models\Page;
-use Capell\Core\Support\Widgets\WidgetRegistry;
 use Capell\LayoutBuilder\Actions\BuildPublicLayoutGraphAction;
 use Capell\LayoutBuilder\Data\PublicLayoutContainerData;
 use Capell\LayoutBuilder\Data\PublicLayoutGraphData;
 use Capell\LayoutBuilder\Data\PublicLayoutWidgetData;
+use Capell\LayoutBuilder\Enums\LayoutWidgetTarget;
+use Capell\LayoutBuilder\Support\LayoutWidgets\LayoutWidgetRegistry;
 use Lorisleiva\Actions\Concerns\AsObject;
 
 class BuildPublicLayoutPayloadAction
@@ -23,7 +23,7 @@ class BuildPublicLayoutPayloadAction
     use SanitizesPublicHtml;
 
     public function __construct(
-        private readonly WidgetRegistry $widgetRegistry,
+        private readonly LayoutWidgetRegistry $widgetRegistry,
     ) {}
 
     /**
@@ -65,7 +65,7 @@ class BuildPublicLayoutPayloadAction
         return [
             'key' => $container->key,
             'meta' => $this->sanitizeHtmlValue($container->meta),
-            'widgets' => array_map(
+            'layout_widgets' => array_map(
                 fn (PublicLayoutWidgetData $widget): array => $this->layoutWidget($widget, $options),
                 $container->widgets,
             ),
@@ -85,7 +85,7 @@ class BuildPublicLayoutPayloadAction
         ];
 
         if ($options->includeWidgetComponents && is_string($widget->type)) {
-            $component = $this->widgetRegistry->get($widget->type, WidgetTarget::FrontendInertia);
+            $component = $this->widgetRegistry->get($widget->type, LayoutWidgetTarget::FrontendInertia);
 
             if (is_string($component)) {
                 $data['component'] = $component;

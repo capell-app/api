@@ -36,7 +36,7 @@ it('documents the public page resolver contract in openapi', function (): void {
             'PageData',
             'LayoutGraph',
             'LayoutContainer',
-            'LayoutWidget',
+            'Widget',
             'ErrorResponse',
         )
         ->and(data_get($openApi, 'components.responses.PageResolved.headers.X-Capell-Api-Version.$ref'))->toBe('#/components/headers/ApiVersion')
