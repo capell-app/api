@@ -73,7 +73,7 @@ it('emits deterministic etags and honors conditional requests', function (): voi
         ->assertHeader('X-Capell-Api-Version', 'v1')
         ->assertHeader('ETag');
 
-    $etag = $response->headers->get('ETag');
+    $etag = $response->baseResponse->headers->get('ETag');
 
     expect($etag)->toBeString()
         ->and($etag)->not->toBe('');
@@ -92,7 +92,7 @@ it('emits deterministic etags and honors conditional requests', function (): voi
         ->assertHeader('X-Capell-Api-Version', 'v1')
         ->assertJsonPath('data.title', 'Terms');
 
-    expect($changedProjectionResponse->headers->get('ETag'))->not->toBe($etag);
+    expect($changedProjectionResponse->baseResponse->headers->get('ETag'))->not->toBe($etag);
 });
 
 it('returns only requested fields', function (): void {

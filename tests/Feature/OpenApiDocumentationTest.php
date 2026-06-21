@@ -58,7 +58,7 @@ function api_openapi_json_file_array(string $path): array
 
     throw_unless(is_array($decodedJson), RuntimeException::class, sprintf('Expected %s to decode to an array.', $path));
 
-    return $decodedJson;
+    return api_openapi_normalize_assoc($decodedJson);
 }
 
 /**
@@ -70,7 +70,7 @@ function api_openapi_yaml_file_array(string $path): array
 
     throw_unless(is_array($decodedYaml), RuntimeException::class, sprintf('Expected %s to decode to an array.', $path));
 
-    return $decodedYaml;
+    return api_openapi_normalize_assoc($decodedYaml);
 }
 
 /**
@@ -83,5 +83,22 @@ function api_openapi_array_value(array $values, string $key): array
 
     throw_unless(is_array($value), RuntimeException::class, sprintf('Expected %s to be an array.', $key));
 
-    return $value;
+    return api_openapi_normalize_assoc($value);
+}
+
+/**
+ * @param  array<mixed>  $values
+ * @return array<string, mixed>
+ */
+function api_openapi_normalize_assoc(array $values): array
+{
+    $normalized = [];
+
+    foreach ($values as $key => $value) {
+        if (is_string($key)) {
+            $normalized[$key] = $value;
+        }
+    }
+
+    return $normalized;
 }
