@@ -105,7 +105,10 @@
             "signedRoutes": [],
             "tokenizedRoutes": [],
             "webhookRoutes": [],
-            "throttledRoutes": []
+            "throttledRoutes": [
+                "capell-api.pages.resolve",
+                "capell-api.v1.pages.resolve"
+            ]
         },
         "sensitiveData": {
             "encryptedFields": [],
