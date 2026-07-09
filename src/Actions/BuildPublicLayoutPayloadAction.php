@@ -9,12 +9,6 @@ use Capell\Api\Support\SanitizesPublicHtml;
 use Capell\Core\Models\Language;
 use Capell\Core\Models\Layout;
 use Capell\Core\Models\Page;
-use Capell\LayoutBuilder\Actions\BuildPublicLayoutGraphAction;
-use Capell\LayoutBuilder\Data\PublicLayoutContainerData;
-use Capell\LayoutBuilder\Data\PublicLayoutGraphData;
-use Capell\LayoutBuilder\Data\PublicLayoutWidgetData;
-use Capell\LayoutBuilder\Enums\LayoutWidgetTarget;
-use Capell\LayoutBuilder\Support\LayoutWidgets\LayoutWidgetRegistry;
 use Lorisleiva\Actions\Concerns\AsObject;
 
 class BuildPublicLayoutPayloadAction
@@ -22,16 +16,26 @@ class BuildPublicLayoutPayloadAction
     use AsObject;
     use SanitizesPublicHtml;
 
-    public function __construct(
-        private readonly LayoutWidgetRegistry $widgetRegistry,
-    ) {}
+    private const string BUILD_LAYOUT_GRAPH_ACTION = 'Capell\\LayoutBuilder\\Actions\\BuildPublicLayoutGraphAction';
+
+    private const string LAYOUT_WIDGET_REGISTRY = 'Capell\\LayoutBuilder\\Support\\LayoutWidgets\\LayoutWidgetRegistry';
+
+    private const string LAYOUT_WIDGET_TARGET = 'Capell\\LayoutBuilder\\Enums\\LayoutWidgetTarget';
+
+    private const string FRONTEND_INERTIA_TARGET = 'frontend-inertia';
 
     /**
      * @return array<string, mixed>
      */
     public function handle(Layout $layout, Page $page, Language $language, PublicPagePayloadOptionsData $options): array
     {
-        $graph = BuildPublicLayoutGraphAction::run(
+        $buildLayoutGraphAction = self::BUILD_LAYOUT_GRAPH_ACTION;
+
+        if (! class_exists($buildLayoutGraphAction)) {
+            return [];
+        }
+
+        $graph = $buildLayoutGraphAction::run(
             layout: $layout,
             page: $page,
             language: $language,
@@ -45,14 +49,14 @@ class BuildPublicLayoutPayloadAction
     /**
      * @return array<string, mixed>
      */
-    private function layoutGraph(PublicLayoutGraphData $graph, PublicPagePayloadOptionsData $options): array
+    private function layoutGraph(object $graph, PublicPagePayloadOptionsData $options): array
     {
         return [
-            'key' => $graph->key,
-            'meta' => $this->sanitizeHtmlValue($graph->meta),
+            'key' => $this->stringProperty($graph, 'key'),
+            'meta' => $this->sanitizeHtmlValue($this->arrayProperty($graph, 'meta')),
             'containers' => array_map(
-                fn (PublicLayoutContainerData $container): array => $this->layoutContainer($container, $options),
-                $graph->containers,
+                fn (object $container): array => $this->layoutContainer($container, $options),
+                $this->objectArrayProperty($graph, 'containers'),
             ),
         ];
     }
@@ -60,14 +64,14 @@ class BuildPublicLayoutPayloadAction
     /**
      * @return array<string, mixed>
      */
-    private function layoutContainer(PublicLayoutContainerData $container, PublicPagePayloadOptionsData $options): array
+    private function layoutContainer(object $container, PublicPagePayloadOptionsData $options): array
     {
         return [
-            'key' => $container->key,
-            'meta' => $this->sanitizeHtmlValue($container->meta),
+            'key' => $this->stringProperty($container, 'key'),
+            'meta' => $this->sanitizeHtmlValue($this->arrayProperty($container, 'meta')),
             'widgets' => array_map(
-                fn (PublicLayoutWidgetData $widget): array => $this->layoutWidget($widget, $options),
-                $container->widgets,
+                fn (object $widget): array => $this->layoutWidget($widget, $options),
+                $this->objectArrayProperty($container, 'widgets'),
             ),
         ];
     }
@@ -75,25 +79,29 @@ class BuildPublicLayoutPayloadAction
     /**
      * @return array<string, mixed>
      */
-    private function layoutWidget(PublicLayoutWidgetData $widget, PublicPagePayloadOptionsData $options): array
+    private function layoutWidget(object $widget, PublicPagePayloadOptionsData $options): array
     {
+        $type = $this->nullableStringProperty($widget, 'type');
+
         $data = [
-            'key' => $widget->key,
-            'occurrence' => $widget->occurrence,
-            'type' => $widget->type,
-            'data' => $this->sanitizeHtmlValue($widget->data),
+            'key' => $this->stringProperty($widget, 'key'),
+            'occurrence' => $this->intProperty($widget, 'occurrence'),
+            'type' => $type,
+            'data' => $this->sanitizeHtmlValue($this->arrayProperty($widget, 'data')),
         ];
 
-        if ($options->includeWidgetComponents && is_string($widget->type)) {
-            $component = $this->widgetRegistry->get($widget->type, LayoutWidgetTarget::FrontendInertia);
+        if ($options->includeWidgetComponents && $type !== null) {
+            $component = $this->inertiaComponent($type);
 
             if (is_string($component)) {
                 $data['component'] = $component;
             }
         }
 
-        if ($widget->html !== null) {
-            $html = $this->sanitizeHtmlValue($widget->html);
+        $rawHtml = $this->nullableStringProperty($widget, 'html');
+
+        if ($rawHtml !== null) {
+            $html = $this->sanitizeHtmlValue($rawHtml);
 
             if (is_string($html)) {
                 $data['html'] = $html;
@@ -101,5 +109,71 @@ class BuildPublicLayoutPayloadAction
         }
 
         return $data;
+    }
+
+    private function inertiaComponent(string $widgetType): ?string
+    {
+        $registryClass = self::LAYOUT_WIDGET_REGISTRY;
+        $targetClass = self::LAYOUT_WIDGET_TARGET;
+
+        if (! class_exists($registryClass) || ! enum_exists($targetClass) || ! app()->bound($registryClass)) {
+            return null;
+        }
+
+        $target = constant($targetClass . '::FrontendInertia');
+        $registry = app($registryClass);
+
+        if (! is_object($registry) || ! method_exists($registry, 'get')) {
+            return null;
+        }
+
+        $component = $registry->get($widgetType, $target);
+
+        return is_string($component) ? $component : null;
+    }
+
+    private function stringProperty(object $object, string $property): string
+    {
+        $value = $object->{$property} ?? '';
+
+        return is_string($value) ? $value : '';
+    }
+
+    private function nullableStringProperty(object $object, string $property): ?string
+    {
+        $value = $object->{$property} ?? null;
+
+        return is_string($value) ? $value : null;
+    }
+
+    private function intProperty(object $object, string $property): int
+    {
+        $value = $object->{$property} ?? 0;
+
+        return is_int($value) ? $value : 0;
+    }
+
+    /**
+     * @return array<string, mixed>
+     */
+    private function arrayProperty(object $object, string $property): array
+    {
+        $value = $object->{$property} ?? [];
+
+        return is_array($value) ? $value : [];
+    }
+
+    /**
+     * @return array<int, object>
+     */
+    private function objectArrayProperty(object $object, string $property): array
+    {
+        $value = $object->{$property} ?? [];
+
+        if (! is_array($value)) {
+            return [];
+        }
+
+        return array_values(array_filter($value, static fn (mixed $item): bool => is_object($item)));
     }
 }
