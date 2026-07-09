@@ -2,6 +2,7 @@
 
 declare(strict_types=1);
 
+use Capell\Api\Actions\ResolveApiRequestContextAction;
 use Capell\Api\Providers\ApiServiceProvider;
 use Capell\Core\Database\Factories\TranslationFactory;
 use Capell\Core\Facades\CapellCore;
@@ -13,6 +14,7 @@ use Capell\Core\Models\Site;
 use Capell\Core\Models\SiteDomain;
 use Capell\LayoutBuilder\Contracts\PublicLayoutWidgetPayloadResolver;
 use Capell\LayoutBuilder\Models\Widget;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\URL;
 
 use function Pest\Laravel\getJson;
@@ -287,6 +289,33 @@ it('resolves the site from the request host and blocks unsigned explicit site se
         ->assertJsonPath('data.title', 'Other Terms');
 
     expect($site->getKey())->not->toBe($otherSite->getKey());
+});
+
+it('resolves api request context and cache tags directly from the request host', function (): void {
+    [$pageUrl, $page, $language, $site] = createPublicApiPage('/terms');
+
+    $request = Request::create('https://example.com/api/capell/pages/resolve?url=' . urlencode($pageUrl->url));
+
+    $context = ResolveApiRequestContextAction::run($request);
+
+    expect($context->found())->toBeTrue()
+        ->and($context->resolvedSite()->is($site))->toBeTrue()
+        ->and($context->resolvedLanguage()->is($language))->toBeTrue()
+        ->and($context->urlPath)->toBe('/terms')
+        ->and($context->cacheTags($page))->toBe([
+            'api',
+            'site:' . apiScalarKey($site->getKey()),
+            'language:' . apiScalarKey($language->getKey()),
+            'page:' . apiScalarKey($page->getKey()),
+        ]);
+});
+
+it('rejects unsigned explicit site selection in the api request context action', function (): void {
+    [, , , $site] = createPublicApiPage('/terms');
+
+    $request = Request::create('https://example.com/api/capell/pages/resolve?url=/terms&site=' . $site->getKey());
+
+    expect(ResolveApiRequestContextAction::run($request)->isForbidden())->toBeTrue();
 });
 
 it('blocks unsigned explicit language selection', function (): void {
