@@ -5,8 +5,8 @@
     "license": "proprietary",
     "require": {
         "php": "^8.4",
-        "capell-app/core": "^0.0.1 || 0.0.x-dev",
-        "capell-app/layout-builder": "^0.0.1 || 0.0.x-dev",
+        "capell-app/core": "^0.0.4 || 0.0.x-dev",
+        "capell-app/layout-builder": "^0.0.4 || 0.0.x-dev",
         "spatie/laravel-package-tools": "^1.14.1",
         "symfony/html-sanitizer": "^7.0|^8.0"
     },
