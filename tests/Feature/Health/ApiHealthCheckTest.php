@@ -11,7 +11,7 @@ use Illuminate\Support\Facades\Config;
 use Illuminate\Support\Facades\Route;
 
 it('reports a compatible capell api version', function (): void {
-    expect(ApiHealthCheck::compatibleCapellApiVersion())->toBe('^0.0');
+    expect(ApiHealthCheck::compatibleCapellApiVersion())->toBe('^4.0');
 });
 
 it('runs real api diagnostics and passes when the route contract is healthy', function (): void {
