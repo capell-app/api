@@ -1,0 +1,176 @@
+{
+    "manifest-version": 3,
+    "name": "capell-app/api",
+    "slug": "api",
+    "displayName": "API",
+    "kind": "package",
+    "capellApiVersion": "^0.0.1",
+    "version": "0.0.x-dev",
+    "description": "Versioned public JSON endpoints for published Capell pages and Layout Builder graphs, with sanitized output for headless consumers.",
+    "product": {
+        "group": "Capell Publishing Pro",
+        "tier": "premium",
+        "bundle": "publishing-pro"
+    },
+    "namespace": "Capell\\Api",
+    "surfaces": ["frontend"],
+    "dependencies": {
+        "requires": ["capell-app/core", "capell-app/layout-builder"],
+        "supports": [],
+        "conflicts": []
+    },
+    "providers": {
+        "metadata": [],
+        "install": [],
+        "runtime": ["Capell\\Api\\Providers\\ApiServiceProvider"],
+        "admin": [],
+        "frontend": []
+    },
+    "contributes": [
+        {
+            "type": "route",
+            "class": "Capell\\Api\\Manifest\\ApiRoutesContribution",
+            "routes": [
+                "capell-api.pages.resolve",
+                "capell-api.v1.pages.resolve"
+            ],
+            "prefix": "api",
+            "middleware": ["api", "throttle:capell-api"],
+            "apiEndpoints": [
+                {
+                    "type": "public-api-endpoint",
+                    "name": "public-page-resolve-v1",
+                    "routeName": "capell-api.v1.pages.resolve",
+                    "method": "GET",
+                    "path": "/api/capell/v1/pages/resolve",
+                    "version": "v1",
+                    "auth": "public",
+                    "readOnly": true,
+                    "canonical": true,
+                    "signedContextParameters": ["site", "language"],
+                    "publicSafety": [
+                        "sanitized-html",
+                        "no-authoring-surface",
+                        "no-secrets"
+                    ]
+                },
+                {
+                    "type": "public-api-endpoint",
+                    "name": "public-page-resolve-legacy",
+                    "routeName": "capell-api.pages.resolve",
+                    "method": "GET",
+                    "path": "/api/capell/pages/resolve",
+                    "version": "v1",
+                    "auth": "public",
+                    "readOnly": true,
+                    "canonical": false,
+                    "compatibility": "legacy",
+                    "signedContextParameters": ["site", "language"],
+                    "publicSafety": [
+                        "sanitized-html",
+                        "no-authoring-surface",
+                        "no-secrets"
+                    ]
+                }
+            ]
+        },
+        {
+            "type": "health-check",
+            "class": "Capell\\Api\\Health\\ApiHealthCheck"
+        }
+    ],
+    "database": {
+        "migrations": false,
+        "settings": false,
+        "requiredTables": []
+    },
+    "commands": {
+        "install": null,
+        "setup": null,
+        "demo": null,
+        "doctor": null
+    },
+    "settings": [],
+    "permissions": [],
+    "capabilities": ["public-page-api", "public-page-api-v1"],
+    "security": {
+        "riskTier": "critical",
+        "publicSurface": {
+            "routeNames": [
+                "capell-api.pages.resolve",
+                "capell-api.v1.pages.resolve"
+            ],
+            "auth": "public",
+            "csrfExemptRoutes": [],
+            "signedRoutes": [],
+            "tokenizedRoutes": [],
+            "webhookRoutes": [],
+            "throttledRoutes": [
+                "capell-api.pages.resolve",
+                "capell-api.v1.pages.resolve"
+            ]
+        },
+        "sensitiveData": {
+            "encryptedFields": [],
+            "hashedTokenFields": [],
+            "redactedOutputClasses": [],
+            "plaintextJustifications": []
+        },
+        "publicOutput": {
+            "cacheSafe": true,
+            "forbidAuthoringSurface": true,
+            "forbidSecrets": true,
+            "forbidPublicBladeQueries": true
+        },
+        "externalHttpClients": {
+            "requiresTimeouts": false,
+            "requiresSecretRedaction": false,
+            "clients": []
+        },
+        "adminSurface": {
+            "authorization": "none",
+            "permissions": []
+        }
+    },
+    "performance": {
+        "frontendRenderBudgetMs": 20,
+        "adminQueryBudget": 0,
+        "cacheTags": ["api", "api:pages"],
+        "cacheSafety": {
+            "cacheable": false,
+            "variesBy": ["site", "locale"],
+            "sensitiveOutput": false,
+            "invalidationSources": [],
+            "queueInvalidation": true
+        }
+    },
+    "healthChecks": [
+        {
+            "key": "api.package-health",
+            "label": "API route, middleware, and response header diagnostics are discoverable by Diagnostics.",
+            "class": "Capell\\Api\\Health\\ApiHealthCheck",
+            "severity": "critical",
+            "surface": "frontend"
+        }
+    ],
+    "commercial": {
+        "proposedLicense": "paid",
+        "requestedCertification": "first-party",
+        "supportPolicy": "priority",
+        "privateDocsRequested": true
+    },
+    "marketplace": {
+        "summary": "Versioned public JSON endpoints for published Capell pages and layout graphs, with sanitized output for headless consumers.",
+        "screenshots": [
+            {
+                "path": "docs/assets/marketplace/extension-card.jpg",
+                "alt": "API extension preview image",
+                "caption": "API extension preview"
+            }
+        ],
+        "categories": ["frontend", "publishing-pro"]
+    },
+    "contributionTraceability": {
+        "deferredContributions": []
+    }
+}
