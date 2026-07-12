@@ -20,6 +20,9 @@ return [
         'rate_limit_middleware' => 'throttle:capell-api',
         'rate_limit_per_minute' => 60,
         'max_candidate_sites' => 50,
+        'max_layout_containers' => 12,
+        'max_widgets_per_container' => 50,
+        'max_response_bytes' => 1048576,
         'middleware' => [],
     ],
 ];

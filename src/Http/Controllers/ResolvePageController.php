@@ -6,6 +6,7 @@ namespace Capell\Api\Http\Controllers;
 
 use Capell\Api\Actions\BuildPublicPagePayloadAction;
 use Capell\Api\Actions\ResolveApiRequestContextAction;
+use Capell\Api\Actions\ValidatePublicLayoutPayloadBoundsAction;
 use Capell\Api\Data\PublicPagePayloadOptionsData;
 use Capell\Core\Actions\ResolvePublicPageByUrlAction;
 use Capell\Core\Models\Layout;
@@ -48,7 +49,22 @@ final class ResolvePageController
             return $this->badRequest('layout.html requires explicit bounded containers.');
         }
 
+        if ($options->shouldIncludeLayout() && $resolution->layout instanceof Layout) {
+            $boundsError = ValidatePublicLayoutPayloadBoundsAction::run($resolution->layout, $options);
+
+            if (is_string($boundsError)) {
+                return $this->badRequest($boundsError);
+            }
+        }
+
         $this->cacheTags = $context->cacheTags($resolution->page);
+        $etag = $this->representationEtag($resolution->fields, $resolution->page, $resolution->layout, $options);
+        $notModified = $this->json([])->setEtag($etag);
+
+        if ($notModified->isNotModified($request)) {
+            return $notModified;
+        }
+
         $data = BuildPublicPagePayloadAction::run(
             fields: $resolution->fields,
             options: $options,
@@ -57,7 +73,7 @@ final class ResolvePageController
             language: $context->resolvedLanguage(),
         );
 
-        return $this->jsonWithEtag($request, ['data' => $data]);
+        return $this->jsonWithEtag(['data' => $data], $etag);
     }
 
     private function notFound(): JsonResponse
@@ -89,17 +105,29 @@ final class ResolvePageController
     /**
      * @param  array<string, mixed>  $payload
      */
-    private function jsonWithEtag(Request $request, array $payload): JsonResponse
+    private function jsonWithEtag(array $payload, string $etag): JsonResponse
     {
         $response = $this->json($payload);
         $responseContent = $response->getContent();
+        $maxResponseBytes = max(1024, (int) config('capell-api.public_pages.max_response_bytes', 1048576));
 
-        $response->setEtag(hash('sha256', is_string($responseContent) ? $responseContent : ''));
-
-        if ($response->isNotModified($request)) {
-            return $response;
+        if (is_string($responseContent) && strlen($responseContent) > $maxResponseBytes) {
+            return $this->json(['message' => 'API response exceeds the configured byte limit.'], 413);
         }
 
-        return $response;
+        return $response->setEtag($etag);
+    }
+
+    private function representationEtag(mixed $fields, mixed $page, mixed $layout, PublicPagePayloadOptionsData $options): string
+    {
+        $fieldValues = is_object($fields) && method_exists($fields, 'toArray') ? $fields->toArray() : [];
+
+        return hash('sha256', json_encode([
+            'fields' => $fieldValues,
+            'page_updated_at' => data_get($page, 'updated_at')?->getTimestamp(),
+            'layout_updated_at' => data_get($layout, 'updated_at')?->getTimestamp(),
+            'options' => $options->toArray(),
+            'api_version' => self::API_VERSION,
+        ], JSON_THROW_ON_ERROR));
     }
 }

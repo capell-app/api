@@ -182,6 +182,45 @@ it('treats all containers as the full layout graph', function (): void {
         ->assertJsonPath('data.layout.containers.1.key', 'sidebar');
 });
 
+it('rejects layout graphs that exceed configured container and widget bounds', function (): void {
+    [$pageUrl, $page] = createPublicApiPage('/bounded-layout');
+    $firstWidget = Widget::factory()->create(['key' => 'first-widget']);
+    $secondWidget = Widget::factory()->create(['key' => 'second-widget']);
+    $layout = Layout::factory()->site($page->site)->create([
+        'key' => 'bounded',
+        'containers' => [
+            'main' => ['widgets' => [
+                ['widget_key' => $firstWidget->key, 'occurrence' => 1],
+                ['widget_key' => $secondWidget->key, 'occurrence' => 1],
+            ]],
+            'sidebar' => ['widgets' => []],
+        ],
+    ]);
+    $page->update(['layout_id' => $layout->id]);
+
+    config()->set('capell-api.public_pages.max_layout_containers', 1);
+
+    getJson(apiResolveUrl(['url' => $pageUrl->url, 'include' => 'layout', 'containers' => 'all']))
+        ->assertUnprocessable()
+        ->assertExactJson(['message' => 'Layout container count exceeds the API limit; request explicit containers.']);
+
+    config()->set('capell-api.public_pages.max_layout_containers', 12);
+    config()->set('capell-api.public_pages.max_widgets_per_container', 1);
+
+    getJson(apiResolveUrl(['url' => $pageUrl->url, 'include' => 'layout', 'containers' => 'main']))
+        ->assertUnprocessable()
+        ->assertExactJson(['message' => 'Layout widget count exceeds the API limit.']);
+});
+
+it('rejects serialized responses above the configured byte ceiling', function (): void {
+    [$pageUrl] = createPublicApiPage('/oversized', ['content' => '<p>' . str_repeat('Large response ', 200) . '</p>']);
+    config()->set('capell-api.public_pages.max_response_bytes', 1024);
+
+    getJson(apiResolveUrl(['url' => $pageUrl->url]))
+        ->assertStatus(413)
+        ->assertExactJson(['message' => 'API response exceeds the configured byte limit.']);
+});
+
 it('includes layout html and sanitizes unsafe html strings', function (): void {
     [$pageUrl, $page, $language] = createPublicApiPage('/terms', [
         'title' => 'Terms',
