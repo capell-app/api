@@ -16,8 +16,10 @@ final class ValidatePublicLayoutPayloadBoundsAction
     {
         $containers = is_array($layout->containers) ? $layout->containers : [];
         $requestedContainers = $options->layoutContainers();
-        $maxContainers = max(1, (int) config('capell-api.public_pages.max_layout_containers', 12));
-        $maxWidgets = max(1, (int) config('capell-api.public_pages.max_widgets_per_container', 50));
+        $configuredMaxContainers = config('capell-api.public_pages.max_layout_containers', 12);
+        $configuredMaxWidgets = config('capell-api.public_pages.max_widgets_per_container', 50);
+        $maxContainers = max(1, is_int($configuredMaxContainers) ? $configuredMaxContainers : 12);
+        $maxWidgets = max(1, is_int($configuredMaxWidgets) ? $configuredMaxWidgets : 50);
 
         if ($requestedContainers !== [] && $requestedContainers !== ['*']) {
             if (count($requestedContainers) > $maxContainers) {

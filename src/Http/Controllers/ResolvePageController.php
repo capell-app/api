@@ -11,6 +11,7 @@ use Capell\Api\Data\PublicPagePayloadOptionsData;
 use Capell\Core\Actions\ResolvePublicPageByUrlAction;
 use Capell\Core\Models\Layout;
 use Capell\Core\Models\Page;
+use Carbon\CarbonInterface;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 
@@ -109,7 +110,8 @@ final class ResolvePageController
     {
         $response = $this->json($payload);
         $responseContent = $response->getContent();
-        $maxResponseBytes = max(1024, (int) config('capell-api.public_pages.max_response_bytes', 1048576));
+        $configuredMaxResponseBytes = config('capell-api.public_pages.max_response_bytes', 1048576);
+        $maxResponseBytes = max(1024, is_int($configuredMaxResponseBytes) ? $configuredMaxResponseBytes : 1048576);
 
         if (is_string($responseContent) && strlen($responseContent) > $maxResponseBytes) {
             return $this->json(['message' => 'API response exceeds the configured byte limit.'], 413);
@@ -122,10 +124,13 @@ final class ResolvePageController
     {
         $fieldValues = is_object($fields) && method_exists($fields, 'toArray') ? $fields->toArray() : [];
 
+        $pageUpdatedAt = data_get($page, 'updated_at');
+        $layoutUpdatedAt = data_get($layout, 'updated_at');
+
         return hash('sha256', json_encode([
             'fields' => $fieldValues,
-            'page_updated_at' => data_get($page, 'updated_at')?->getTimestamp(),
-            'layout_updated_at' => data_get($layout, 'updated_at')?->getTimestamp(),
+            'page_updated_at' => $pageUpdatedAt instanceof CarbonInterface ? $pageUpdatedAt->getTimestamp() : null,
+            'layout_updated_at' => $layoutUpdatedAt instanceof CarbonInterface ? $layoutUpdatedAt->getTimestamp() : null,
             'options' => $options->toArray(),
             'api_version' => self::API_VERSION,
         ], JSON_THROW_ON_ERROR));

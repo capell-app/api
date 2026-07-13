@@ -22,8 +22,6 @@ class BuildPublicLayoutPayloadAction
 
     private const string LAYOUT_WIDGET_TARGET = 'Capell\\LayoutBuilder\\Enums\\LayoutWidgetTarget';
 
-    private const string FRONTEND_INERTIA_TARGET = 'frontend-inertia';
-
     /**
      * @return array<string, mixed>
      */

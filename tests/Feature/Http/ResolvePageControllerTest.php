@@ -352,7 +352,7 @@ it('resolves api request context and cache tags directly from the request host',
 it('rejects unsigned explicit site selection in the api request context action', function (): void {
     [, , , $site] = createPublicApiPage('/terms');
 
-    $request = Request::create('https://example.com/api/capell/pages/resolve?url=/terms&site=' . $site->getKey());
+    $request = Request::create('https://example.com/api/capell/pages/resolve?url=/terms&site=' . apiScalarKey($site->getKey()));
 
     expect(ResolveApiRequestContextAction::run($request)->isForbidden())->toBeTrue();
 });

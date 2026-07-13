@@ -19,6 +19,7 @@ use Illuminate\Support\Collection;
 use Lorisleiva\Actions\Concerns\AsAction;
 use Throwable;
 
+/** @method static ResolveApiRequestContextData run(Request $request) */
 final class ResolveApiRequestContextAction
 {
     use AsAction;
