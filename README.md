@@ -4,7 +4,7 @@
 
 ## What This Plugin Adds
 
-API is an **Available**, **No schema impact** Capell package in the **Capell Publishing Pro** product group. It ships as `capell-app/api` and extends these surfaces: frontend.
+API is an **Available**, **No schema impact** Capell package in the **Capell Publishing** product group. It ships as `capell-app/api` and extends these surfaces: frontend.
 
 Versioned public JSON endpoints for published Capell pages and Layout Builder graphs, with sanitized output for headless consumers.
 
@@ -14,7 +14,7 @@ Status details:
 
 - Status: Available
 - Tier: premium
-- Bundle: publishing-pro
+- Bundle: publishing
 - Composer package: `capell-app/api`
 - Namespace: `Capell\Api`
 - Theme key: not applicable
@@ -28,6 +28,10 @@ Status details:
 ## Screens And Workflow
 
 Screenshot contract: `docs/screenshots.json`.
+
+![Successful page resolve JSON response](docs/screenshots/page-resolve-success-json.png)
+
+![Page resolve layout graph JSON response](docs/screenshots/page-resolve-layout-json.png)
 
 - Successful page resolve JSON response (frontend, required).
 - Page resolve layout graph JSON response (frontend, required).
