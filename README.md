@@ -2,7 +2,7 @@
 
 <!-- prettier-ignore-start -->
 
-## What This Extension Adds
+## What This Plugin Adds
 
 API is an **Available**, **No schema impact** Capell package in the **Capell Publishing Pro** product group. It ships as `capell-app/api` and extends these surfaces: frontend.
 
@@ -39,8 +39,8 @@ Screenshot contract: `docs/screenshots.json`.
 - Service providers: `Capell\Api\Providers\ApiServiceProvider`.
 - Config files: `packages/api/config/capell-api.php`.
 - Route files: `packages/api/routes/api.php`.
-- Actions: `BuildPublicLayoutPayloadAction`, `BuildPublicPagePayloadAction`.
-- Data objects: `PublicPagePayloadOptionsData`.
+- Actions: `BuildPublicLayoutPayloadAction`, `BuildPublicPagePayloadAction`, `ResolveApiRequestContextAction`, `ValidatePublicLayoutPayloadBoundsAction`.
+- Data objects: `PublicPagePayloadOptionsData`, `ResolveApiRequestContextData`.
 - Manifest contributions: `health-check: Capell\Api\Health\ApiHealthCheck`, `route: Capell\Api\Manifest\ApiRoutesContribution`.
 - Health checks: `Capell\Api\Health\ApiHealthCheck`.
 - Cache tags: `api`, `api:pages`.
