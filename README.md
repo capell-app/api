@@ -6,9 +6,11 @@
 
 API is an **Available**, **No schema impact** Capell package in the **Capell Publishing** product group. It ships as `capell-app/api` and extends these surfaces: frontend.
 
-Versioned public JSON endpoints for published Capell pages and Layout Builder graphs, with sanitized output for headless consumers.
+API adds versioned public JSON endpoints for resolving published Capell pages and bounded Layout Builder graphs.
 
-After install, the package affects public rendering, public routes, or frontend runtime behaviour.
+The package adds no admin screen. Headless clients can resolve a published page and request its sanitized public layout payload through the documented API routes.
+
+Evidence: [`capell.json`](capell.json), [`routes/api.php`](routes/api.php), [`src/Http/Controllers/ResolvePageController.php`](src/Http/Controllers/ResolvePageController.php), [`docs/screenshots.json`](docs/screenshots.json), [`tests/Feature/Http/ResolvePageControllerTest.php`](tests/Feature/Http/ResolvePageControllerTest.php), [`tests/Feature/OpenApiDocumentationTest.php`](tests/Feature/OpenApiDocumentationTest.php).
 
 Status details:
 
@@ -21,9 +23,11 @@ Status details:
 
 ## Why It Matters
 
-**For developers:** The package gives developers package-owned service providers, Actions, Data objects, and Laravel routes instead of pushing this behaviour into core or application code.
+**For developers:** ResolveApiRequestContextAction, BuildPublicPagePayloadAction, and BuildPublicLayoutPayloadAction keep request resolution, sanitization, and layout bounds outside the controller.
 
-**For teams:** Versioned public JSON endpoints for published Capell pages and layout graphs, with sanitized output for headless consumers.
+**For teams:** A separate frontend can consume published Capell content without receiving draft, admin, or authoring state.
+
+Evidence: [`src/Actions/ResolveApiRequestContextAction.php`](src/Actions/ResolveApiRequestContextAction.php), [`src/Actions/BuildPublicPagePayloadAction.php`](src/Actions/BuildPublicPagePayloadAction.php), [`src/Actions/BuildPublicLayoutPayloadAction.php`](src/Actions/BuildPublicLayoutPayloadAction.php), [`tests/Feature/Actions/BuildPublicPagePayloadActionTest.php`](tests/Feature/Actions/BuildPublicPagePayloadActionTest.php), [`docs/screenshots.json`](docs/screenshots.json), [`tests/Feature/Http/ResolvePageControllerTest.php`](tests/Feature/Http/ResolvePageControllerTest.php), [`tests/Feature/ApiErrorScreenshotProofTest.php`](tests/Feature/ApiErrorScreenshotProofTest.php).
 
 ## Screens And Workflow
 
@@ -51,26 +55,29 @@ Screenshot contract: `docs/screenshots.json`.
 
 ## Data Model
 
-This package has no schema impact. It does not declare package-owned migrations or required tables.
-
-Docs gap: document extension points here if the package delegates persistence to a host package.
+This package has no schema impact. It extends Capell through `health-check` contributions and `route` contributions instead of declaring package-owned tables.
 
 ## Install Impact
 
-- Admin navigation: no admin surface declared.
+- Required packages: `capell-app/core`, `capell-app/layout-builder`.
+- Admin navigation: no admin page or resource contribution is declared.
+- Admin/editor extensions: none declared.
 - Permissions: none declared in `capell.json`.
-- Public routes: route files exist and must be reviewed before public enablement.
+- Public routes: loads `routes/api.php`; registers `ApiRoutesContribution`.
 - Database changes: no package migrations declared.
+- Config: `config/capell-api.php`.
 - Settings: no package settings declared.
-- Queues or schedules: none detected in standard package paths.
+- Queues or schedules: none declared.
 - Cache tags: `api`, `api:pages`.
 - Commands: none declared.
 
 ## Common Pitfalls
 
-- Review route middleware, throttling, signed URLs, and public-output safety before exposing routes.
+- Keep required Capell packages on compatible v4 releases: `capell-app/core`, `capell-app/layout-builder`.
+- Review package configuration before production-like verification: `config/capell-api.php`.
+- Review middleware, throttling, signatures, and public-output safety in `routes/api.php` before exposing routes.
 - Keep public Blade and cached HTML free of authoring markers, model IDs, permissions, signed editor URLs, and lazy database queries.
-- Keep `composer.json`, `composer.local.json`, `capell.json`, docs, screenshots, and tests aligned when the package surface changes.
+- Custom write integrations must preserve invalidation for `api`, `api:pages` cache tags.
 
 ## Troubleshooting
 
@@ -83,13 +90,15 @@ Docs gap: document extension points here if the package delegates persistence to
 ## Quick Start
 
 1. Install the package: `composer require capell-app/api`.
-2. Run the required setup: no package migrations are declared; clear cached config and routes if the host app uses caches.
-3. Verify the package provider is registered and the related frontend, command, or extension point is active.
+2. Review `config/capell-api.php` before enabling the package.
+3. Open the Successful page resolve JSON response and confirm the public output renders without admin state.
 
 ## Next Steps
 
 - [Package docs](docs/README.md)
 - [Overview](docs/overview.md)
+- Configuration files: [`config/capell-api.php`](config/capell-api.php).
+- [Troubleshooting](#troubleshooting)
 - [Screenshot contract](docs/screenshots.json)
 - [Marketplace assets](docs/assets/marketplace/)
 - [Capell content language plan](../../docs/CONTENT_LANGUAGE_PLAN.md)

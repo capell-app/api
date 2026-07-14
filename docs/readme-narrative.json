@@ -1,0 +1,37 @@
+{
+    "whatThisPluginAdds": {
+        "text": "API adds versioned public JSON endpoints for resolving published Capell pages and bounded Layout Builder graphs.",
+        "evidence": [
+            "capell.json",
+            "routes/api.php",
+            "src/Http/Controllers/ResolvePageController.php"
+        ]
+    },
+    "surfaceOutcome": {
+        "text": "The package adds no admin screen. Headless clients can resolve a published page and request its sanitized public layout payload through the documented API routes.",
+        "evidence": [
+            "docs/screenshots.json",
+            "tests/Feature/Http/ResolvePageControllerTest.php",
+            "tests/Feature/OpenApiDocumentationTest.php"
+        ]
+    },
+    "whyItMatters": {
+        "developers": {
+            "text": "ResolveApiRequestContextAction, BuildPublicPagePayloadAction, and BuildPublicLayoutPayloadAction keep request resolution, sanitization, and layout bounds outside the controller.",
+            "evidence": [
+                "src/Actions/ResolveApiRequestContextAction.php",
+                "src/Actions/BuildPublicPagePayloadAction.php",
+                "src/Actions/BuildPublicLayoutPayloadAction.php",
+                "tests/Feature/Actions/BuildPublicPagePayloadActionTest.php"
+            ]
+        },
+        "teams": {
+            "text": "A separate frontend can consume published Capell content without receiving draft, admin, or authoring state.",
+            "evidence": [
+                "docs/screenshots.json",
+                "tests/Feature/Http/ResolvePageControllerTest.php",
+                "tests/Feature/ApiErrorScreenshotProofTest.php"
+            ]
+        }
+    }
+}
