@@ -9,10 +9,12 @@ use Capell\Api\Support\SanitizesPublicHtml;
 use Capell\Core\Models\Language;
 use Capell\Core\Models\Layout;
 use Capell\Core\Models\Page;
+use Lorisleiva\Actions\Concerns\AsFake;
 use Lorisleiva\Actions\Concerns\AsObject;
 
 class BuildPublicLayoutPayloadAction
 {
+    use AsFake;
     use AsObject;
     use SanitizesPublicHtml;
 

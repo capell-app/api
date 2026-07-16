@@ -16,13 +16,15 @@ use Capell\Core\Models\SiteDomain;
 use Illuminate\Contracts\Database\Eloquent\Builder as BuilderContract;
 use Illuminate\Http\Request;
 use Illuminate\Support\Collection;
-use Lorisleiva\Actions\Concerns\AsAction;
+use Lorisleiva\Actions\Concerns\AsFake;
+use Lorisleiva\Actions\Concerns\AsObject;
 use Throwable;
 
 /** @method static ResolveApiRequestContextData run(Request $request) */
 final class ResolveApiRequestContextAction
 {
-    use AsAction;
+    use AsFake;
+    use AsObject;
 
     private ?SiteDomain $resolvedSiteDomain = null;
 

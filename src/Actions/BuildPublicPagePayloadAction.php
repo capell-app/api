@@ -10,10 +10,12 @@ use Capell\Core\Data\PublicPageFieldsData;
 use Capell\Core\Models\Language;
 use Capell\Core\Models\Layout;
 use Capell\Core\Models\Page;
+use Lorisleiva\Actions\Concerns\AsFake;
 use Lorisleiva\Actions\Concerns\AsObject;
 
 class BuildPublicPagePayloadAction
 {
+    use AsFake;
     use AsObject;
     use SanitizesPublicHtml;
 

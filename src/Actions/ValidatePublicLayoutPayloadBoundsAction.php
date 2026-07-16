@@ -6,11 +6,13 @@ namespace Capell\Api\Actions;
 
 use Capell\Api\Data\PublicPagePayloadOptionsData;
 use Capell\Core\Models\Layout;
-use Lorisleiva\Actions\Concerns\AsAction;
+use Lorisleiva\Actions\Concerns\AsFake;
+use Lorisleiva\Actions\Concerns\AsObject;
 
 final class ValidatePublicLayoutPayloadBoundsAction
 {
-    use AsAction;
+    use AsFake;
+    use AsObject;
 
     public function handle(Layout $layout, PublicPagePayloadOptionsData $options): ?string
     {
