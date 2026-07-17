@@ -94,8 +94,8 @@ final class ResolveApiRequestContextAction
 
         $publicPageUrl = $this->publicPageUrl($request);
         $resolved = LoadSiteDomainFromUrlAction::run($publicPageUrl, $this->candidateSitesForUrl($publicPageUrl));
-        $siteDomain = is_array($resolved) ? ($resolved[0] ?? null) : null;
-        $urlPath = is_array($resolved) ? ($resolved[1] ?? null) : null;
+        $siteDomain = is_array($resolved) ? $resolved[0] : null;
+        $urlPath = is_array($resolved) ? $resolved[1] : null;
 
         if (! $siteDomain instanceof SiteDomain) {
             return null;
