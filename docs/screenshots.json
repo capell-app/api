@@ -7,19 +7,21 @@
     "entries": [
         {
             "id": "page-resolve-success-json",
-            "title": "Successful page resolve JSON response.",
+            "title": "Illustrative successful page resolve json response preview.",
             "package": "api",
             "surface": "frontend",
-            "targetType": "frontend-route",
-            "target": "capell-api.v1.pages.resolve",
-            "url": "/api/capell/v1/pages/resolve?url=/",
+            "targetType": "frontend-url",
+            "target": "/screenshot-fixtures/catalogue/api/page-resolve-success-json",
+            "url": "/screenshot-fixtures/catalogue/api/page-resolve-success-json",
             "waitFor": "body",
             "expectedStatus": 200,
             "required": true,
-            "notes": "Requires API installed, Layout Builder installed, and a seeded published page with a resolvable URL. Capture the JSON body plus `X-Capell-Api-Version`, `X-Capell-Cache-Tags`, and `ETag` headers.",
+            "notes": "Illustrative deterministic catalogue fixture, not a live package UI capture. Requires API installed, Layout Builder installed, and a seeded published page with a resolvable URL. Capture the JSON body plus `X-Capell-Api-Version`, `X-Capell-Cache-Tags`, and `ETag` headers.",
             "useCase": "A frontend renderer resolves a published Capell page into public JSON for rendering outside the CMS.",
             "screenshotPath": "packages/api/docs/screenshots/page-resolve-success-json.png",
-            "darkScreenshotPath": "packages/api/docs/screenshots/page-resolve-success-json-dark.png"
+            "darkScreenshotPath": "packages/api/docs/screenshots/page-resolve-success-json-dark.png",
+            "colorSchemes": ["light", "dark"],
+            "fixtureKind": "illustrative-catalogue"
         },
         {
             "id": "page-resolve-layout-json",
