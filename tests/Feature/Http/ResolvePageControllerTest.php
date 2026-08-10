@@ -433,7 +433,7 @@ it('does not hydrate wildcard site domains when an exact host matches', function
     foreach (range(1, 15) as $index) {
         createPublicApiPage('/wildcard-' . $index, [
             'title' => 'Wildcard ' . $index,
-        ], domain: null);
+        ], domain: '*.wildcard-' . $index . '.example.com');
     }
 
     $retrievedSiteDomains = 0;
@@ -450,7 +450,7 @@ it('does not hydrate wildcard site domains when an exact host matches', function
 
 it('does not allow signed context URLs to change the target page URL', function (): void {
     [$pageUrl, , , $site] = createPublicApiPage('/terms');
-    createPublicApiPage('/privacy');
+    createPublicApiPage('/privacy', domain: 'privacy.example.com');
 
     $signedUrl = apiResolveUrl([
         'url' => $pageUrl->url,

@@ -10,6 +10,7 @@ use Capell\Core\Models\Language;
 use Capell\Core\Models\Layout;
 use Capell\Core\Models\Page;
 use Capell\Core\Models\Site;
+use Capell\Core\Models\SiteDomain;
 use Capell\LayoutBuilder\Contracts\PublicLayoutWidgetPayloadResolver;
 use Capell\LayoutBuilder\Data\LayoutWidgets\LayoutWidgetDefinitionData;
 use Capell\LayoutBuilder\Enums\LayoutTypeEnum;
@@ -40,6 +41,7 @@ it('matches the public page api field payload and sanitizes html recursively', f
 it('can include inertia widget component names without changing the default api payload', function (): void {
     $language = Language::factory()->english()->create();
     $site = Site::factory()->default()->create(['language_id' => $language->id]);
+    SiteDomain::factory()->site($site)->language($language)->create();
     $page = Page::factory()->site($site)->create();
     $widgetType = Blueprint::factory()
         ->type(LayoutTypeEnum::Widget->value)
@@ -110,6 +112,7 @@ it('can include inertia widget component names without changing the default api 
 it('strips authoring metadata and secrets from public page and layout payloads', function (): void {
     $language = Language::factory()->english()->create();
     $site = Site::factory()->default()->create(['language_id' => $language->id]);
+    SiteDomain::factory()->site($site)->language($language)->create();
     $page = Page::factory()->site($site)->create();
     $widgetType = Blueprint::factory()
         ->type(LayoutTypeEnum::Widget->value)
