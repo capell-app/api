@@ -9,7 +9,7 @@
     "description": "Versioned public JSON endpoints for published Capell pages and Layout Builder graphs, with sanitized output for headless consumers.",
     "product": {
         "group": "Capell Publishing",
-        "tier": "premium",
+        "tier": "free",
         "bundle": "publishing"
     },
     "namespace": "Capell\\Api",
@@ -154,10 +154,10 @@
         }
     ],
     "commercial": {
-        "proposedLicense": "paid",
+        "proposedLicense": "free",
         "requestedCertification": "first-party",
-        "supportPolicy": "priority",
-        "privateDocsRequested": true
+        "supportPolicy": "capell-first-party",
+        "privateDocsRequested": false
     },
     "marketplace": {
         "summary": "Versioned public JSON endpoints for published Capell pages and layout graphs, with sanitized output for headless consumers.",

@@ -10,12 +10,10 @@ API adds versioned public JSON endpoints for resolving published Capell pages an
 
 The package adds no admin screen. Headless clients can resolve a published page and request its sanitized public layout payload through the documented API routes.
 
-Evidence: [`capell.json`](capell.json), [`routes/api.php`](routes/api.php), [`src/Http/Controllers/ResolvePageController.php`](src/Http/Controllers/ResolvePageController.php), [`docs/screenshots.json`](docs/screenshots.json), [`tests/Feature/Http/ResolvePageControllerTest.php`](tests/Feature/Http/ResolvePageControllerTest.php), [`tests/Feature/OpenApiDocumentationTest.php`](tests/Feature/OpenApiDocumentationTest.php).
-
 Status details:
 
 - Status: Available
-- Tier: premium
+- Tier: free
 - Bundle: publishing
 - Composer package: `capell-app/api`
 - Namespace: `Capell\Api`
@@ -26,8 +24,6 @@ Status details:
 **For developers:** ResolveApiRequestContextAction, BuildPublicPagePayloadAction, and BuildPublicLayoutPayloadAction keep request resolution, sanitization, and layout bounds outside the controller.
 
 **For teams:** A separate frontend can consume published Capell content without receiving draft, admin, or authoring state.
-
-Evidence: [`src/Actions/ResolveApiRequestContextAction.php`](src/Actions/ResolveApiRequestContextAction.php), [`src/Actions/BuildPublicPagePayloadAction.php`](src/Actions/BuildPublicPagePayloadAction.php), [`src/Actions/BuildPublicLayoutPayloadAction.php`](src/Actions/BuildPublicLayoutPayloadAction.php), [`tests/Feature/Actions/BuildPublicPagePayloadActionTest.php`](tests/Feature/Actions/BuildPublicPagePayloadActionTest.php), [`docs/screenshots.json`](docs/screenshots.json), [`tests/Feature/Http/ResolvePageControllerTest.php`](tests/Feature/Http/ResolvePageControllerTest.php), [`tests/Feature/ApiErrorScreenshotProofTest.php`](tests/Feature/ApiErrorScreenshotProofTest.php).
 
 ## Screens And Workflow
 
@@ -120,7 +116,7 @@ This package has no schema impact. It extends Capell through `health-check` cont
 ## Quick Start
 
 1. Install the package: `composer require capell-app/api`.
-2. Open `/screenshot-fixtures/catalogue/api/page-resolve-success-json` and confirm the public output renders without admin state.
+2. Open `/api/capell/v1/pages/resolve?url=/&include=layout&containers=main` and confirm the public output renders without admin state.
 
 ## Next Steps
 
@@ -134,6 +130,5 @@ This package has no schema impact. It extends Capell through `health-check` cont
 - [Capell documentation design system](../../docs/DESIGN_SYSTEM.md)
 - [Capell and package ERD notes](../../docs/erd/capell-and-package-erds.md)
 - Related packages: [Layout Builder](../layout-builder/README.md).
-- Focused tests: `vendor/bin/pest packages/api/tests --configuration=phpunit.xml`.
 
 <!-- prettier-ignore-end -->
