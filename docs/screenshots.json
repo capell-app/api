@@ -69,7 +69,8 @@
             "notes": "Optional non-2xx runner evidence. Requires a runner that treats `expectedStatus` as the successful capture status for public JSON errors.",
             "useCase": "A developer verifies unresolved pages return the documented JSON error contract.",
             "screenshotPath": "packages/api/docs/screenshots/page-resolve-not-found-json.png",
-            "darkScreenshotPath": "packages/api/docs/screenshots/page-resolve-not-found-json-dark.png"
+            "darkScreenshotPath": "packages/api/docs/screenshots/page-resolve-not-found-json-dark.png",
+            "expectedState": "not-found"
         }
     ]
 }
