@@ -7,9 +7,18 @@ use Symfony\Component\Process\Process;
 it('keeps committed non-2xx API JSON proof screenshots current', function (): void {
     $packagePath = dirname(__DIR__, 2);
     $repositoryPath = dirname(__DIR__, 4);
+    $manifest = json_decode((string) file_get_contents($packagePath . '/docs/screenshots.json'), true, flags: JSON_THROW_ON_ERROR);
+    $manifestEntries = [];
+
+    foreach (is_array($manifest) && is_array($manifest['entries'] ?? null) ? $manifest['entries'] : [] as $manifestEntry) {
+        if (is_array($manifestEntry) && is_string($manifestEntry['id'] ?? null)) {
+            $manifestEntries[$manifestEntry['id']] = $manifestEntry;
+        }
+    }
 
     $entries = [
         [
+            'id' => 'page-resolve-forbidden-json',
             'htmlPath' => $packagePath . '/docs/screenshots/.page-resolve-forbidden-json.html',
             'screenshotPath' => $packagePath . '/docs/screenshots/page-resolve-forbidden-json.png',
             'status' => 403,
@@ -21,6 +30,7 @@ it('keeps committed non-2xx API JSON proof screenshots current', function (): vo
             ),
         ],
         [
+            'id' => 'page-resolve-forbidden-json',
             'htmlPath' => $packagePath . '/docs/screenshots/.page-resolve-forbidden-json-dark.html',
             'screenshotPath' => $packagePath . '/docs/screenshots/page-resolve-forbidden-json-dark.png',
             'status' => 403,
@@ -32,6 +42,7 @@ it('keeps committed non-2xx API JSON proof screenshots current', function (): vo
             ),
         ],
         [
+            'id' => 'page-resolve-not-found-json',
             'htmlPath' => $packagePath . '/docs/screenshots/.page-resolve-not-found-json.html',
             'screenshotPath' => $packagePath . '/docs/screenshots/page-resolve-not-found-json.png',
             'status' => 404,
@@ -43,6 +54,7 @@ it('keeps committed non-2xx API JSON proof screenshots current', function (): vo
             ),
         ],
         [
+            'id' => 'page-resolve-not-found-json',
             'htmlPath' => $packagePath . '/docs/screenshots/.page-resolve-not-found-json-dark.html',
             'screenshotPath' => $packagePath . '/docs/screenshots/page-resolve-not-found-json-dark.png',
             'status' => 404,
@@ -56,6 +68,16 @@ it('keeps committed non-2xx API JSON proof screenshots current', function (): vo
     ];
 
     foreach ($entries as $entry) {
+        // The capture contract frames these native JSON error responses at the
+        // standard width with the height declared by the manifest (maxHeight).
+        $expectedHeight = $manifestEntries[$entry['id']]['maxHeight'] ?? null;
+
+        expect($expectedHeight)->toBeInt();
+
+        if (! is_int($expectedHeight)) {
+            continue;
+        }
+
         expect($entry['html'])
             ->toContain('"status": ' . $entry['status'])
             ->not->toContain('authoring')
@@ -73,7 +95,7 @@ it('keeps committed non-2xx API JSON proof screenshots current', function (): vo
                     $entry['htmlPath'],
                     $entry['screenshotPath'],
                     '1440',
-                    '900',
+                    (string) $expectedHeight,
                 ], $repositoryPath);
                 $process->setTimeout(60);
                 $process->mustRun();
@@ -90,7 +112,7 @@ it('keeps committed non-2xx API JSON proof screenshots current', function (): vo
 
         expect($dimensions)->toBeArray()
             ->and($dimensions[0] ?? null)->toBe(1440)
-            ->and($dimensions[1] ?? null)->toBe(900);
+            ->and($dimensions[1] ?? null)->toBe($expectedHeight);
     }
 });
 
