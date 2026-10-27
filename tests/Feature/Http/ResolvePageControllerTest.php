@@ -2,9 +2,11 @@
 
 declare(strict_types=1);
 
+use Capell\Api\Actions\BuildPublicPagePayloadAction;
 use Capell\Api\Actions\ResolveApiRequestContextAction;
 use Capell\Api\Providers\ApiServiceProvider;
 use Capell\Core\Database\Factories\TranslationFactory;
+use Capell\Core\Enums\ContentStructure;
 use Capell\Core\Facades\CapellCore;
 use Capell\Core\Models\Language;
 use Capell\Core\Models\Layout;
@@ -538,3 +540,53 @@ function apiResolveUrl(array $parameters = [], string $host = 'example.com', boo
 
     return route('capell-api.pages.resolve', $parameters);
 }
+
+it('removes reserved editor envelopes from native block content without losing public values', function (): void {
+    $blocks = [['type' => 'chart', 'data' => ['title' => 'Workshop attendance', 'series' => [84, 128], '__capell' => ['instance_id' => 'private-editor-instance', 'state_version' => 1]]]];
+    [$pageUrl, $page] = createPublicApiPage('/workshops', ['title' => 'Workshops', 'content' => $blocks]);
+    $page->forceFill(['content_structure_override' => ContentStructure::Blocks->value])->save();
+
+    $response = getJson(apiResolveUrl(['url' => $pageUrl->url]))
+        ->assertOk()
+        ->assertExactJson(['data' => ['url' => '/workshops', 'title' => 'Workshops', 'content' => [['type' => 'chart', 'data' => ['title' => 'Workshop attendance', 'series' => [84, 128]]]]]])
+        ->assertHeader('X-Capell-Api-Version', 'v1');
+
+    expect($response->getContent())->not->toContain('__capell', 'private-editor-instance', 'state_version');
+    assertCapellPublicOutputIsSafe($response, 'Native block content API response');
+});
+
+it('invalidates a cached response when sanitized serializer output changes with unchanged stored fields', function (): void {
+    [$pageUrl] = createPublicApiPage('/terms');
+    BuildPublicPagePayloadAction::shouldRun()->twice()->andReturn(
+        ['url' => '/terms', 'title' => 'Before policy repair'],
+        ['url' => '/terms', 'title' => 'After policy repair'],
+    );
+    $first = getJson(apiResolveUrl(['url' => $pageUrl->url]))->assertOk();
+    $etag = $first->baseResponse->headers->get('ETag');
+    $second = getJson(apiResolveUrl(['url' => $pageUrl->url]), ['If-None-Match' => $etag])
+        ->assertOk()
+        ->assertExactJson(['data' => ['url' => '/terms', 'title' => 'After policy repair']]);
+    expect($second->baseResponse->headers->get('ETag'))->not->toBe($etag);
+});
+
+it('keeps documented v1 signed page context fixed while allowing projection changes', function (): void {
+    [$pageUrl, $page, $language, $site] = createPublicApiPage('/terms');
+    PageUrl::factory()->site($site)->language($language)->page($page)->create(['url' => '/second-page']);
+    URL::useOrigin('https://example.com');
+    $parameters = ['url' => '/terms', 'site' => $site->getKey(), 'language' => $language->getKey()];
+    $signedUrl = URL::temporarySignedRoute('capell-api.v1.pages.resolve', now()->addMinutes(15), $parameters);
+
+    getJson($signedUrl . '&fields=url,title&include=layout&containers=main')
+        ->assertOk()->assertJsonPath('data.url', '/terms')->assertJsonMissingPath('data.content');
+
+    foreach (['url' => '/second-page', 'site' => 999999, 'language' => 999999] as $key => $value) {
+        $parts = parse_url($signedUrl);
+        parse_str($parts['query'] ?? '', $query);
+        $query[$key] = $value;
+        getJson('https://example.com/api/capell/v1/pages/resolve?' . http_build_query($query))->assertForbidden();
+    }
+
+    $parameters['url'] = '/second-page';
+    getJson(URL::temporarySignedRoute('capell-api.v1.pages.resolve', now()->addMinutes(15), $parameters))
+        ->assertOk()->assertJsonPath('data.url', '/second-page');
+});

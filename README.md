@@ -29,12 +29,12 @@ Status details:
 
 Screenshot contract: `docs/screenshots.json`.
 
-![Illustrative successful page resolve json response preview](docs/screenshots/page-resolve-success-json.png)
+![Native successful page resolve JSON response](docs/screenshots/page-resolve-success-json.png)
 
-![Page resolve layout graph JSON response](docs/screenshots/page-resolve-layout-json.png)
+![Native bounded page layout JSON response](docs/screenshots/page-resolve-layout-json.png)
 
-- Illustrative successful page resolve json response preview (frontend, required evidence).
-- Page resolve layout graph JSON response (frontend, required evidence).
+- Native successful page resolve JSON response (frontend, required evidence).
+- Native bounded page layout JSON response (frontend, required evidence).
 - Page resolve forbidden JSON response (frontend, supplementary evidence).
 - Page resolve not found JSON response (frontend, supplementary evidence).
 
@@ -116,7 +116,13 @@ This package has no schema impact. It extends Capell through `health-check` cont
 ## Quick Start
 
 1. Install the package: `composer require capell-app/api`.
-2. Open `/api/capell/v1/pages/resolve?url=/&include=layout&containers=main` and confirm the public output renders without admin state.
+2. Run `php artisan route:list` and verify the package routes are registered.
+
+## Upgrading
+
+No manual steps between minor versions.
+
+Read [CHANGELOG.md](CHANGELOG.md) before upgrading.
 
 ## Next Steps
 

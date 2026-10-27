@@ -66,6 +66,7 @@ final class ApiHealthCheck implements ChecksExtensionHealth
             remediation: $failures === []
                 ? null
                 : (string) __('capell-api::health.route.remediation'),
+            id: 'legacy.api.v1.page.resolve.route',
         );
     }
 
@@ -82,6 +83,7 @@ final class ApiHealthCheck implements ChecksExtensionHealth
             remediation: $failures === []
                 ? null
                 : (string) __('capell-api::health.middleware.remediation'),
+            id: 'legacy.api.middleware.configuration',
         );
     }
 
@@ -98,6 +100,7 @@ final class ApiHealthCheck implements ChecksExtensionHealth
             remediation: $headersPresent
                 ? null
                 : (string) __('capell-api::health.headers.remediation'),
+            id: 'legacy.api.response.contract.headers',
         );
     }
 

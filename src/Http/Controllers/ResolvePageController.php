@@ -11,9 +11,9 @@ use Capell\Api\Data\PublicPagePayloadOptionsData;
 use Capell\Core\Actions\ResolvePublicPageByUrlAction;
 use Capell\Core\Models\Layout;
 use Capell\Core\Models\Page;
-use Carbon\CarbonInterface;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
+use LogicException;
 
 final class ResolvePageController
 {
@@ -59,13 +59,6 @@ final class ResolvePageController
         }
 
         $this->cacheTags = $context->cacheTags($resolution->page);
-        $etag = $this->representationEtag($resolution->fields, $resolution->page, $resolution->layout, $options);
-        $notModified = $this->json([])->setEtag($etag);
-
-        if ($notModified->isNotModified($request)) {
-            return $notModified;
-        }
-
         $data = BuildPublicPagePayloadAction::run(
             fields: $resolution->fields,
             options: $options,
@@ -74,7 +67,7 @@ final class ResolvePageController
             language: $context->resolvedLanguage(),
         );
 
-        return $this->jsonWithEtag(['data' => $data], $etag);
+        return $this->jsonWithEtag(['data' => $data], $request);
     }
 
     private function notFound(): JsonResponse
@@ -106,33 +99,22 @@ final class ResolvePageController
     /**
      * @param  array<string, mixed>  $payload
      */
-    private function jsonWithEtag(array $payload, string $etag): JsonResponse
+    private function jsonWithEtag(array $payload, Request $request): JsonResponse
     {
         $response = $this->json($payload);
         $responseContent = $response->getContent();
+        throw_unless(is_string($responseContent), LogicException::class, 'JSON responses must contain serialized content.');
         $configuredMaxResponseBytes = config('capell-api.public_pages.max_response_bytes', 1048576);
         $maxResponseBytes = max(1024, is_int($configuredMaxResponseBytes) ? $configuredMaxResponseBytes : 1048576);
 
-        if (is_string($responseContent) && strlen($responseContent) > $maxResponseBytes) {
+        if (strlen($responseContent) > $maxResponseBytes) {
             return $this->json(['message' => 'API response exceeds the configured byte limit.'], 413);
         }
 
-        return $response->setEtag($etag);
-    }
+        // Validate the bytes actually sent, including current public-output policy.
+        $response->setEtag(hash('sha256', $responseContent));
+        $response->isNotModified($request);
 
-    private function representationEtag(mixed $fields, mixed $page, mixed $layout, PublicPagePayloadOptionsData $options): string
-    {
-        $fieldValues = is_object($fields) && method_exists($fields, 'toArray') ? $fields->toArray() : [];
-
-        $pageUpdatedAt = data_get($page, 'updated_at');
-        $layoutUpdatedAt = data_get($layout, 'updated_at');
-
-        return hash('sha256', json_encode([
-            'fields' => $fieldValues,
-            'page_updated_at' => $pageUpdatedAt instanceof CarbonInterface ? $pageUpdatedAt->getTimestamp() : null,
-            'layout_updated_at' => $layoutUpdatedAt instanceof CarbonInterface ? $layoutUpdatedAt->getTimestamp() : null,
-            'options' => $options->toArray(),
-            'api_version' => self::API_VERSION,
-        ], JSON_THROW_ON_ERROR));
+        return $response;
     }
 }

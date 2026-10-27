@@ -92,21 +92,45 @@ Successful page responses include an `ETag` computed from the selected sanitized
 JSON payload. Send that value back with `If-None-Match` to avoid downloading an
 unchanged response body:
 
+Validators follow the emitted JSON bytes. A serializer or public-output policy repair therefore invalidates an older cached representation even when the stored page has not changed. Conditional requests still build the bounded public payload before checking the validator.
+
 ```http
 GET /api/capell/v1/pages/resolve?url=/terms
 If-None-Match: "previous-response-etag"
 ```
 
 When the payload still matches, the endpoint returns HTTP `304` with the same
-API version, cache tag, and ETag headers and no JSON body. Different field,
-include, or container selections produce a different ETag because the payload
-shape changes.
+API version, cache tag, and ETag headers and no JSON body. Field, include, or container selections that change the emitted payload produce a different ETag.
 
 ## Site Resolution
 
 Unsigned requests resolve the site from the request host/domain using Capell site domain records. This keeps the public API aligned with frontend multi-site boundaries.
 
-Explicit `site` or `language` selection is only accepted on a signed route URL. The signature fixes the selected `site` and `language`; consumers may still vary `url`, `fields`, `include`, and `containers`.
+Explicit `site` or `language` selection is only accepted on a signed route URL. The signature fixes the selected `site`, `language`, and page `url`. Consumers may vary only the projection parameters `fields`, `include`, and `containers` without invalidating it. Changing the page path, site, or language requires the server to issue a new signed URL; do not edit these values in an existing URL.
+
+Generate the canonical v1 URL in the trusted host application:
+
+```php
+use Illuminate\Support\Facades\URL;
+
+$signedUrl = URL::temporarySignedRoute(
+    'capell-api.v1.pages.resolve',
+    now()->addMinutes(15),
+    ['site' => $site->getKey(), 'language' => $language->getKey(), 'url' => '/terms'],
+);
+
+// The consumer may append projection options to this exact URL.
+$projectedUrl = $signedUrl . '&fields=url,title&include=layout&containers=main';
+
+// A different page needs a fresh signature from the trusted application.
+$secondPageUrl = URL::temporarySignedRoute(
+    'capell-api.v1.pages.resolve',
+    now()->addMinutes(15),
+    ['site' => $site->getKey(), 'language' => $language->getKey(), 'url' => '/privacy'],
+);
+```
+
+Keep the generated origin, path, expiry, and signature intact. Signing selects the request context; the endpoint still enforces its public publishing and access rules.
 
 ## Layout Builder Content
 
@@ -161,7 +185,7 @@ Use `include=layout.html` when a registered public layout widget payload resolve
 GET /api/capell/pages/resolve?url=/terms&include=layout.html
 ```
 
-HTML remains off unless `layout.html` is requested.
+The top-level `widgets[].html` field remains off unless `layout.html` is requested. Package-contributed widget data can contain sanitised public HTML, such as Content Sections’ `sections[].summary` and `sections[].html`. Section payloads expose their public blueprint key and content; server-side Blade component names are omitted.
 
 ## Sanitization
 
