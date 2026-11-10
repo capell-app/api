@@ -6,7 +6,7 @@
     "kind": "package",
     "capellApiVersion": "^1.0",
     "version": "1.0.0",
-    "description": "Versioned public JSON endpoints for published Capell pages and Layout Builder graphs, with sanitized output for headless consumers.",
+    "description": "Supported v1 content API with cursor-paginated pages, collections, preview tokens and signed revalidation webhooks.",
     "product": {
         "group": "Capell Publishing",
         "tier": "free",
@@ -32,7 +32,13 @@
             "class": "Capell\\Api\\Manifest\\ApiRoutesContribution",
             "routes": [
                 "capell-api.pages.resolve",
-                "capell-api.v1.pages.resolve"
+                "capell-api.v1.pages.resolve",
+                "capell-api.v1.pages",
+                "capell-api.v1.resolve",
+                "capell-api.v1.collections",
+                "capell-api.v1.search",
+                "capell-api.v1.navigation",
+                "capell-api.v1.media"
             ],
             "prefix": "api",
             "middleware": ["api", "throttle:capell-api"],
@@ -46,7 +52,7 @@
                     "version": "v1",
                     "auth": "public",
                     "readOnly": true,
-                    "canonical": true,
+                    "canonical": false,
                     "signedContextParameters": ["site", "language"],
                     "publicSafety": [
                         "sanitized-html",
@@ -65,6 +71,108 @@
                     "readOnly": true,
                     "canonical": false,
                     "compatibility": "legacy",
+                    "signedContextParameters": ["site", "language"],
+                    "publicSafety": [
+                        "sanitized-html",
+                        "no-authoring-surface",
+                        "no-secrets"
+                    ]
+                },
+                {
+                    "type": "public-api-endpoint",
+                    "name": "headless-v1-pages",
+                    "routeName": "capell-api.v1.pages",
+                    "method": "GET",
+                    "path": "/api/v1/pages",
+                    "version": "v1",
+                    "auth": "public",
+                    "readOnly": true,
+                    "canonical": true,
+                    "signedContextParameters": ["site", "language"],
+                    "publicSafety": [
+                        "sanitized-html",
+                        "no-authoring-surface",
+                        "no-secrets"
+                    ]
+                },
+                {
+                    "type": "public-api-endpoint",
+                    "name": "headless-v1-resolve",
+                    "routeName": "capell-api.v1.resolve",
+                    "method": "GET",
+                    "path": "/api/v1/pages/resolve",
+                    "version": "v1",
+                    "auth": "public",
+                    "readOnly": true,
+                    "canonical": true,
+                    "signedContextParameters": ["site", "language"],
+                    "publicSafety": [
+                        "sanitized-html",
+                        "no-authoring-surface",
+                        "no-secrets"
+                    ]
+                },
+                {
+                    "type": "public-api-endpoint",
+                    "name": "headless-v1-collections",
+                    "routeName": "capell-api.v1.collections",
+                    "method": "GET",
+                    "path": "/api/v1/collections/{type}",
+                    "version": "v1",
+                    "auth": "public",
+                    "readOnly": true,
+                    "canonical": true,
+                    "signedContextParameters": ["site", "language"],
+                    "publicSafety": [
+                        "sanitized-html",
+                        "no-authoring-surface",
+                        "no-secrets"
+                    ]
+                },
+                {
+                    "type": "public-api-endpoint",
+                    "name": "headless-v1-search",
+                    "routeName": "capell-api.v1.search",
+                    "method": "GET",
+                    "path": "/api/v1/search",
+                    "version": "v1",
+                    "auth": "public",
+                    "readOnly": true,
+                    "canonical": true,
+                    "signedContextParameters": ["site", "language"],
+                    "publicSafety": [
+                        "sanitized-html",
+                        "no-authoring-surface",
+                        "no-secrets"
+                    ]
+                },
+                {
+                    "type": "public-api-endpoint",
+                    "name": "headless-v1-navigation",
+                    "routeName": "capell-api.v1.navigation",
+                    "method": "GET",
+                    "path": "/api/v1/navigation",
+                    "version": "v1",
+                    "auth": "public",
+                    "readOnly": true,
+                    "canonical": true,
+                    "signedContextParameters": ["site", "language"],
+                    "publicSafety": [
+                        "sanitized-html",
+                        "no-authoring-surface",
+                        "no-secrets"
+                    ]
+                },
+                {
+                    "type": "public-api-endpoint",
+                    "name": "headless-v1-media",
+                    "routeName": "capell-api.v1.media",
+                    "method": "GET",
+                    "path": "/api/v1/media",
+                    "version": "v1",
+                    "auth": "public",
+                    "readOnly": true,
+                    "canonical": true,
                     "signedContextParameters": ["site", "language"],
                     "publicSafety": [
                         "sanitized-html",
@@ -92,13 +200,25 @@
     },
     "settings": [],
     "permissions": [],
-    "capabilities": ["public-page-api", "public-page-api-v1"],
+    "capabilities": [
+        "public-page-api",
+        "public-page-api-v1",
+        "cursor-pagination",
+        "token-preview",
+        "revalidation-webhooks"
+    ],
     "security": {
         "riskTier": "critical",
         "publicSurface": {
             "routeNames": [
-                "capell-api.pages.resolve",
-                "capell-api.v1.pages.resolve"
+                "GET /api/capell/pages/resolve (capell-api.pages.resolve)",
+                "GET /api/capell/v1/pages/resolve (capell-api.v1.pages.resolve)",
+                "GET /api/v1/collections/{type} (capell-api.v1.collections)",
+                "GET /api/v1/media (capell-api.v1.media)",
+                "GET /api/v1/navigation (capell-api.v1.navigation)",
+                "GET /api/v1/pages (capell-api.v1.pages)",
+                "GET /api/v1/pages/resolve (capell-api.v1.resolve)",
+                "GET /api/v1/search (capell-api.v1.search)"
             ],
             "auth": "public",
             "csrfExemptRoutes": [],
@@ -106,8 +226,14 @@
             "tokenizedRoutes": [],
             "webhookRoutes": [],
             "throttledRoutes": [
-                "capell-api.pages.resolve",
-                "capell-api.v1.pages.resolve"
+                "GET /api/capell/pages/resolve (capell-api.pages.resolve)",
+                "GET /api/capell/v1/pages/resolve (capell-api.v1.pages.resolve)",
+                "GET /api/v1/collections/{type} (capell-api.v1.collections)",
+                "GET /api/v1/media (capell-api.v1.media)",
+                "GET /api/v1/navigation (capell-api.v1.navigation)",
+                "GET /api/v1/pages (capell-api.v1.pages)",
+                "GET /api/v1/pages/resolve (capell-api.v1.resolve)",
+                "GET /api/v1/search (capell-api.v1.search)"
             ]
         },
         "sensitiveData": {
@@ -123,9 +249,9 @@
             "forbidPublicBladeQueries": true
         },
         "externalHttpClients": {
-            "requiresTimeouts": false,
-            "requiresSecretRedaction": false,
-            "clients": []
+            "requiresTimeouts": true,
+            "requiresSecretRedaction": true,
+            "clients": ["Capell\\Api\\Jobs\\DeliverRevalidationWebhookJob"]
         },
         "adminSurface": {
             "authorization": "none",
@@ -140,7 +266,20 @@
             "cacheable": false,
             "variesBy": ["site", "locale"],
             "sensitiveOutput": false,
-            "invalidationSources": [],
+            "invalidationSources": [
+                {
+                    "model": "Capell\\Core\\Models\\Page",
+                    "events": ["saved", "deleted"]
+                },
+                {
+                    "model": "Capell\\Core\\Models\\PageUrl",
+                    "events": ["saved", "deleted"]
+                },
+                {
+                    "model": "Capell\\Core\\Models\\Site",
+                    "events": ["saved", "deleted"]
+                }
+            ],
             "queueInvalidation": true
         }
     },
@@ -160,8 +299,34 @@
         "privateDocsRequested": false
     },
     "marketplace": {
-        "summary": "Versioned public JSON endpoints for published Capell pages and layout graphs, with sanitized output for headless consumers.",
+        "summary": "Supported v1 content API with cursor-paginated pages, collections, preview tokens and signed revalidation webhooks.",
+        "problem": "Our headless frontend cannot retrieve published pages without a custom integration.",
+        "outcome": "A separate frontend can consume published page content without receiving draft or authoring state.",
+        "faq": [
+            {
+                "question": "What content can a headless client retrieve?",
+                "answer": "Resolve and list published pages, filter collections by page type, search titles and retrieve a paginated page directory and public content images through the supported v1 API."
+            },
+            {
+                "question": "Are draft pages included in responses?",
+                "answer": "Public reads exclude drafts. Server-side Sanctum tokens with explicit preview and site abilities can request sanitised preview content."
+            },
+            {
+                "question": "Can clients use it to edit pages?",
+                "answer": "The declared endpoints are public and read-only."
+            }
+        ],
         "screenshots": [
+            {
+                "path": "docs/assets/marketplace/listing-page-resolve-success-json.png",
+                "alt": "JSON response returned for a published page",
+                "caption": "JSON response returned for a published page"
+            },
+            {
+                "path": "docs/assets/marketplace/listing-page-resolve-layout-json.png",
+                "alt": "JSON response describing a page layout and the areas it contains",
+                "caption": "JSON response describing a page layout and the areas it contains"
+            },
             {
                 "path": "docs/assets/marketplace/extension-card.jpg",
                 "alt": "API extension preview image",

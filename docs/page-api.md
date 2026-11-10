@@ -1,3 +1,7 @@
+# Legacy page resolver compatibility
+
+For new integrations use the [supported headless v1 API](headless.md). The endpoints below retain their legacy projection and layout options; they are deprecated without a removal date.
+
 # Page API
 
 Capell API adds a public, read-only page resolver endpoint:
@@ -10,7 +14,7 @@ The versioned route name is `capell-api.v1.pages.resolve`. The legacy route
 `/api/capell/pages/resolve` remains available as `capell-api.pages.resolve`.
 Both routes are declared in `capell.json` as public, read-only API endpoints
 under the package route contribution. Marketplace and install tooling should
-treat the v1 route as canonical and the legacy route as compatibility only.
+treat both routes below as compatibility aliases; new integrations use `/api/v1`.
 
 The machine-readable contract is maintained in [`openapi.yaml`](openapi.yaml).
 Keep that document aligned with `capell.json`, this guide, and the controller

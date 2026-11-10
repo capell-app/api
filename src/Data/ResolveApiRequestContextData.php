@@ -7,6 +7,7 @@ namespace Capell\Api\Data;
 use Capell\Core\Contracts\Pageable;
 use Capell\Core\Models\Language;
 use Capell\Core\Models\Site;
+use Capell\Core\Models\SiteDomain;
 use LogicException;
 use Spatie\LaravelData\Data;
 
@@ -23,15 +24,17 @@ final class ResolveApiRequestContextData extends Data
         public ?Site $site = null,
         public ?Language $language = null,
         public string $urlPath = '/',
+        public ?SiteDomain $siteDomain = null,
     ) {}
 
-    public static function ok(Site $site, Language $language, string $urlPath): self
+    public static function ok(Site $site, Language $language, string $urlPath, ?SiteDomain $siteDomain = null): self
     {
         return new self(
             status: self::STATUS_OK,
             site: $site,
             language: $language,
             urlPath: $urlPath,
+            siteDomain: $siteDomain,
         );
     }
 

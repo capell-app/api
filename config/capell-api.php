@@ -15,6 +15,10 @@ return [
     */
     'middleware' => ['api'],
 
+    // Endpoint keys are stable queue references. Secrets never enter job payloads.
+    // 'frontend' => ['site_id' => 1, 'url' => 'https://frontend.example/revalidate', 'secret' => env('CAPELL_API_WEBHOOK_SECRET')],
+    'webhooks' => ['queue' => 'default', 'endpoints' => []],
+
     'public_pages' => [
         'auth_middleware' => null,
         'rate_limit_middleware' => 'throttle:capell-api',
@@ -22,7 +26,10 @@ return [
         'max_candidate_sites' => 50,
         'max_layout_containers' => 12,
         'max_widgets_per_container' => 50,
+        // Sanitised resources actually returned, including the response envelope.
         'max_response_bytes' => 1048576,
+        // Raw source processed for a returned page; never below max_response_bytes.
+        'max_source_bytes' => 8388608,
         'middleware' => [],
     ],
 ];

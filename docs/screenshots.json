@@ -7,7 +7,7 @@
     "entries": [
         {
             "id": "page-resolve-success-json",
-            "title": "Native successful page resolve JSON response.",
+            "title": "JSON response returned for a published page.",
             "package": "api",
             "surface": "frontend",
             "targetType": "frontend-route",
@@ -40,7 +40,7 @@
         },
         {
             "id": "page-resolve-layout-json",
-            "title": "Native bounded page layout JSON response.",
+            "title": "JSON response describing a page layout and the areas it contains.",
             "package": "api",
             "surface": "frontend",
             "targetType": "frontend-route",

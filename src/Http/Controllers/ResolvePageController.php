@@ -7,10 +7,16 @@ namespace Capell\Api\Http\Controllers;
 use Capell\Api\Actions\BuildPublicPagePayloadAction;
 use Capell\Api\Actions\ResolveApiRequestContextAction;
 use Capell\Api\Actions\ValidatePublicLayoutPayloadBoundsAction;
+use Capell\Api\Data\LegacyPageResponseData;
 use Capell\Api\Data\PublicPagePayloadOptionsData;
+use Capell\Api\Data\V1\ErrorData;
+use Capell\Api\Support\ApiLimits;
+use Capell\Core\Actions\PublicRead\PageUrlIsPubliclyReadableAction;
 use Capell\Core\Actions\ResolvePublicPageByUrlAction;
 use Capell\Core\Models\Layout;
 use Capell\Core\Models\Page;
+use Capell\Core\Models\PageUrl;
+use Capell\Core\Support\PublicRead\PublicReadProjectionHeaders;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use LogicException;
@@ -44,6 +50,14 @@ final class ResolvePageController
             return $this->notFound();
         }
 
+        $pageUrl = $resolution->page?->getRelation('pageUrl');
+        if ($pageUrl instanceof PageUrl && $context->siteDomain !== null) {
+            $pageUrl->setRelation('siteDomain', $context->siteDomain);
+        }
+        if (! $pageUrl instanceof PageUrl || ! PageUrlIsPubliclyReadableAction::run($pageUrl)) {
+            return $this->notFound();
+        }
+
         $options = PublicPagePayloadOptionsData::fromRequest($request);
 
         if ($options->shouldIncludeLayout() && $resolution->layout instanceof Layout && $resolution->page instanceof Page && $options->requestsUnboundedLayoutHtml()) {
@@ -56,6 +70,10 @@ final class ResolvePageController
             if (is_string($boundsError)) {
                 return $this->badRequest($boundsError);
             }
+        }
+
+        if (ApiLimits::sourceExceeded($resolution->fields)) {
+            return $this->json(['message' => 'API response exceeds the configured byte limit.'], 413);
         }
 
         $this->cacheTags = $context->cacheTags($resolution->page);
@@ -90,10 +108,25 @@ final class ResolvePageController
      */
     private function json(array $payload, int $status = 200): JsonResponse
     {
-        return response()
-            ->json($payload, $status)
+        $body = isset($payload['data']) && is_array($payload['data'])
+            ? new LegacyPageResponseData($payload['data'])
+            : new ErrorData(is_string($payload['message'] ?? null) ? $payload['message'] : '');
+        $response = response()
+            ->json($body->toArray(), $status)
+            ->header('Cache-Control', $status === 200 ? PublicReadProjectionHeaders::cacheControl() : 'private, no-store')
+            ->header('Deprecation', '@1793923200')
+            ->header('Link', '</api/v1/pages/resolve>; rel="successor-version"')
             ->header('X-Capell-Api-Version', self::API_VERSION)
             ->header('X-Capell-Cache-Tags', implode(',', $this->cacheTags));
+        if ($status === 200) {
+            $keys = array_map(static fn (string $tag): string => str_replace(':', '-', $tag), array_values(array_filter(
+                $this->cacheTags,
+                static fn (string $tag): bool => str_starts_with($tag, 'site:') || str_starts_with($tag, 'page:'),
+            )));
+            $response->header('Surrogate-Key', implode(' ', $keys))->header('Cache-Tag', implode(',', $keys));
+        }
+
+        return $response;
     }
 
     /**
@@ -104,16 +137,15 @@ final class ResolvePageController
         $response = $this->json($payload);
         $responseContent = $response->getContent();
         throw_unless(is_string($responseContent), LogicException::class, 'JSON responses must contain serialized content.');
-        $configuredMaxResponseBytes = config('capell-api.public_pages.max_response_bytes', 1048576);
-        $maxResponseBytes = max(1024, is_int($configuredMaxResponseBytes) ? $configuredMaxResponseBytes : 1048576);
 
-        if (strlen($responseContent) > $maxResponseBytes) {
+        if (strlen($responseContent) > ApiLimits::responseBytes()) {
             return $this->json(['message' => 'API response exceeds the configured byte limit.'], 413);
         }
 
         // Validate the bytes actually sent, including current public-output policy.
-        $response->setEtag(hash('sha256', $responseContent));
-        $response->isNotModified($request);
+        if (! $request->hasHeader('Authorization')) {
+            PublicReadProjectionHeaders::apply($response, $request, $responseContent);
+        }
 
         return $response;
     }

@@ -1,14 +1,17 @@
 {
     "whatThisPluginAdds": {
-        "text": "API adds versioned public JSON endpoints for resolving published Capell pages and bounded Layout Builder graphs.",
+        "text": "API provides a supported v1 content API, typed TypeScript SDK and Next.js example, with cursor-paginated pages and collections, token-scoped previews and signed revalidation webhooks.",
         "evidence": [
             "capell.json",
             "routes/api.php",
-            "src/Http/Controllers/ResolvePageController.php"
+            "src/Http/Controllers/ResolvePageController.php",
+            "docs/v1-contract.md",
+            "sdk/src/index.ts",
+            "examples/nextjs/README.md"
         ]
     },
     "surfaceOutcome": {
-        "text": "The package adds no admin screen. Headless clients can resolve a published page and request its sanitized public layout payload through the documented API routes.",
+        "text": "Headless clients can read published pages, filter collections, search titles and load a page directory and content images. Preview tokens remain on the server. There is no editing endpoint.",
         "evidence": [
             "docs/screenshots.json",
             "tests/Feature/Http/ResolvePageControllerTest.php",

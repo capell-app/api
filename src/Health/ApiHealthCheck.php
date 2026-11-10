@@ -13,6 +13,7 @@ use Illuminate\Http\Request;
 use Illuminate\Routing\Route as LaravelRoute;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Route;
+use Override;
 use Symfony\Component\HttpFoundation\Response;
 use Throwable;
 
@@ -28,6 +29,7 @@ final class ApiHealthCheck implements ChecksExtensionHealth
 
     private const string API_VERSION = 'v1';
 
+    #[Override]
     public static function compatibleCapellApiVersion(): string
     {
         return '^1.0';
@@ -44,6 +46,7 @@ final class ApiHealthCheck implements ChecksExtensionHealth
             $check->v1RouteCheck(),
             $check->middlewareConfigurationCheck(),
             $check->responseHeadersCheck(),
+            $check->webhookConfigurationCheck(),
         ]);
     }
 
@@ -51,6 +54,31 @@ final class ApiHealthCheck implements ChecksExtensionHealth
     {
         return self::runDiagnostics()
             ->every(static fn (DoctorCheckResultData $result): bool => $result->passed);
+    }
+
+    public function webhookConfigurationCheck(): DoctorCheckResultData
+    {
+        $endpoints = config('capell-api.webhooks.endpoints', []);
+        $configuredConnection = config('queue.default');
+        $connection = is_string($configuredConnection) ? $configuredConnection : 'sync';
+        $passed = is_array($endpoints) && ($endpoints === []
+            || config('queue.connections.' . $connection . '.driver') !== 'sync');
+        if (is_array($endpoints)) {
+            foreach ($endpoints as $key => $endpoint) {
+                $passed = $passed && is_string($key) && is_array($endpoint)
+                    && is_int($endpoint['site_id'] ?? null) && $endpoint['site_id'] > 0
+                    && is_string($endpoint['url'] ?? null) && str_starts_with($endpoint['url'], 'https://')
+                    && is_string($endpoint['secret'] ?? null) && strlen($endpoint['secret']) >= 32;
+            }
+        }
+
+        return new DoctorCheckResultData(
+            label: (string) __('capell-api::api.webhook_health_label'),
+            passed: $passed,
+            message: (string) ($passed ? __('capell-api::api.webhook_health_passed') : __('capell-api::api.webhook_health_failed')),
+            remediation: $passed ? null : (string) __('capell-api::api.webhook_health_remediation'),
+            id: 'api.webhook.configuration',
+        );
     }
 
     public function v1RouteCheck(): DoctorCheckResultData

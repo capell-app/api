@@ -1,0 +1,28 @@
+{
+    "name": "@capell/sdk",
+    "version": "1.0.0",
+    "private": true,
+    "type": "module",
+    "description": "Typed client for the supported Capell v1 content API",
+    "exports": {
+        ".": {
+            "types": "./dist/index.d.ts",
+            "import": "./dist/index.js"
+        }
+    },
+    "files": [
+        "dist",
+        "README.md"
+    ],
+    "scripts": {
+        "build": "tsc",
+        "test": "node --test tests/*.test.mjs",
+        "check": "tsc --noEmit"
+    },
+    "devDependencies": {
+        "typescript": "~5.9.3"
+    },
+    "engines": {
+        "node": ">=22.18"
+    }
+}

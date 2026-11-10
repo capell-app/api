@@ -1,8 +1,13 @@
 # API Docs
 
-Public JSON delivery of published Capell page data.
+Supported v1 headless content delivery with a typed SDK and Next.js example.
 
 Start at the [package README](../README.md) when deciding whether to install this package. Use the docs below for setup, extension, debugging, and verification details.
+
+- [Headless setup and webhooks](headless.md)
+- [v1 contract](v1-contract.md)
+- [TypeScript SDK](../sdk/README.md)
+- [Next.js example](../examples/nextjs/README.md)
 
 ## Guides
 

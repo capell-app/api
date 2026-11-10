@@ -4,10 +4,17 @@ declare(strict_types=1);
 
 namespace Capell\Api\Providers;
 
+use Capell\Api\Actions\V1\QueueRevalidationWebhooksAction;
+use Capell\Api\Listeners\QueuePageRevalidation;
+use Capell\Core\Events\PageDeleted;
+use Capell\Core\Events\PageSaved;
+use Capell\Core\Events\PageUrlChanged;
 use Capell\Core\Support\Packages\AbstractPackageServiceProvider;
+use Capell\Core\Support\PublicRead\PublicReadWithdrawalSteps;
 use Illuminate\Cache\RateLimiting\Limit;
 use Illuminate\Http\Request;
 use Illuminate\Routing\Router;
+use Illuminate\Support\Facades\Event;
 use Illuminate\Support\Facades\RateLimiter;
 use Override;
 use ReflectionProperty;
@@ -55,6 +62,19 @@ final class ApiServiceProvider extends AbstractPackageServiceProvider
     {
         $this->registerRoutes();
         $this->registerRateLimiter();
+        $this->registerRevalidation();
+    }
+
+    private function registerRevalidation(): void
+    {
+        Event::listen(PageUrlChanged::class, static function (PageUrlChanged $event): void {
+            QueueRevalidationWebhooksAction::run('page.url_changed', $event->site_id);
+        });
+        Event::listen(PageSaved::class, [QueuePageRevalidation::class, 'handle']);
+        Event::listen(PageDeleted::class, [QueuePageRevalidation::class, 'handle']);
+        $this->app->make(PublicReadWithdrawalSteps::class)->register('api.headless', static function (?int $siteId): void {
+            QueueRevalidationWebhooksAction::run('site.eligibility_changed', $siteId);
+        });
     }
 
     private function registerRoutes(): void

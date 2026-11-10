@@ -1,11 +1,11 @@
 openapi: 3.1.0
 info:
-  title: Capell Public Page API
+  title: 'Capell Public Page API'
   version: v1
-  summary: Versioned public JSON endpoints for published Capell pages and Layout Builder graphs.
-  description: Public, read-only page resolution for headless consumers. Returned HTML is sanitized and authoring surfaces are forbidden.
+  summary: 'Supported v1 headless content API, with scoped preview and signed revalidation webhooks.'
+  description: 'Public, read-only page resolution for headless consumers. Returned HTML is sanitized and authoring surfaces are forbidden.'
 servers:
-  - url: https://{host}
+  - url: 'https://{host}'
     variables:
       host:
         default: example.com
@@ -13,10 +13,10 @@ paths:
   /api/capell/v1/pages/resolve:
     get:
       operationId: resolvePublicPageV1
-      summary: Resolve a published Capell page by URL.
-      description: Canonical v1 endpoint for public page JSON delivery.
+      summary: 'Resolve a published Capell page by URL.'
+      description: 'Compatibility endpoint; migrate new clients to /api/v1/pages/resolve. No removal date is set.'
       tags:
-        - Public Pages
+        - 'Public Pages'
       parameters:
         - $ref: '#/components/parameters/Url'
         - $ref: '#/components/parameters/Site'
@@ -25,23 +25,24 @@ paths:
         - $ref: '#/components/parameters/Include'
         - $ref: '#/components/parameters/Containers'
       responses:
-        '200':
+        200:
           $ref: '#/components/responses/PageResolved'
-        '304':
+        304:
           $ref: '#/components/responses/NotModified'
-        '403':
+        403:
           $ref: '#/components/responses/Forbidden'
-        '404':
+        404:
           $ref: '#/components/responses/PageNotFound'
-        '422':
+        422:
           $ref: '#/components/responses/InvalidLayoutHtmlRequest'
+      deprecated: true
   /api/capell/pages/resolve:
     get:
       operationId: resolvePublicPageLegacy
-      summary: Resolve a published Capell page by URL through the legacy compatibility path.
-      description: Compatibility alias for the canonical v1 endpoint. New consumers should use `/api/capell/v1/pages/resolve`.
+      summary: 'Resolve a published Capell page by URL through the legacy compatibility path.'
+      description: 'Compatibility endpoint; migrate new clients to /api/v1/pages/resolve. No removal date is set.'
       tags:
-        - Public Pages
+        - 'Public Pages'
       parameters:
         - $ref: '#/components/parameters/Url'
         - $ref: '#/components/parameters/Site'
@@ -50,16 +51,541 @@ paths:
         - $ref: '#/components/parameters/Include'
         - $ref: '#/components/parameters/Containers'
       responses:
-        '200':
+        200:
           $ref: '#/components/responses/PageResolved'
-        '304':
+        304:
           $ref: '#/components/responses/NotModified'
-        '403':
+        403:
           $ref: '#/components/responses/Forbidden'
-        '404':
+        404:
           $ref: '#/components/responses/PageNotFound'
-        '422':
+        422:
           $ref: '#/components/responses/InvalidLayoutHtmlRequest'
+      deprecated: true
+  /api/v1/pages:
+    get:
+      operationId: headlessV1Pages
+      summary: 'Supported v1 pages'
+      security:
+        - {}
+        - PreviewBearer: []
+      parameters:
+        - $ref: '#/components/parameters/Url'
+        - $ref: '#/components/parameters/Site'
+        - $ref: '#/components/parameters/Language'
+        - name: preview
+          in: query
+          schema:
+            type: string
+            enum:
+              - '0'
+              - '1'
+          description: 'Preview requires a personal Sanctum token with api:preview and api:preview:site:{site-id}.'
+        - name: limit
+          in: query
+          schema:
+            type: integer
+            minimum: 1
+            maximum: 100
+            default: 20
+        - name: cursor
+          in: query
+          schema:
+            type: string
+            maxLength: 2048
+        - name: 'filter[type]'
+          in: query
+          schema:
+            type: string
+            maxLength: 100
+        - name: 'filter[path]'
+          in: query
+          schema:
+            type: string
+            maxLength: 1024
+      responses:
+        200:
+          description: 'Safe content representation.'
+          headers:
+            Cache-Control:
+              schema:
+                type: string
+              description: 'public, no-cache; preview and bearer requests private, no-store.'
+            Surrogate-Key:
+              schema:
+                type: string
+              description: 'html-cache site-{id} purge key.'
+            Cache-Tag:
+              schema:
+                type: string
+            ETag:
+              $ref: '#/components/headers/ETag'
+          content:
+            application/json:
+              schema:
+                type: object
+                required:
+                  - data
+                  - meta
+                properties:
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/ContentPage'
+                  meta:
+                    type: object
+                    required:
+                      - next_cursor
+                    properties:
+                      next_cursor:
+                        type:
+                          - string
+                          - 'null'
+        304:
+          $ref: '#/components/responses/NotModified'
+        403:
+          $ref: '#/components/responses/Forbidden'
+        404:
+          $ref: '#/components/responses/PageNotFound'
+        422:
+          description: 'Invalid query or expired/context-mismatched cursor.'
+        429:
+          description: 'Rate limit exceeded.'
+        503:
+          description: 'Eligibility unavailable; retry later.'
+  /api/v1/pages/resolve:
+    get:
+      operationId: headlessV1Resolve
+      summary: 'Supported v1 resolve'
+      security:
+        - {}
+        - PreviewBearer: []
+      parameters:
+        - $ref: '#/components/parameters/Url'
+        - $ref: '#/components/parameters/Site'
+        - $ref: '#/components/parameters/Language'
+        - name: preview
+          in: query
+          schema:
+            type: string
+            enum:
+              - '0'
+              - '1'
+          description: 'Preview requires a personal Sanctum token with api:preview and api:preview:site:{site-id}.'
+      responses:
+        200:
+          description: 'Safe content representation.'
+          headers:
+            Cache-Control:
+              schema:
+                type: string
+              description: 'public, no-cache; preview and bearer requests private, no-store.'
+            Surrogate-Key:
+              schema:
+                type: string
+              description: 'html-cache site-{id} purge key.'
+            Cache-Tag:
+              schema:
+                type: string
+            ETag:
+              $ref: '#/components/headers/ETag'
+          content:
+            application/json:
+              schema:
+                type: object
+                required:
+                  - data
+                properties:
+                  data:
+                    $ref: '#/components/schemas/ContentPage'
+        304:
+          $ref: '#/components/responses/NotModified'
+        403:
+          $ref: '#/components/responses/Forbidden'
+        404:
+          $ref: '#/components/responses/PageNotFound'
+        422:
+          description: 'Invalid query or expired/context-mismatched cursor.'
+        429:
+          description: 'Rate limit exceeded.'
+        503:
+          description: 'Eligibility unavailable; retry later.'
+  '/api/v1/collections/{type}':
+    get:
+      operationId: headlessV1Collections
+      summary: 'Supported v1 collections'
+      security:
+        - {}
+        - PreviewBearer: []
+      parameters:
+        - $ref: '#/components/parameters/Url'
+        - $ref: '#/components/parameters/Site'
+        - $ref: '#/components/parameters/Language'
+        - name: preview
+          in: query
+          schema:
+            type: string
+            enum:
+              - '0'
+              - '1'
+          description: 'Preview requires a personal Sanctum token with api:preview and api:preview:site:{site-id}.'
+        - name: limit
+          in: query
+          schema:
+            type: integer
+            minimum: 1
+            maximum: 100
+            default: 20
+        - name: cursor
+          in: query
+          schema:
+            type: string
+            maxLength: 2048
+        - name: 'filter[type]'
+          in: query
+          schema:
+            type: string
+            maxLength: 100
+        - name: 'filter[path]'
+          in: query
+          schema:
+            type: string
+            maxLength: 1024
+        - name: type
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        200:
+          description: 'Safe content representation.'
+          headers:
+            Cache-Control:
+              schema:
+                type: string
+              description: 'public, no-cache; preview and bearer requests private, no-store.'
+            Surrogate-Key:
+              schema:
+                type: string
+              description: 'html-cache site-{id} purge key.'
+            Cache-Tag:
+              schema:
+                type: string
+            ETag:
+              $ref: '#/components/headers/ETag'
+          content:
+            application/json:
+              schema:
+                type: object
+                required:
+                  - data
+                  - meta
+                properties:
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/ContentPage'
+                  meta:
+                    type: object
+                    required:
+                      - next_cursor
+                    properties:
+                      next_cursor:
+                        type:
+                          - string
+                          - 'null'
+        304:
+          $ref: '#/components/responses/NotModified'
+        403:
+          $ref: '#/components/responses/Forbidden'
+        404:
+          $ref: '#/components/responses/PageNotFound'
+        422:
+          description: 'Invalid query or expired/context-mismatched cursor.'
+        429:
+          description: 'Rate limit exceeded.'
+        503:
+          description: 'Eligibility unavailable; retry later.'
+  /api/v1/search:
+    get:
+      operationId: headlessV1Search
+      summary: 'Supported v1 search'
+      security:
+        - {}
+        - PreviewBearer: []
+      parameters:
+        - $ref: '#/components/parameters/Url'
+        - $ref: '#/components/parameters/Site'
+        - $ref: '#/components/parameters/Language'
+        - name: preview
+          in: query
+          schema:
+            type: string
+            enum:
+              - '0'
+              - '1'
+          description: 'Preview requires a personal Sanctum token with api:preview and api:preview:site:{site-id}.'
+        - name: limit
+          in: query
+          schema:
+            type: integer
+            minimum: 1
+            maximum: 100
+            default: 20
+        - name: cursor
+          in: query
+          schema:
+            type: string
+            maxLength: 2048
+        - name: 'filter[type]'
+          in: query
+          schema:
+            type: string
+            maxLength: 100
+        - name: 'filter[path]'
+          in: query
+          schema:
+            type: string
+            maxLength: 1024
+        - name: q
+          in: query
+          required: true
+          schema:
+            type: string
+            minLength: 1
+            maxLength: 200
+      responses:
+        200:
+          description: 'Safe content representation.'
+          headers:
+            Cache-Control:
+              schema:
+                type: string
+              description: 'public, no-cache; preview and bearer requests private, no-store.'
+            Surrogate-Key:
+              schema:
+                type: string
+              description: 'html-cache site-{id} purge key.'
+            Cache-Tag:
+              schema:
+                type: string
+            ETag:
+              $ref: '#/components/headers/ETag'
+          content:
+            application/json:
+              schema:
+                type: object
+                required:
+                  - data
+                  - meta
+                properties:
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/ContentPage'
+                  meta:
+                    type: object
+                    required:
+                      - next_cursor
+                    properties:
+                      next_cursor:
+                        type:
+                          - string
+                          - 'null'
+        304:
+          $ref: '#/components/responses/NotModified'
+        403:
+          $ref: '#/components/responses/Forbidden'
+        404:
+          $ref: '#/components/responses/PageNotFound'
+        422:
+          description: 'Invalid query or expired/context-mismatched cursor.'
+        429:
+          description: 'Rate limit exceeded.'
+        503:
+          description: 'Eligibility unavailable; retry later.'
+  /api/v1/navigation:
+    get:
+      operationId: headlessV1Navigation
+      summary: 'Supported v1 navigation'
+      security:
+        - {}
+        - PreviewBearer: []
+      parameters:
+        - $ref: '#/components/parameters/Url'
+        - $ref: '#/components/parameters/Site'
+        - $ref: '#/components/parameters/Language'
+        - name: preview
+          in: query
+          schema:
+            type: string
+            enum:
+              - '0'
+              - '1'
+          description: 'Preview requires a personal Sanctum token with api:preview and api:preview:site:{site-id}.'
+        - name: limit
+          in: query
+          schema:
+            type: integer
+            minimum: 1
+            maximum: 100
+            default: 20
+        - name: cursor
+          in: query
+          schema:
+            type: string
+            maxLength: 2048
+        - name: 'filter[type]'
+          in: query
+          schema:
+            type: string
+            maxLength: 100
+        - name: 'filter[path]'
+          in: query
+          schema:
+            type: string
+            maxLength: 1024
+      responses:
+        200:
+          description: 'Safe content representation.'
+          headers:
+            Cache-Control:
+              schema:
+                type: string
+              description: 'public, no-cache; preview and bearer requests private, no-store.'
+            Surrogate-Key:
+              schema:
+                type: string
+              description: 'html-cache site-{id} purge key.'
+            Cache-Tag:
+              schema:
+                type: string
+            ETag:
+              $ref: '#/components/headers/ETag'
+          content:
+            application/json:
+              schema:
+                type: object
+                required:
+                  - data
+                  - meta
+                properties:
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/NavigationLink'
+                  meta:
+                    type: object
+                    required:
+                      - next_cursor
+                    properties:
+                      next_cursor:
+                        type:
+                          - string
+                          - 'null'
+        304:
+          $ref: '#/components/responses/NotModified'
+        403:
+          $ref: '#/components/responses/Forbidden'
+        404:
+          $ref: '#/components/responses/PageNotFound'
+        422:
+          description: 'Invalid query or expired/context-mismatched cursor.'
+        429:
+          description: 'Rate limit exceeded.'
+        503:
+          description: 'Eligibility unavailable; retry later.'
+  /api/v1/media:
+    get:
+      operationId: headlessV1Media
+      summary: 'Supported v1 media'
+      security:
+        - {}
+        - PreviewBearer: []
+      parameters:
+        - $ref: '#/components/parameters/Url'
+        - $ref: '#/components/parameters/Site'
+        - $ref: '#/components/parameters/Language'
+        - name: preview
+          in: query
+          schema:
+            type: string
+            enum:
+              - '0'
+              - '1'
+          description: 'Preview requires a personal Sanctum token with api:preview and api:preview:site:{site-id}.'
+        - name: limit
+          in: query
+          schema:
+            type: integer
+            minimum: 1
+            maximum: 100
+            default: 20
+        - name: cursor
+          in: query
+          schema:
+            type: string
+            maxLength: 2048
+        - name: 'filter[type]'
+          in: query
+          schema:
+            type: string
+            maxLength: 100
+        - name: 'filter[path]'
+          in: query
+          schema:
+            type: string
+            maxLength: 1024
+      responses:
+        200:
+          description: 'Safe content representation.'
+          headers:
+            Cache-Control:
+              schema:
+                type: string
+              description: 'public, no-cache; preview and bearer requests private, no-store.'
+            Surrogate-Key:
+              schema:
+                type: string
+              description: 'html-cache site-{id} purge key.'
+            Cache-Tag:
+              schema:
+                type: string
+            ETag:
+              $ref: '#/components/headers/ETag'
+          content:
+            application/json:
+              schema:
+                type: object
+                required:
+                  - data
+                  - meta
+                properties:
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/ContentMedia'
+                  meta:
+                    type: object
+                    required:
+                      - next_cursor
+                    properties:
+                      next_cursor:
+                        type:
+                          - string
+                          - 'null'
+        304:
+          $ref: '#/components/responses/NotModified'
+        403:
+          $ref: '#/components/responses/Forbidden'
+        404:
+          $ref: '#/components/responses/PageNotFound'
+        422:
+          description: 'Invalid query or expired/context-mismatched cursor.'
+        429:
+          description: 'Rate limit exceeded.'
+        503:
+          description: 'Eligibility unavailable; retry later.'
 components:
   parameters:
     Url:
@@ -71,21 +597,21 @@ components:
         default: /
         examples:
           - /terms
-      description: Published page URL to resolve. Blank or omitted resolves `/`.
+      description: 'Published page URL to resolve. Blank or omitted resolves `/`.'
     Site:
       name: site
       in: query
       required: false
       schema:
         type: string
-      description: Optional signed-context site id. Unsigned requests resolve the site from the request host.
+      description: 'Optional signed-context site id. Unsigned requests resolve the site from the request host.'
     Language:
       name: language
       in: query
       required: false
       schema:
         type: string
-      description: Optional signed-context language id, code, or locale.
+      description: 'Optional signed-context language id, code, or locale.'
     Fields:
       name: fields
       in: query
@@ -97,9 +623,9 @@ components:
           - title
           - content
           - meta
-          - url,title,content
-          - url,title,content,meta
-      description: Comma-separated field projection. Unknown fields are ignored.
+          - 'url,title,content'
+          - 'url,title,content,meta'
+      description: 'Comma-separated field projection. Unknown fields are ignored.'
     Include:
       name: include
       in: query
@@ -118,11 +644,11 @@ components:
         type: string
         examples:
           - main
-          - main,sidebar
+          - 'main,sidebar'
       description: 'Comma-separated layout container keys. Required to bound `layout.html` requests.'
   responses:
     PageResolved:
-      description: Published page resolved.
+      description: 'Published page resolved.'
       headers:
         X-Capell-Api-Version:
           $ref: '#/components/headers/ApiVersion'
@@ -135,7 +661,7 @@ components:
           schema:
             $ref: '#/components/schemas/PageResponse'
     NotModified:
-      description: The current sanitized payload matches the supplied `If-None-Match` validator.
+      description: 'The current sanitized payload matches the supplied `If-None-Match` validator.'
       headers:
         X-Capell-Api-Version:
           $ref: '#/components/headers/ApiVersion'
@@ -144,7 +670,7 @@ components:
         ETag:
           $ref: '#/components/headers/ETag'
     Forbidden:
-      description: Explicit site or language context was requested without a valid signature.
+      description: 'Explicit site or language context was requested without a valid signature.'
       headers:
         X-Capell-Api-Version:
           $ref: '#/components/headers/ApiVersion'
@@ -159,7 +685,7 @@ components:
               value:
                 message: Forbidden
     PageNotFound:
-      description: Package, site, language, or page could not be resolved.
+      description: 'Package, site, language, or page could not be resolved.'
       headers:
         X-Capell-Api-Version:
           $ref: '#/components/headers/ApiVersion'
@@ -172,7 +698,7 @@ components:
           examples:
             notFound:
               value:
-                message: Page not found
+                message: 'Page not found'
     InvalidLayoutHtmlRequest:
       description: '`layout.html` was requested without explicit bounded containers.'
       headers:
@@ -187,21 +713,21 @@ components:
           examples:
             unboundedLayoutHtml:
               value:
-                message: layout.html requires explicit bounded containers.
+                message: 'layout.html requires explicit bounded containers.'
   headers:
     ApiVersion:
       schema:
         type: string
         const: v1
-      description: Public response contract version.
+      description: 'Public response contract version.'
     CacheTags:
       schema:
         type: string
-      description: Comma-separated cache tags for downstream integrations.
+      description: 'Comma-separated cache tags for downstream integrations.'
     ETag:
       schema:
         type: string
-      description: Strong validator for the selected sanitized JSON payload.
+      description: 'Strong validator for the selected sanitized JSON payload.'
   schemas:
     PageResponse:
       type: object
@@ -227,12 +753,12 @@ components:
           type:
             - string
             - 'null'
-          description: Sanitized public HTML.
+          description: 'Sanitized public HTML.'
         meta:
           type:
             - object
             - array
-          description: Optional sanitized public page metadata.
+          description: 'Optional sanitized public page metadata.'
         layout:
           $ref: '#/components/schemas/LayoutGraph'
     LayoutGraph:
@@ -295,10 +821,10 @@ components:
             - number
             - boolean
             - 'null'
-          description: Sanitized public widget payload.
+          description: 'Sanitized public widget payload.'
         component:
           type: string
-          description: Optional frontend component identifier when enabled by the host application.
+          description: 'Optional frontend component identifier when enabled by the host application.'
         html:
           type: string
           description: 'Optional sanitized rendered widget HTML for bounded `layout.html` requests.'
@@ -310,3 +836,54 @@ components:
       properties:
         message:
           type: string
+    ContentPage:
+      type: object
+      required:
+        - url
+        - title
+        - content
+      properties:
+        url:
+          type: string
+        title:
+          type:
+            - string
+            - 'null'
+        content:
+          type:
+            - string
+            - object
+            - array
+            - 'null'
+    NavigationLink:
+      type: object
+      required:
+        - url
+        - title
+      properties:
+        url:
+          type: string
+        title:
+          type:
+            - string
+            - 'null'
+    ContentMedia:
+      type: object
+      required:
+        - url
+        - alt
+        - mime_type
+      properties:
+        url:
+          type: string
+        alt:
+          type: string
+        mime_type:
+          type:
+            - string
+            - 'null'
+  securitySchemes:
+    PreviewBearer:
+      type: http
+      scheme: bearer
+      bearerFormat: 'Sanctum personal access token'

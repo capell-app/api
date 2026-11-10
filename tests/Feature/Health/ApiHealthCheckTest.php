@@ -18,7 +18,7 @@ it('runs real api diagnostics and passes when the route contract is healthy', fu
     $results = ApiHealthCheck::runDiagnostics();
     $check = new ApiHealthCheck;
 
-    expect($results)->toHaveCount(3)
+    expect($results)->toHaveCount(4)
         ->and($results->every(static fn (mixed $result): bool => $result instanceof DoctorCheckResultData))->toBeTrue()
         ->and($results->every(static fn (DoctorCheckResultData $result): bool => $result->passed))->toBeTrue()
         ->and(ApiHealthCheck::passed())->toBeTrue()
@@ -29,6 +29,7 @@ it('runs real api diagnostics and passes when the route contract is healthy', fu
             __('capell-api::health.route.label'),
             __('capell-api::health.middleware.label'),
             __('capell-api::health.headers.label'),
+            __('capell-api::api.webhook_health_label'),
         ]);
 });
 

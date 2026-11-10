@@ -7,12 +7,14 @@ namespace Capell\Api\Actions;
 use Capell\Api\Data\ResolveApiRequestContextData;
 use Capell\Api\Providers\ApiServiceProvider;
 use Capell\Core\Actions\LoadSiteDomainFromUrlAction;
+use Capell\Core\Data\SiteAccessContextData;
 use Capell\Core\Enums\ExtensionStatusEnum;
 use Capell\Core\Facades\CapellCore;
 use Capell\Core\Models\CapellExtension;
 use Capell\Core\Models\Language;
 use Capell\Core\Models\Site;
 use Capell\Core\Models\SiteDomain;
+use Capell\Core\Support\SiteAccess\SiteAccessPolicyRegistry;
 use Illuminate\Contracts\Database\Eloquent\Builder as BuilderContract;
 use Illuminate\Http\Request;
 use Illuminate\Support\Collection;
@@ -56,10 +58,25 @@ final class ResolveApiRequestContextAction
             return ResolveApiRequestContextData::notFound();
         }
 
+        // Public API routes sit outside the web group, so site lockdown must be consulted
+        // here through the shared registry. Fail closed: a locked or unconfigurable site
+        // is indistinguishable from an unknown one.
+        $policy = resolve(SiteAccessPolicyRegistry::class)->resolve(new SiteAccessContextData(
+            request: $request,
+            site: $site,
+            siteDomain: $this->resolvedSiteDomain,
+            user: $request->user(),
+        ));
+
+        if ($policy?->active === true || $policy?->configurationAvailable === false) {
+            return ResolveApiRequestContextData::notFound();
+        }
+
         return ResolveApiRequestContextData::ok(
             site: $site,
             language: $language,
             urlPath: $this->resolvedUrlPath ?? $this->queryString($request, 'url', '/'),
+            siteDomain: $this->resolvedSiteDomain,
         );
     }
 
@@ -89,7 +106,7 @@ final class ResolveApiRequestContextAction
                 return false;
             }
 
-            return Site::query()->whereKey($site)->first();
+            return Site::query()->excludingPreview()->whereKey($site)->first();
         }
 
         $publicPageUrl = $this->publicPageUrl($request);
@@ -215,6 +232,7 @@ final class ResolveApiRequestContextAction
     private function candidateSitesForDomain(?string $host, string $scheme, bool $includeWildcardDomains): Collection
     {
         return Site::query()
+            ->excludingPreview()
             ->with([
                 'language',
                 'siteDomains' => fn (BuilderContract $query): BuilderContract => $this->candidateSiteDomainQuery($query, $host, $scheme, includeWildcardDomains: $includeWildcardDomains)

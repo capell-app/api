@@ -1,0 +1,59 @@
+{
+    "page": {
+        "data": {
+            "url": "/",
+            "title": "Welcome",
+            "content": "<p>Hello from Capell</p>"
+        }
+    },
+    "pages": {
+        "data": [
+            {
+                "url": "/",
+                "title": "Welcome",
+                "content": "<p>Hello from Capell</p>"
+            },
+            {
+                "url": "/about",
+                "title": "About",
+                "content": "<p>An agency site</p>"
+            }
+        ],
+        "meta": {
+            "next_cursor": null
+        }
+    },
+    "navigation": {
+        "data": [
+            {
+                "url": "/",
+                "title": "Welcome"
+            },
+            {
+                "url": "/about",
+                "title": "About"
+            }
+        ],
+        "meta": {
+            "next_cursor": null
+        }
+    },
+    "media": {
+        "data": [],
+        "meta": {
+            "next_cursor": null
+        }
+    },
+    "search": {
+        "data": [
+            {
+                "url": "/",
+                "title": "Welcome",
+                "content": "<p>Hello from Capell</p>"
+            }
+        ],
+        "meta": {
+            "next_cursor": null
+        }
+    }
+}
