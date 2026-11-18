@@ -1,6 +1,6 @@
 {
     "name": "capell-app/api",
-    "description": "Public JSON delivery of published Capell page data",
+    "description": "Read-only JSON access to published Capell pages for separate front ends, with refresh messages.",
     "type": "library",
     "license": "proprietary",
     "require": {

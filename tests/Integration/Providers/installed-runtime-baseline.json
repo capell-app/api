@@ -5,7 +5,7 @@
         "default": {
             "source": {
                 "ref": "HEAD",
-                "commit": "6749d4dcafb65cc8b5df8b7eeb06049e226c1133",
+                "commit": "1ae4b0bc7015b9341a8e086da388a1a230b1bbf8",
                 "providers": {
                     "Providers/ApiServiceProvider.php": "5ef1d80bf2607f69bd142e040d3e1fb10ee0d7f15306095adc1fca6119a48c5d"
                 },
@@ -15,6 +15,7 @@
             "surfaces": {
                 "config-defaults": {
                     "capell-api.php": {
+                        "expose_surrogate_key_header": false,
                         "middleware": ["api"],
                         "public_pages.auth_middleware": null,
                         "public_pages.max_candidate_sites": 50,
@@ -31,6 +32,7 @@
                 },
                 "config-keys": [
                     "capell-api",
+                    "capell-api.expose_surrogate_key_header",
                     "capell-api.middleware",
                     "capell-api.middleware.0",
                     "capell-api.public_pages",
@@ -269,6 +271,7 @@
             "uninstalledSurfaces": {
                 "config-defaults": {
                     "capell-api.php": {
+                        "expose_surrogate_key_header": false,
                         "middleware": ["api"],
                         "public_pages.auth_middleware": null,
                         "public_pages.max_candidate_sites": 50,
@@ -285,6 +288,7 @@
                 },
                 "config-keys": [
                     "capell-api",
+                    "capell-api.expose_surrogate_key_header",
                     "capell-api.middleware",
                     "capell-api.middleware.0",
                     "capell-api.public_pages",

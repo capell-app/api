@@ -10,6 +10,7 @@ use Capell\Api\Actions\V1\ResolvePreviewAccessAction;
 use Capell\Api\Data\V1\ErrorData;
 use Capell\Api\Data\V1\PageListData;
 use Capell\Api\Data\V1\PageResponseData;
+use Capell\Api\Support\ApiEdgeCacheHeaders;
 use Capell\Api\Support\ApiLimits;
 use Capell\Core\Support\PublicRead\PublicReadProjectionHeaders;
 use Illuminate\Http\JsonResponse;
@@ -42,8 +43,8 @@ final class V1PagesController
             if ($preview->enabled || $request->hasHeader('Authorization')) {
                 return $response->header('Cache-Control', 'private, no-store')->header('Vary', 'Authorization');
             }
-            $keys = 'site-' . $context->resolvedSite()->id;
-            $response->header('Surrogate-Key', $keys)->header('Cache-Tag', $keys)->header('Vary', 'Authorization');
+            ApiEdgeCacheHeaders::apply($response, ['site-' . $context->resolvedSite()->id]);
+            $response->header('Vary', 'Authorization');
             PublicReadProjectionHeaders::apply($response, $request, $content);
 
             return $response;

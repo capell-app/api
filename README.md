@@ -2,27 +2,25 @@
 
 <!-- prettier-ignore-start -->
 
-## What It Does
+You can show your published Capell pages on a separate website or mobile app, such as one built with Next.js or Nuxt. Your editors keep working in Capell as they do now.
 
-API provides a supported v1 content API, typed TypeScript SDK and Next.js example, with cursor-paginated pages and collections, token-scoped previews and signed revalidation webhooks.
+Your developer can ask for one page by its address, list pages by type, search page titles or fetch a directory of pages. Lists arrive twenty at a time by default, up to a hundred, and each list points to the next batch if there is one. Pages that are live today are the only ones returned, and their content is cleaned of anything unsafe on the way out. The access is read-only and adds no admin screen. Drafts stay private unless your developer uses a personal key made for previewing.
+
+When an editor publishes, saves or deletes a page, or a page's dates pass, Capell can send your front end a signed message. Sending starts once your developer has added the front end's address and a secret, and the messages go out as background jobs, which your developer or host keeps running. Each message names the site and page that changed.
 
 - **Price and availability:** Check current availability and price on the [Capell Marketplace listing](https://capell.app/extensions/api).
 - **Licence:** Check the licence terms on the [Capell Marketplace listing](https://capell.app/extensions/api).
 - **Requires:** `PHP ^8.4`, `capell-app/core ^1.0.76`, `capell-app/layout-builder ^1.0`, `laravel/sanctum ^4.0`, `spatie/laravel-package-tools ^1.14.1`, `symfony/html-sanitizer ^7.0|^8.0`.
 - **Install:** `composer require capell-app/api`.
 
-Headless clients can read published pages, filter collections, search titles and load a page directory and content images. Preview tokens remain on the server. There is no editing endpoint.
-
-## Who It Is For
-
-**For developers:** ResolveApiRequestContextAction, BuildPublicPagePayloadAction, and BuildPublicLayoutPayloadAction keep request resolution, sanitization, and layout bounds outside the controller.
-
-**For teams:** A separate frontend can consume published Capell content without receiving draft, admin, or authoring state.
-
 ## Quick Start
 
 1. Install the package: `composer require capell-app/api`.
 2. Run `php artisan route:list` and verify the package routes are registered.
+
+## For Developers
+
+ResolveApiRequestContextAction, BuildPublicPagePayloadAction, and BuildPublicLayoutPayloadAction keep request resolution, sanitization, and layout bounds outside the controller.
 
 ## Configure
 
@@ -33,7 +31,7 @@ Headless clients can read published pages, filter collections, search titles and
 - Install the required Capell packages at the versions in `composer.json`: `capell-app/core ^1.0.76`, `capell-app/layout-builder ^1.0`.
 - Review middleware, throttling, signatures, and public-output safety in `routes/api.php` before exposing routes.
 - Keep public Blade and cached HTML free of authoring markers, model IDs, permissions, signed editor URLs, and lazy database queries.
-- Custom write integrations must preserve invalidation for `api`, `api:pages` cache tags.
+- Custom write integrations must preserve invalidation for `api` cache tags.
 
 ## Screens And Workflow
 
@@ -57,7 +55,7 @@ Headless clients can read published pages, filter collections, search titles and
 - Config: `config/capell-api.php`.
 - Settings: no package settings declared.
 - Queues or schedules: queue jobs `DeliverRevalidationWebhookJob`.
-- Cache tags: `api`, `api:pages`.
+- Cache tags: `api`.
 - Commands: none declared.
 
 ## Troubleshooting

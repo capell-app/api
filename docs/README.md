@@ -15,7 +15,7 @@ Start at the [package README](../README.md) when deciding whether to install thi
 | -------------------------------- | ---------------------------------------------------------------------------------- |
 | [Overview](overview.md)          | Package boundary, runtime surfaces, install notes, and first troubleshooting path. |
 | [OpenAPI contract](openapi.yaml) | Machine-readable v1 public page resolver paths, parameters, headers, and schemas.  |
-| [Page API](page-api.md)          | HTTP/API contracts, payloads, and integration behavior.                            |
+| [Page API](page-api.md)          | HTTP/API contracts, payloads, and integration behaviour.                           |
 
 ## Read Next
 

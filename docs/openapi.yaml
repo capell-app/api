@@ -114,7 +114,7 @@ paths:
             Surrogate-Key:
               schema:
                 type: string
-              description: 'html-cache site-{id} purge key.'
+              description: 'html-cache site-{id} purge key. Sent only when capell-api.expose_surrogate_key_header (CAPELL_API_EXPOSE_SURROGATE_KEY) is true.'
             Cache-Tag:
               schema:
                 type: string
@@ -183,7 +183,7 @@ paths:
             Surrogate-Key:
               schema:
                 type: string
-              description: 'html-cache site-{id} purge key.'
+              description: 'html-cache site-{id} purge key. Sent only when capell-api.expose_surrogate_key_header (CAPELL_API_EXPOSE_SURROGATE_KEY) is true.'
             Cache-Tag:
               schema:
                 type: string
@@ -267,7 +267,7 @@ paths:
             Surrogate-Key:
               schema:
                 type: string
-              description: 'html-cache site-{id} purge key.'
+              description: 'html-cache site-{id} purge key. Sent only when capell-api.expose_surrogate_key_header (CAPELL_API_EXPOSE_SURROGATE_KEY) is true.'
             Cache-Tag:
               schema:
                 type: string
@@ -365,7 +365,7 @@ paths:
             Surrogate-Key:
               schema:
                 type: string
-              description: 'html-cache site-{id} purge key.'
+              description: 'html-cache site-{id} purge key. Sent only when capell-api.expose_surrogate_key_header (CAPELL_API_EXPOSE_SURROGATE_KEY) is true.'
             Cache-Tag:
               schema:
                 type: string
@@ -456,7 +456,7 @@ paths:
             Surrogate-Key:
               schema:
                 type: string
-              description: 'html-cache site-{id} purge key.'
+              description: 'html-cache site-{id} purge key. Sent only when capell-api.expose_surrogate_key_header (CAPELL_API_EXPOSE_SURROGATE_KEY) is true.'
             Cache-Tag:
               schema:
                 type: string
@@ -547,7 +547,7 @@ paths:
             Surrogate-Key:
               schema:
                 type: string
-              description: 'html-cache site-{id} purge key.'
+              description: 'html-cache site-{id} purge key. Sent only when capell-api.expose_surrogate_key_header (CAPELL_API_EXPOSE_SURROGATE_KEY) is true.'
             Cache-Tag:
               schema:
                 type: string
@@ -723,7 +723,7 @@ components:
     CacheTags:
       schema:
         type: string
-      description: 'Comma-separated cache tags for downstream integrations.'
+      description: 'Coarse cache tag for downstream integrations; always api, never record identifiers.'
     ETag:
       schema:
         type: string

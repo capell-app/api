@@ -31,6 +31,7 @@ final class ResolvePreviewAccessAction
         $user = $request->user('sanctum');
         $token = is_object($user) && method_exists($user, 'currentAccessToken') ? $user->currentAccessToken() : null;
         abort_unless($token instanceof PersonalAccessToken
+            // capell-permission-scan: token-ability Sanctum token scope, not a role permission
             && $token->can('api:preview')
             && $token->can('api:preview:site:' . $site->id), 403, __('capell-api::api.forbidden'));
 
@@ -39,7 +40,9 @@ final class ResolvePreviewAccessAction
 
         return new PreviewAccessData(
             enabled: true,
+            // capell-permission-scan: token-ability Sanctum token scope, not a role permission
             restricted: $token->can('api:preview:restricted'),
+            // capell-permission-scan: token-ability Sanctum token scope, not a role permission
             deleted: $token->can('api:preview:deleted'),
             tokenId: (string) $tokenId,
         );

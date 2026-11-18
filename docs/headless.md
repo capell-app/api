@@ -6,8 +6,8 @@ type, title search, a page directory for navigation, and images referenced in
 public HTML. It is read-only.
 
 The [v1 contract](v1-contract.md) defines pagination, preview abilities, response
-shapes, cache behaviour and webhook signatures. The [TypeScript SDK](../sdk/README.md)
-and [Next.js example](../examples/nextjs/README.md) ship alongside the package.
+shapes, cache behaviour and webhook signatures. The TypeScript SDK (`sdk/`)
+and the Next.js example (`examples/nextjs/`) ship alongside the package source.
 The SDK is prepared for local distribution; registry publication is separate.
 
 ```http
@@ -47,9 +47,15 @@ Keep all preview tokens in server-only environment variables.
 ## Caching and revalidation
 
 Anonymous responses use an eligibility-aware ETag and revalidate on every read.
-`Surrogate-Key` and `Cache-Tag` use html-cache's `site-{id}` purge keys. All
-responses from a site can be invalidated with that site key. Legacy API aliases
-retain their existing response shapes and cache-tag header; migrate to `/api/v1`.
+`Cache-Tag` uses html-cache's `site-{id}` purge keys (and `page-{id}` on the
+legacy resolve alias). Cloudflare consumes and strips it at the edge; any other
+edge forwards it to visitors unless it strips the header, so those site and page
+IDs reach visitors behind an edge that does not. `Surrogate-Key` carries the same
+keys only when `CAPELL_API_EXPOSE_SURROGATE_KEY` is true; enable it only behind an
+edge that strips the header, because most CDNs forward it. All responses from a
+site can be invalidated with that site key. `X-Capell-Cache-Tags` is always the
+coarse `api` tag. Legacy API aliases keep their response shapes and carry a
+`Deprecation` header and a `successor-version` link; migrate to `/api/v1`.
 
 Configure `capell-api.webhooks.endpoints` with stable keys, a `site_id`, an HTTPS
 `url`, and an independent secret of at least 32 random characters. Set

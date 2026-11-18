@@ -54,9 +54,11 @@ Reuse Core's `PublicReadProjectionHeaders`: anonymous responses must revalidate
 (`public, no-cache`); unknown eligibility state is private/no-store. ETags include
 the eligibility stamp and the actual serialised response bytes. Preview, errors
 and token-bearing requests use private/no-store and never return 304.
-`Surrogate-Key` uses html-cache's `site-{id}` and `page-{id}` purge vocabulary;
-`Cache-Tag` carries the same tags for compatible edge caches. These operational
-headers are documented identifiers, not content fields. No positive freshness
+`Cache-Tag` carries html-cache's `site-{id}` and `page-{id}` purge vocabulary
+for compatible edge caches; it reaches visitors unless the edge strips it.
+`Surrogate-Key` carries the same tags only when `CAPELL_API_EXPOSE_SURROGATE_KEY`
+is true. These operational headers are documented identifiers, not content
+fields. No positive freshness
 window survives an unpublish or scheduled transition. Legacy cache tag headers
 remain compatible.
 

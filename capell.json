@@ -6,7 +6,7 @@
     "kind": "package",
     "capellApiVersion": "^1.0",
     "version": "1.0.0",
-    "description": "Supported v1 content API with cursor-paginated pages, collections, preview tokens and signed revalidation webhooks.",
+    "description": "Lets a separate website or mobile app read your published Capell pages, and can tell it when to refresh.",
     "product": {
         "group": "Capell Publishing",
         "tier": "free",
@@ -200,13 +200,7 @@
     },
     "settings": [],
     "permissions": [],
-    "capabilities": [
-        "public-page-api",
-        "public-page-api-v1",
-        "cursor-pagination",
-        "token-preview",
-        "revalidation-webhooks"
-    ],
+    "capabilities": ["public-page-api", "public-page-api-v1"],
     "security": {
         "riskTier": "critical",
         "publicSurface": {
@@ -261,7 +255,7 @@
     "performance": {
         "frontendRenderBudgetMs": 20,
         "adminQueryBudget": 0,
-        "cacheTags": ["api", "api:pages"],
+        "cacheTags": ["api"],
         "cacheSafety": {
             "cacheable": false,
             "variesBy": ["site", "locale"],
@@ -299,38 +293,43 @@
         "privateDocsRequested": false
     },
     "marketplace": {
-        "summary": "Supported v1 content API with cursor-paginated pages, collections, preview tokens and signed revalidation webhooks.",
-        "problem": "Our headless frontend cannot retrieve published pages without a custom integration.",
-        "outcome": "A separate frontend can consume published page content without receiving draft or authoring state.",
+        "summary": "Share published pages with a separate front end or app, and let it know when editors publish.",
+        "description": "Keep Capell as the place where editors write, and let another site or app do the displaying. Your developer gets read-only access to live pages, fetched singly, filtered by page type, searched by title or browsed as a directory. Lists return a page's address, title and cleaned content, and media entries carry an address, description and file type. Looking a page up by address can also return its page details and layout when asked. A rate limit protects the site, and previews of unpublished work need a personal key. A TypeScript starter and a Next.js example are included for developers.",
+        "problem": "I can't get my published pages out of Capell and into a separate front end without custom work.",
+        "outcome": "Your own front end shows published Capell pages and can refresh when editors publish.",
         "faq": [
             {
-                "question": "What content can a headless client retrieve?",
-                "answer": "Resolve and list published pages, filter collections by page type, search titles and retrieve a paginated page directory and public content images through the supported v1 API."
+                "question": "Can the separate website or app change my pages?",
+                "answer": "No. The access is read-only and the package adds no admin screen. Your editors keep working in Capell as they do now."
             },
             {
-                "question": "Are draft pages included in responses?",
-                "answer": "Public reads exclude drafts. Server-side Sanctum tokens with explicit preview and site abilities can request sanitised preview content."
+                "question": "Will my draft pages show up on the separate website?",
+                "answer": "No. Only pages that are live today are returned. Your developer can see drafts by using a personal key made for previewing."
             },
             {
-                "question": "Can clients use it to edit pages?",
-                "answer": "The declared endpoints are public and read-only."
+                "question": "How many pages come back when the website asks for a list?",
+                "answer": "Twenty at a time by default, and up to a hundred. Each list points to the next batch if there is one."
+            },
+            {
+                "question": "Can my front end find out when a page has changed?",
+                "answer": "Yes, once your developer has added the front end's address and a secret. When a page is saved or deleted, Capell sends a signed message through your background queue naming the site and page."
             }
         ],
         "screenshots": [
             {
-                "path": "docs/assets/marketplace/listing-page-resolve-success-json.png",
-                "alt": "JSON response returned for a published page",
-                "caption": "JSON response returned for a published page"
+                "path": "docs/screenshots/page-resolve-success-json.png",
+                "alt": "Browser window of formatted data for a home page, with its web address, a title and one line of text.",
+                "caption": "This is what a separate website receives when it asks for a published page by its address."
             },
             {
-                "path": "docs/assets/marketplace/listing-page-resolve-layout-json.png",
-                "alt": "JSON response describing a page layout and the areas it contains",
-                "caption": "JSON response describing a page layout and the areas it contains"
+                "path": "docs/screenshots/page-resolve-layout-json.png",
+                "alt": "Browser window of formatted data for a page, listing its layout, one block and the heading and text inside it.",
+                "caption": "A page's layout comes back as blocks and their text, so the front end can arrange them itself."
             },
             {
                 "path": "docs/assets/marketplace/extension-card.jpg",
-                "alt": "API extension preview image",
-                "caption": "API extension preview"
+                "alt": "Card with two large empty browser frames of tiny text above three small step boxes.",
+                "caption": "The card presents the package as published page data served for other websites to read."
             }
         ],
         "categories": ["frontend", "publishing-pro"]

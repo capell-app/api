@@ -51,16 +51,26 @@ it('serves the v1 route and emits public api contract headers', function (): voi
     $v1Response = getJson(route('capell-api.v1.pages.resolve', ['url' => $pageUrl->url]))
         ->assertOk()
         ->assertHeader('X-Capell-Api-Version', 'v1')
-        ->assertHeader('X-Capell-Cache-Tags', apiExpectedCacheTags($site, $language, $page))
+        ->assertHeader('X-Capell-Cache-Tags', 'api')
+        ->assertHeader('Cache-Tag', 'site-' . apiScalarKey($site->getKey()) . ',page-' . apiScalarKey($page->getKey()))
+        ->assertHeaderMissing('Surrogate-Key')
         ->assertJsonPath('data.url', '/terms')
         ->assertJsonPath('data.title', 'Terms');
 
     assertCapellPublicOutputIsSafe($v1Response, 'Capell API v1 page resolve response');
 
+    config()->set('capell-api.expose_surrogate_key_header', true);
+
+    getJson(route('capell-api.v1.pages.resolve', ['url' => $pageUrl->url]))
+        ->assertOk()
+        ->assertHeader('Surrogate-Key', 'site-' . apiScalarKey($site->getKey()) . ' page-' . apiScalarKey($page->getKey()));
+
+    config()->set('capell-api.expose_surrogate_key_header', false);
+
     $legacyResponse = getJson(route('capell-api.pages.resolve', ['url' => $pageUrl->url]))
         ->assertOk()
         ->assertHeader('X-Capell-Api-Version', 'v1')
-        ->assertHeader('X-Capell-Cache-Tags', apiExpectedCacheTags($site, $language, $page))
+        ->assertHeader('X-Capell-Cache-Tags', 'api')
         ->assertJsonPath('data.url', '/terms');
 
     assertCapellPublicOutputIsSafe($legacyResponse, 'Capell API legacy page resolve response');
@@ -505,16 +515,6 @@ function createPublicApiPage(string $url, array $translation = [], ?string $doma
         ->create(['url' => $url]);
 
     return [$pageUrl, $page, $language, $site];
-}
-
-function apiExpectedCacheTags(Site $site, Language $language, Page $page): string
-{
-    return sprintf(
-        'api,site:%s,language:%s,page:%s',
-        apiScalarKey($site->getKey()),
-        apiScalarKey($language->getKey()),
-        apiScalarKey($page->getKey()),
-    );
 }
 
 function apiScalarKey(mixed $key): string

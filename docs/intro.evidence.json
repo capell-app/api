@@ -1,0 +1,71 @@
+[
+    {
+        "claim": "You can show your published Capell pages on a separate website or mobile app, such as one built with Next.js or Nuxt.",
+        "evidence": [
+            "routes/api.php",
+            "src/Http/Controllers/V1PagesController.php",
+            "examples/nextjs/package.json",
+            "sdk/src/index.ts"
+        ]
+    },
+    {
+        "claim": "Your editors keep working in Capell as they do now; the package adds no admin screen.",
+        "evidence": ["routes/api.php", "src/Providers/ApiServiceProvider.php"]
+    },
+    {
+        "claim": "Your developer can ask for one page by its address, list pages by type, search page titles or fetch a directory of pages.",
+        "evidence": [
+            "routes/api.php",
+            "src/Http/Controllers/V1PagesController.php",
+            "src/Actions/V1/ListPagesAction.php",
+            "src/Data/V1/NavigationLinkData.php"
+        ]
+    },
+    {
+        "claim": "Lists arrive twenty at a time by default, up to a hundred, and each list points to the next batch if there is one.",
+        "evidence": [
+            "src/Actions/V1/ListPagesAction.php",
+            "src/Data/V1/ListMetaData.php"
+        ]
+    },
+    {
+        "claim": "Pages that are live today are the only ones returned.",
+        "evidence": ["src/Actions/V1/ListPagesAction.php"]
+    },
+    {
+        "claim": "Their content is cleaned of anything unsafe on the way out.",
+        "evidence": [
+            "src/Actions/V1/BuildPageDataAction.php",
+            "src/Actions/BuildPublicPagePayloadAction.php",
+            "src/Support/SanitizesPublicHtml.php"
+        ]
+    },
+    {
+        "claim": "The access is read-only.",
+        "evidence": ["routes/api.php", "config/capell-api.php"]
+    },
+    {
+        "claim": "Drafts stay private unless your developer uses a personal key made for previewing.",
+        "evidence": [
+            "src/Actions/V1/ResolvePreviewAccessAction.php",
+            "src/Data/V1/PreviewAccessData.php"
+        ]
+    },
+    {
+        "claim": "Sending starts once your developer has added the front end's address and a secret, and the messages go out as background jobs, which your developer or host keeps running.",
+        "evidence": [
+            "config/capell-api.php",
+            "src/Actions/V1/QueueRevalidationWebhooksAction.php",
+            "src/Jobs/DeliverRevalidationWebhookJob.php"
+        ]
+    },
+    {
+        "claim": "When an editor publishes, saves or deletes a page, or a page's dates pass, Capell can send your front end a signed message. Each message names the site and page that changed.",
+        "evidence": [
+            "src/Providers/ApiServiceProvider.php",
+            "src/Listeners/QueuePageRevalidation.php",
+            "src/Data/V1/RevalidationWebhookData.php",
+            "src/Support/WebhookSignature.php"
+        ]
+    }
+]

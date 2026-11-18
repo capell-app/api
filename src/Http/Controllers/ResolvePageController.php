@@ -10,6 +10,7 @@ use Capell\Api\Actions\ValidatePublicLayoutPayloadBoundsAction;
 use Capell\Api\Data\LegacyPageResponseData;
 use Capell\Api\Data\PublicPagePayloadOptionsData;
 use Capell\Api\Data\V1\ErrorData;
+use Capell\Api\Support\ApiEdgeCacheHeaders;
 use Capell\Api\Support\ApiLimits;
 use Capell\Core\Actions\PublicRead\PageUrlIsPubliclyReadableAction;
 use Capell\Core\Actions\ResolvePublicPageByUrlAction;
@@ -117,13 +118,14 @@ final class ResolvePageController
             ->header('Deprecation', '@1793923200')
             ->header('Link', '</api/v1/pages/resolve>; rel="successor-version"')
             ->header('X-Capell-Api-Version', self::API_VERSION)
-            ->header('X-Capell-Cache-Tags', implode(',', $this->cacheTags));
+            // The integration header is coarse; record keys stay on edge purge headers.
+            ->header('X-Capell-Cache-Tags', 'api');
         if ($status === 200) {
             $keys = array_map(static fn (string $tag): string => str_replace(':', '-', $tag), array_values(array_filter(
                 $this->cacheTags,
                 static fn (string $tag): bool => str_starts_with($tag, 'site:') || str_starts_with($tag, 'page:'),
             )));
-            $response->header('Surrogate-Key', implode(' ', $keys))->header('Cache-Tag', implode(',', $keys));
+            ApiEdgeCacheHeaders::apply($response, $keys);
         }
 
         return $response;

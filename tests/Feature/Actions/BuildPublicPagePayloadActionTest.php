@@ -195,7 +195,6 @@ it('strips authoring metadata and secrets from public page and layout payloads',
     expect($content)->toBe('<p>Book online</p>')
         ->and($meta)->toBe([
             'description' => '<span>Private care</span>',
-            'nested' => ['summary' => 'Safe public summary'],
         ])
         ->and($widgetData)->toBe([
             'headline' => '<strong>Appointments</strong>',
@@ -271,3 +270,39 @@ function apiTestWidgetData(array $widget): array
 
     return $data;
 }
+
+it('returns only the public search meta keys from translation meta', function (): void {
+    $payload = BuildPublicPagePayloadAction::run(
+        fields: new PublicPageFieldsData(
+            url: '/about',
+            title: 'About',
+            content: '<p>About</p>',
+            meta: [
+                'title' => 'About us',
+                'description' => 'Who we are',
+                'keywords' => 'team, history',
+                'editor' => ['locked_by' => 7],
+                'site_spec_applied_hash' => 'abc123',
+                'rendering_strategy' => 'static',
+                'image_source' => ['media_id' => 42],
+                'slug' => 'about',
+            ],
+        ),
+        options: new PublicPagePayloadOptionsData(fields: ['meta']),
+    );
+
+    expect($payload)->toBe([
+        'meta' => [
+            'title' => 'About us',
+            'description' => 'Who we are',
+            'keywords' => 'team, history',
+        ],
+    ]);
+
+    $nonString = BuildPublicPagePayloadAction::run(
+        fields: new PublicPageFieldsData(url: '/about', meta: ['title' => ['nested' => 'x'], 'description' => 12]),
+        options: new PublicPagePayloadOptionsData(fields: ['meta']),
+    );
+
+    expect($nonString)->toBe(['meta' => []]);
+});

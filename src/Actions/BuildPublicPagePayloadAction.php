@@ -24,6 +24,12 @@ class BuildPublicPagePayloadAction
     private const array ALLOWED_FIELDS = ['url', 'title', 'content', 'meta'];
 
     /**
+     * Translation meta also holds editor, import and rendering state, so only
+     * the search fields an editor writes for the public page leave the server.
+     */
+    private const array PUBLIC_META_KEYS = ['title', 'description', 'keywords'];
+
+    /**
      * @return array<string, mixed>
      */
     public function handle(
@@ -63,7 +69,7 @@ class BuildPublicPagePayloadAction
                 'url' => $fields->url,
                 'title' => $fields->title,
                 'content' => $fields->content,
-                'meta' => $fields->meta,
+                'meta' => $this->publicMeta($fields->meta),
                 default => null,
             };
 
@@ -71,5 +77,22 @@ class BuildPublicPagePayloadAction
         }
 
         return $data;
+    }
+
+    /**
+     * @param  array<string, mixed>  $meta
+     * @return array<string, string>
+     */
+    private function publicMeta(array $meta): array
+    {
+        $public = [];
+
+        foreach (self::PUBLIC_META_KEYS as $key) {
+            if (is_string($meta[$key] ?? null)) {
+                $public[$key] = $meta[$key];
+            }
+        }
+
+        return $public;
     }
 }

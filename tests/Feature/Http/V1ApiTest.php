@@ -46,8 +46,10 @@ it('resolves safe v1 pages and carries revalidation and surrogate headers', func
     v1Page($this->site, $this->language, '/hello', content: '<p>Hello</p><script>private()</script>');
     $response = getJson('https://example.com/api/v1/pages/resolve?url=/hello')->assertOk()
         ->assertExactJson(['data' => ['url' => '/hello', 'title' => 'Welcome', 'content' => '<p>Hello</p>']])
-        ->assertHeader('Surrogate-Key', 'site-' . $this->site->id)->assertHeader('ETag');
+        ->assertHeader('Cache-Tag', 'site-' . $this->site->id)->assertHeaderMissing('Surrogate-Key')->assertHeader('ETag');
     expect($response->headers->get('Cache-Control'))->toContain('no-cache');
+    config()->set('capell-api.expose_surrogate_key_header', true);
+    getJson('https://example.com/api/v1/pages/resolve?url=/hello')->assertOk()->assertHeader('Surrogate-Key', 'site-' . $this->site->id);
     getJson('https://example.com/api/v1/pages/resolve?url=/hello', ['If-None-Match' => $response->headers->get('ETag')])->assertStatus(304);
 });
 
@@ -299,4 +301,40 @@ it('keeps the source ceiling at or above the response limit so raising one never
     config()->set('capell-api.public_pages.max_source_bytes', 2000);
 
     expect(ApiLimits::sourceBytes())->toBe(20000);
+});
+
+it('reads the surrogate key switch from environment strings and only enables it for true values', function (mixed $value, bool $exposed): void {
+    v1Page($this->site, $this->language, '/hello', content: '<p>Hello</p>');
+    config()->set('capell-api.expose_surrogate_key_header', $value);
+
+    $response = getJson('https://example.com/api/v1/pages/resolve?url=/hello')->assertOk()
+        ->assertHeader('Cache-Tag', 'site-' . $this->site->id);
+
+    expect($response->headers->has('Surrogate-Key'))->toBe($exposed);
+})->with([
+    'env true' => ['true', true],
+    'env one' => ['1', true],
+    'boolean true' => [true, true],
+    'env false' => ['false', false],
+    'empty' => ['', false],
+    'unset' => [null, false],
+    'garbage' => ['sometimes', false],
+]);
+
+it('declares the surrogate key switch through its environment variable', function (): void {
+    $config = require dirname(__DIR__, 3) . '/config/capell-api.php';
+
+    expect($config['expose_surrogate_key_header'])->toBeFalse();
+
+    putenv('CAPELL_API_EXPOSE_SURROGATE_KEY=true');
+    $_ENV['CAPELL_API_EXPOSE_SURROGATE_KEY'] = 'true';
+    $_SERVER['CAPELL_API_EXPOSE_SURROGATE_KEY'] = 'true';
+
+    try {
+        $config = require dirname(__DIR__, 3) . '/config/capell-api.php';
+        expect($config['expose_surrogate_key_header'])->toBeTrue();
+    } finally {
+        putenv('CAPELL_API_EXPOSE_SURROGATE_KEY');
+        unset($_ENV['CAPELL_API_EXPOSE_SURROGATE_KEY'], $_SERVER['CAPELL_API_EXPOSE_SURROGATE_KEY']);
+    }
 });

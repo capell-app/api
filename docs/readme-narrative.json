@@ -1,23 +1,4 @@
 {
-    "whatThisPluginAdds": {
-        "text": "API provides a supported v1 content API, typed TypeScript SDK and Next.js example, with cursor-paginated pages and collections, token-scoped previews and signed revalidation webhooks.",
-        "evidence": [
-            "capell.json",
-            "routes/api.php",
-            "src/Http/Controllers/ResolvePageController.php",
-            "docs/v1-contract.md",
-            "sdk/src/index.ts",
-            "examples/nextjs/README.md"
-        ]
-    },
-    "surfaceOutcome": {
-        "text": "Headless clients can read published pages, filter collections, search titles and load a page directory and content images. Preview tokens remain on the server. There is no editing endpoint.",
-        "evidence": [
-            "docs/screenshots.json",
-            "tests/Feature/Http/ResolvePageControllerTest.php",
-            "tests/Feature/OpenApiDocumentationTest.php"
-        ]
-    },
     "whyItMatters": {
         "developers": {
             "text": "ResolveApiRequestContextAction, BuildPublicPagePayloadAction, and BuildPublicLayoutPayloadAction keep request resolution, sanitization, and layout bounds outside the controller.",
@@ -26,14 +7,6 @@
                 "src/Actions/BuildPublicPagePayloadAction.php",
                 "src/Actions/BuildPublicLayoutPayloadAction.php",
                 "tests/Feature/Actions/BuildPublicPagePayloadActionTest.php"
-            ]
-        },
-        "teams": {
-            "text": "A separate frontend can consume published Capell content without receiving draft, admin, or authoring state.",
-            "evidence": [
-                "docs/screenshots.json",
-                "tests/Feature/Http/ResolvePageControllerTest.php",
-                "tests/Feature/ApiErrorScreenshotProofTest.php"
             ]
         }
     }

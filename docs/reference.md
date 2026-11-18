@@ -6,7 +6,7 @@ Developer reference for `capell-app/api`. Start with the [README](../README.md) 
 
 ## Package Details
 
-API is an **Available**, **No schema impact** Capell package in the **Capell Publishing** product group. It ships as `capell-app/api` and extends these surfaces: frontend.
+API is an **Available** Capell package in the **Capell Publishing** product group. It ships as `capell-app/api` and extends these surfaces: frontend.
 
 - Status: Available
 - Tier: free
@@ -78,7 +78,6 @@ API is an **Available**, **No schema impact** Capell package in the **Capell Pub
 ### Cache tags
 
 - `api`
-- `api:pages`
 
 
 ## Data Model
