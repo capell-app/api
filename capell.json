@@ -31,7 +31,6 @@
             "type": "route",
             "class": "Capell\\Api\\Manifest\\ApiRoutesContribution",
             "routes": [
-                "capell-api.pages.resolve",
                 "capell-api.v1.pages.resolve",
                 "capell-api.v1.pages",
                 "capell-api.v1.resolve",
@@ -53,24 +52,6 @@
                     "auth": "public",
                     "readOnly": true,
                     "canonical": false,
-                    "signedContextParameters": ["site", "language"],
-                    "publicSafety": [
-                        "sanitized-html",
-                        "no-authoring-surface",
-                        "no-secrets"
-                    ]
-                },
-                {
-                    "type": "public-api-endpoint",
-                    "name": "public-page-resolve-legacy",
-                    "routeName": "capell-api.pages.resolve",
-                    "method": "GET",
-                    "path": "/api/capell/pages/resolve",
-                    "version": "v1",
-                    "auth": "public",
-                    "readOnly": true,
-                    "canonical": false,
-                    "compatibility": "legacy",
                     "signedContextParameters": ["site", "language"],
                     "publicSafety": [
                         "sanitized-html",
@@ -205,7 +186,6 @@
         "riskTier": "critical",
         "publicSurface": {
             "routeNames": [
-                "GET /api/capell/pages/resolve (capell-api.pages.resolve)",
                 "GET /api/capell/v1/pages/resolve (capell-api.v1.pages.resolve)",
                 "GET /api/v1/collections/{type} (capell-api.v1.collections)",
                 "GET /api/v1/media (capell-api.v1.media)",
@@ -220,7 +200,6 @@
             "tokenizedRoutes": [],
             "webhookRoutes": [],
             "throttledRoutes": [
-                "GET /api/capell/pages/resolve (capell-api.pages.resolve)",
                 "GET /api/capell/v1/pages/resolve (capell-api.v1.pages.resolve)",
                 "GET /api/v1/collections/{type} (capell-api.v1.collections)",
                 "GET /api/v1/media (capell-api.v1.media)",

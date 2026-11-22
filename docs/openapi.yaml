@@ -14,7 +14,7 @@ paths:
     get:
       operationId: resolvePublicPageV1
       summary: 'Resolve a published Capell page by URL.'
-      description: 'Compatibility endpoint; migrate new clients to /api/v1/pages/resolve. No removal date is set.'
+      description: 'Page resolver with projection and layout options. New clients should use /api/v1/pages/resolve.'
       tags:
         - 'Public Pages'
       parameters:
@@ -35,33 +35,6 @@ paths:
           $ref: '#/components/responses/PageNotFound'
         422:
           $ref: '#/components/responses/InvalidLayoutHtmlRequest'
-      deprecated: true
-  /api/capell/pages/resolve:
-    get:
-      operationId: resolvePublicPageLegacy
-      summary: 'Resolve a published Capell page by URL through the legacy compatibility path.'
-      description: 'Compatibility endpoint; migrate new clients to /api/v1/pages/resolve. No removal date is set.'
-      tags:
-        - 'Public Pages'
-      parameters:
-        - $ref: '#/components/parameters/Url'
-        - $ref: '#/components/parameters/Site'
-        - $ref: '#/components/parameters/Language'
-        - $ref: '#/components/parameters/Fields'
-        - $ref: '#/components/parameters/Include'
-        - $ref: '#/components/parameters/Containers'
-      responses:
-        200:
-          $ref: '#/components/responses/PageResolved'
-        304:
-          $ref: '#/components/responses/NotModified'
-        403:
-          $ref: '#/components/responses/Forbidden'
-        404:
-          $ref: '#/components/responses/PageNotFound'
-        422:
-          $ref: '#/components/responses/InvalidLayoutHtmlRequest'
-      deprecated: true
   /api/v1/pages:
     get:
       operationId: headlessV1Pages

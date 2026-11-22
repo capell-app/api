@@ -131,23 +131,6 @@
                 ],
                 "routes": [
                     [
-                        "capell-api.pages.resolve",
-                        "api/capell/pages/resolve",
-                        ["GET", "HEAD"],
-                        [
-                            "Capell\\Api\\Http\\Middleware\\ApiResponsePolicy",
-                            "api",
-                            "throttle:capell-api"
-                        ],
-                        "Capell\\Api\\Http\\Controllers\\ResolvePageController",
-                        {
-                            "as": "capell-api.pages.resolve",
-                            "domain": null,
-                            "prefix": "api",
-                            "where": []
-                        }
-                    ],
-                    [
                         "capell-api.v1.pages.resolve",
                         "api/capell/v1/pages/resolve",
                         ["GET", "HEAD"],
@@ -311,23 +294,6 @@
                     ]
                 },
                 "routes": [
-                    [
-                        "capell-api.pages.resolve",
-                        "api/capell/pages/resolve",
-                        ["GET", "HEAD"],
-                        [
-                            "Capell\\Api\\Http\\Middleware\\ApiResponsePolicy",
-                            "api",
-                            "throttle:capell-api"
-                        ],
-                        "Capell\\Api\\Http\\Controllers\\ResolvePageController",
-                        {
-                            "as": "capell-api.pages.resolve",
-                            "domain": null,
-                            "prefix": "api",
-                            "where": []
-                        }
-                    ],
                     [
                         "capell-api.v1.pages.resolve",
                         "api/capell/v1/pages/resolve",

@@ -153,7 +153,7 @@ it('omits contributor-restricted pages from every public endpoint and legacy ali
         getJson('https://example.com/api/v1/' . $resource)->assertOk()->assertJsonCount(0, 'data');
     }
     getJson('https://example.com/api/v1/pages/resolve?url=/restricted')->assertNotFound();
-    getJson('https://example.com/api/capell/pages/resolve?url=/restricted')->assertNotFound();
+    getJson('https://example.com/api/capell/v1/pages/resolve?url=/restricted')->assertNotFound();
 });
 
 it('previews nonpublic states only with the matching site and state abilities', function (string $state): void {
@@ -200,7 +200,7 @@ it('never publicly resolves preview sites even through signed context', function
     getJson('https://example.com/api/v1/pages/resolve?url=/private')->assertNotFound();
     getJson('https://example.com/api/v1/pages')->assertNotFound();
     getJson(URL::signedRoute('capell-api.v1.resolve', ['site' => $this->site->id, 'url' => '/private']))->assertNotFound();
-    getJson('https://example.com/api/capell/pages/resolve?url=/private')->assertNotFound();
+    getJson('https://example.com/api/capell/v1/pages/resolve?url=/private')->assertNotFound();
 });
 
 it('fails closed on every public endpoint while a site access policy is active', function (string $uri): void {

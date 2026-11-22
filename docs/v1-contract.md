@@ -1,8 +1,7 @@
 # Supported headless API v1 contract
 
-The canonical read API is `/api/v1`. Existing `/api/capell/pages/resolve`
-and `/api/capell/v1/pages/resolve` remain compatible aliases; they are deprecated
-in documentation without a removal date. Breaking wire changes require a new
+The canonical read API is `/api/v1`. `/api/capell/v1/pages/resolve`
+stays available with its projection and layout options; new integrations use `/api/v1`. Breaking wire changes require a new
 major path. Additive optional fields are compatible. A removal requires a
 published migration guide and at least twelve months of notice.
 

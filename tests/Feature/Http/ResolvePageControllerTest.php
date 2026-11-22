@@ -54,6 +54,8 @@ it('serves the v1 route and emits public api contract headers', function (): voi
         ->assertHeader('X-Capell-Cache-Tags', 'api')
         ->assertHeader('Cache-Tag', 'site-' . apiScalarKey($site->getKey()) . ',page-' . apiScalarKey($page->getKey()))
         ->assertHeaderMissing('Surrogate-Key')
+        ->assertHeaderMissing('Deprecation')
+        ->assertHeaderMissing('Link')
         ->assertJsonPath('data.url', '/terms')
         ->assertJsonPath('data.title', 'Terms');
 
@@ -67,13 +69,7 @@ it('serves the v1 route and emits public api contract headers', function (): voi
 
     config()->set('capell-api.expose_surrogate_key_header', false);
 
-    $legacyResponse = getJson(route('capell-api.pages.resolve', ['url' => $pageUrl->url]))
-        ->assertOk()
-        ->assertHeader('X-Capell-Api-Version', 'v1')
-        ->assertHeader('X-Capell-Cache-Tags', 'api')
-        ->assertJsonPath('data.url', '/terms');
-
-    assertCapellPublicOutputIsSafe($legacyResponse, 'Capell API legacy page resolve response');
+    getJson('/api/capell/pages/resolve?url=' . urlencode($pageUrl->url))->assertNotFound();
 });
 
 it('emits deterministic etags and honors conditional requests', function (): void {
@@ -345,7 +341,7 @@ it('resolves the site from the request host and blocks unsigned explicit site se
 it('resolves api request context and cache tags directly from the request host', function (): void {
     [$pageUrl, $page, $language, $site] = createPublicApiPage('/terms');
 
-    $request = Request::create('https://example.com/api/capell/pages/resolve?url=' . urlencode($pageUrl->url));
+    $request = Request::create('https://example.com/api/capell/v1/pages/resolve?url=' . urlencode($pageUrl->url));
 
     $context = ResolveApiRequestContextAction::run($request);
 
@@ -364,7 +360,7 @@ it('resolves api request context and cache tags directly from the request host',
 it('rejects unsigned explicit site selection in the api request context action', function (): void {
     [, , , $site] = createPublicApiPage('/terms');
 
-    $request = Request::create('https://example.com/api/capell/pages/resolve?url=/terms&site=' . apiScalarKey($site->getKey()));
+    $request = Request::create('https://example.com/api/capell/v1/pages/resolve?url=/terms&site=' . apiScalarKey($site->getKey()));
 
     expect(ResolveApiRequestContextAction::run($request)->isForbidden())->toBeTrue();
 });
@@ -476,6 +472,8 @@ it('does not allow signed context URLs to change the target page URL', function 
 
 it('does not serve the api when the package is not installed', function (): void {
     createPublicApiPage('/terms');
+    // Uninstall through the lifecycle record the resolver falls back to, as production does.
+    CapellCore::markPackageUninstalled(ApiServiceProvider::$packageName);
     CapellCore::forcePackageInstalled(ApiServiceProvider::$packageName, false);
 
     getJson(apiResolveUrl(['url' => '/terms']))
@@ -530,7 +528,7 @@ function apiResolveUrl(array $parameters = [], string $host = 'example.com', boo
     URL::useOrigin('https://' . $host);
 
     if ($signed) {
-        $signedUrl = URL::signedRoute('capell-api.pages.resolve', array_diff_key($parameters, array_flip(['fields', 'include', 'containers'])));
+        $signedUrl = URL::signedRoute('capell-api.v1.pages.resolve', array_diff_key($parameters, array_flip(['fields', 'include', 'containers'])));
         $ignoredParameters = array_intersect_key($parameters, array_flip(['fields', 'include', 'containers']));
 
         return $ignoredParameters === []
@@ -538,7 +536,7 @@ function apiResolveUrl(array $parameters = [], string $host = 'example.com', boo
             : $signedUrl . '&' . http_build_query($ignoredParameters);
     }
 
-    return route('capell-api.pages.resolve', $parameters);
+    return route('capell-api.v1.pages.resolve', $parameters);
 }
 
 it('removes reserved editor envelopes from native block content without losing public values', function (): void {

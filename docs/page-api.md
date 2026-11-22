@@ -1,6 +1,6 @@
-# Legacy page resolver compatibility
+# Page resolver
 
-For new integrations use the [supported headless v1 API](headless.md). The endpoints below retain their legacy projection and layout options; they are deprecated without a removal date.
+For new integrations use the [supported headless v1 API](headless.md). The endpoint below keeps its projection and layout options.
 
 # Page API
 
@@ -10,11 +10,9 @@ Capell API adds a public, read-only page resolver endpoint:
 GET /api/capell/v1/pages/resolve?url=/terms
 ```
 
-The versioned route name is `capell-api.v1.pages.resolve`. The legacy route
-`/api/capell/pages/resolve` remains available as `capell-api.pages.resolve`.
-Both routes are declared in `capell.json` as public, read-only API endpoints
-under the package route contribution. Marketplace and install tooling should
-treat both routes below as compatibility aliases; new integrations use `/api/v1`.
+The route name is `capell-api.v1.pages.resolve`. It is declared in `capell.json`
+as a public, read-only API endpoint under the package route contribution. New
+integrations use `/api/v1`.
 
 The machine-readable contract is maintained in [`openapi.yaml`](openapi.yaml).
 Keep that document aligned with `capell.json`, this guide, and the controller
@@ -141,7 +139,7 @@ Keep the generated origin, path, expiry, and signature intact. Signing selects t
 Layout output is off by default. Request it explicitly:
 
 ```http
-GET /api/capell/pages/resolve?url=/terms&include=layout
+GET /api/capell/v1/pages/resolve?url=/terms&include=layout
 ```
 
 This adds `data.layout` with layout key, containers, and public widget data. Layout and container `meta` are present as empty objects by default; package resolvers should expose only fields that are intentionally public.
@@ -180,13 +178,13 @@ This adds `data.layout` with layout key, containers, and public widget data. Lay
 Limit output to selected containers:
 
 ```http
-GET /api/capell/pages/resolve?url=/terms&include=layout&containers=main
+GET /api/capell/v1/pages/resolve?url=/terms&include=layout&containers=main
 ```
 
 Use `include=layout.html` when a registered public layout widget payload resolver supports rendered HTML:
 
 ```http
-GET /api/capell/pages/resolve?url=/terms&include=layout.html
+GET /api/capell/v1/pages/resolve?url=/terms&include=layout.html
 ```
 
 The top-level `widgets[].html` field remains off unless `layout.html` is requested. Package-contributed widget data can contain sanitised public HTML, such as Content Sections’ `sections[].summary` and `sections[].html`. Section payloads expose their public blueprint key and content; server-side Blade component names are omitted.

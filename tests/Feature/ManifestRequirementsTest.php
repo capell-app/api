@@ -55,7 +55,6 @@ it('declares shipped api manifest surfaces without duplicate health classes', fu
         ->toHaveKey('name', 'capell-app/api')
         ->toHaveKey('namespace', 'Capell\\Api')
         ->and(data_get($manifest, 'security.publicSurface.routeNames'))->toBe([
-            'GET /api/capell/pages/resolve (capell-api.pages.resolve)',
             'GET /api/capell/v1/pages/resolve (capell-api.v1.pages.resolve)',
             ...$headlessSecurityRoutes,
         ])
@@ -71,7 +70,6 @@ it('declares shipped api manifest surfaces without duplicate health classes', fu
         'type' => 'route',
         'class' => ApiRoutesContribution::class,
         'routes' => [
-            'capell-api.pages.resolve',
             'capell-api.v1.pages.resolve',
             ...$headlessRoutes,
         ],
@@ -94,20 +92,6 @@ it('declares shipped api manifest surfaces without duplicate health classes', fu
                 'signedContextParameters' => ['site', 'language'],
                 'publicSafety' => ['sanitized-html', 'no-authoring-surface', 'no-secrets'],
             ],
-            [
-                'type' => 'public-api-endpoint',
-                'name' => 'public-page-resolve-legacy',
-                'routeName' => 'capell-api.pages.resolve',
-                'method' => 'GET',
-                'path' => '/api/capell/pages/resolve',
-                'version' => 'v1',
-                'auth' => 'public',
-                'readOnly' => true,
-                'canonical' => false,
-                'compatibility' => 'legacy',
-                'signedContextParameters' => ['site', 'language'],
-                'publicSafety' => ['sanitized-html', 'no-authoring-surface', 'no-secrets'],
-            ],
             ...$headlessEndpoints,
         ],
     ]);
@@ -116,10 +100,9 @@ it('declares shipped api manifest surfaces without duplicate health classes', fu
     throw_unless(is_iterable($publicRouteNames), RuntimeException::class, 'Expected API public route names to be iterable.');
 
     expect($apiEndpoints)
-        ->toHaveCount(8)
+        ->toHaveCount(7)
         ->and(collect($apiEndpoints)->pluck('routeName')->all())->toBe([
             'capell-api.v1.pages.resolve',
-            'capell-api.pages.resolve',
             ...$headlessRoutes,
         ])
         ->and(collect($apiEndpoints)->pluck('routeName')->all())->each->toBeIn(collect($publicRouteNames)->map(static fn (mixed $name): string => preg_replace('/^[A-Z|]+ \S+ \((.+)\)$/', '$1', is_string($name) ? $name : '') ?? '')->all())
@@ -166,7 +149,7 @@ it('keeps runner json evidence separate from committed marketplace media', funct
         ->filter(static fn (mixed $path): bool => is_string($path))
         ->values();
 
-    expect(data_get($screenshotContract, 'generatedFor'))->toBe('deployment-screenshot-runner')
+    expect(data_get($screenshotContract, 'generatedFor'))->toBe('shared-capell-screenshot-runner')
         ->and(data_get($screenshotContract, 'outputDirectory'))->toBe('packages/api/docs/screenshots')
         ->and($runnerScreenshotPaths->all())->not->toBeEmpty()
         ->and($runnerScreenshotPaths->every(

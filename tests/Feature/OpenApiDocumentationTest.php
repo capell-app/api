@@ -30,7 +30,7 @@ it('documents the public page resolver contract in openapi', function (): void {
         ->and(data_get($openApi, 'info.version'))->toBe('v1')
         ->and($documentedPaths)->toBe($manifestPaths)
         ->and(data_get($openApi, 'paths./api/capell/v1/pages/resolve.get.operationId'))->toBe('resolvePublicPageV1')
-        ->and(data_get($openApi, 'paths./api/capell/pages/resolve.get.operationId'))->toBe('resolvePublicPageLegacy')
+        ->and($openApi['paths'])->not->toHaveKey('/api/capell/pages/resolve')
         ->and(array_keys($schemas))->toContain(
             'PageResponse',
             'PageData',

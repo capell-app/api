@@ -115,8 +115,6 @@ final class ResolvePageController
         $response = response()
             ->json($body->toArray(), $status)
             ->header('Cache-Control', $status === 200 ? PublicReadProjectionHeaders::cacheControl() : 'private, no-store')
-            ->header('Deprecation', '@1793923200')
-            ->header('Link', '</api/v1/pages/resolve>; rel="successor-version"')
             ->header('X-Capell-Api-Version', self::API_VERSION)
             // The integration header is coarse; record keys stay on edge purge headers.
             ->header('X-Capell-Cache-Tags', 'api');

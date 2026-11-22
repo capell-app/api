@@ -39,9 +39,6 @@ $apiMiddleware = [
 Route::middleware($apiMiddleware)
     ->prefix('api')
     ->group(function (): void {
-        Route::get('capell/pages/resolve', ResolvePageController::class)
-            ->name('capell-api.pages.resolve');
-
         Route::get('capell/v1/pages/resolve', ResolvePageController::class)
             ->name('capell-api.v1.pages.resolve');
     });

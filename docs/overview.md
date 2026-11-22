@@ -22,7 +22,7 @@ It does not add a day-to-day screen. Its effect appears in connected frontend sy
 
 ## Good to know
 
-- This package provides supported public delivery and token-scoped preview; new consumers should use the canonical `/api/v1/pages/resolve` endpoint. The unversioned `/api/capell/pages/resolve` path is a compatibility alias.
+- This package provides supported public delivery and token-scoped preview; new consumers should use the canonical `/api/v1/pages/resolve` endpoint. `/api/capell/v1/pages/resolve` stays available as a page-only resolver.
 - Returned HTML and layout data are sanitized, and drafts, authoring state, and private admin data are not part of the public response.
 - Ask a developer to review middleware, throttling, and any signed site/language context before exposing a new integration.
 

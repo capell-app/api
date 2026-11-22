@@ -8,8 +8,8 @@ Your developer can ask for one page by its address, list pages by type, search p
 
 When an editor publishes, saves or deletes a page, or a page's dates pass, Capell can send your front end a signed message. Sending starts once your developer has added the front end's address and a secret, and the messages go out as background jobs, which your developer or host keeps running. Each message names the site and page that changed.
 
-- **Price and availability:** Check current availability and price on the [Capell Marketplace listing](https://capell.app/extensions/api).
-- **Licence:** Check the licence terms on the [Capell Marketplace listing](https://capell.app/extensions/api).
+- **Price and availability:** Check current availability and price on the [Capell Marketplace listing](https://capell.app/marketplace/extensions/api).
+- **Licence:** Check the licence terms on the [Capell Marketplace listing](https://capell.app/marketplace/extensions/api).
 - **Requires:** `PHP ^8.4`, `capell-app/core ^1.0.76`, `capell-app/layout-builder ^1.0`, `laravel/sanctum ^4.0`, `spatie/laravel-package-tools ^1.14.1`, `symfony/html-sanitizer ^7.0|^8.0`.
 - **Install:** `composer require capell-app/api`.
 

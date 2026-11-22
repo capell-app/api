@@ -27,7 +27,7 @@ it('loads host-configurable public api middleware defaults', function (): void {
 });
 
 it('applies the default public api throttle middleware to resolve routes', function (): void {
-    expect(Route::getRoutes()->getByName('capell-api.pages.resolve')?->gatherMiddleware())
+    expect(Route::getRoutes()->getByName('capell-api.v1.pages.resolve')?->gatherMiddleware())
         ->toContain('throttle:capell-api')
         ->and(Route::getRoutes()->getByName('capell-api.v1.pages.resolve')?->gatherMiddleware())
         ->toContain('throttle:capell-api');

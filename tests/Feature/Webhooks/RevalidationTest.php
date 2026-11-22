@@ -120,14 +120,15 @@ it('revokes queued webhook delivery when the API package is disabled', function 
     $job = new DeliverRevalidationWebhookJob('agency', new RevalidationWebhookData('c93a0d92-e6e3-4115-85f9-d180fb8e80bd', 'v1', 'page.deleted', now()->toIso8601String(), [], ['site-1']));
     Queue::fake();
     Http::fake();
-    CapellCore::forcePackageInstalled(ApiServiceProvider::$packageName, false);
+    // Disable through the lifecycle record that package admission reads, as production does.
+    CapellCore::markPackageDisabled(ApiServiceProvider::$packageName);
     try {
         QueueRevalidationWebhooksAction::run('page.deleted', 1);
         $job->handle();
         Queue::assertNotPushed(DeliverRevalidationWebhookJob::class);
         Http::assertNothingSent();
     } finally {
-        CapellCore::forcePackageInstalled(ApiServiceProvider::$packageName);
+        CapellCore::markPackageInstalled(ApiServiceProvider::$packageName);
     }
 });
 
