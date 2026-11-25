@@ -7,6 +7,156 @@
     "outputDirectory": "packages/api/docs/screenshots",
     "entries": [
         {
+            "id": "nextjs-starter-home",
+            "title": "Studio journal home page rendered by the Next.js starter.",
+            "required": true,
+            "package": "api",
+            "surface": "frontend",
+            "targetType": "frontend-url",
+            "target": "http://127.0.0.1:18747/",
+            "url": "http://127.0.0.1:18747/",
+            "scenario": "frontend-page",
+            "waitFor": "[data-page-directory]",
+            "colorSchemes": ["light"],
+            "viewport": "desktop",
+            "fullPage": false,
+            "user": false,
+            "expectedStatus": 200,
+            "notes": "The runner starts the shipped Next.js example beside the Capell workbench, pointed at the seeded studio journal site. The page text and links come from the v1 API through the SDK, with nothing hard coded in the starter.",
+            "useCase": "A developer sees a real published Capell home page and its linked pages rendered by the headless Next.js starter.",
+            "screenshotPath": "packages/api/docs/screenshots/nextjs-starter-home.png",
+            "companion": {
+                "id": "nextjs-starter",
+                "cwd": "packages/api/examples/nextjs",
+                "prepare": [
+                    {
+                        "command": "npm",
+                        "args": ["--prefix", "../../sdk", "run", "build"]
+                    },
+                    {
+                        "command": "npm",
+                        "args": ["run", "build"]
+                    }
+                ],
+                "command": "npm",
+                "args": [
+                    "run",
+                    "start",
+                    "--",
+                    "--hostname",
+                    "127.0.0.1",
+                    "--port",
+                    "{port}"
+                ],
+                "port": 18747,
+                "readinessUrl": "http://127.0.0.1:18747/",
+                "environment": {
+                    "CAPELL_ORIGIN": "{frontendUrl}/harbour-journal",
+                    "NEXT_TELEMETRY_DISABLED": "1"
+                }
+            }
+        },
+        {
+            "id": "nextjs-starter-directory",
+            "title": "Page directory rendered by the Next.js starter.",
+            "required": true,
+            "package": "api",
+            "surface": "frontend",
+            "targetType": "frontend-url",
+            "target": "http://127.0.0.1:18747/?view=directory",
+            "url": "http://127.0.0.1:18747/?view=directory",
+            "scenario": "frontend-page",
+            "waitFor": "[data-page-directory] li",
+            "colorSchemes": ["light"],
+            "viewport": "desktop",
+            "fullPage": false,
+            "user": false,
+            "expectedStatus": 200,
+            "notes": "The directory view loads the paginated navigation endpoint through the SDK and lists each published page of the seeded studio journal site.",
+            "useCase": "A developer browses every published page the API lists, each linked to its own route in the starter.",
+            "screenshotPath": "packages/api/docs/screenshots/nextjs-starter-directory.png",
+            "companion": {
+                "id": "nextjs-starter",
+                "cwd": "packages/api/examples/nextjs",
+                "prepare": [
+                    {
+                        "command": "npm",
+                        "args": ["--prefix", "../../sdk", "run", "build"]
+                    },
+                    {
+                        "command": "npm",
+                        "args": ["run", "build"]
+                    }
+                ],
+                "command": "npm",
+                "args": [
+                    "run",
+                    "start",
+                    "--",
+                    "--hostname",
+                    "127.0.0.1",
+                    "--port",
+                    "{port}"
+                ],
+                "port": 18747,
+                "readinessUrl": "http://127.0.0.1:18747/",
+                "environment": {
+                    "CAPELL_ORIGIN": "{frontendUrl}/harbour-journal",
+                    "NEXT_TELEMETRY_DISABLED": "1"
+                }
+            }
+        },
+        {
+            "id": "nextjs-starter-article",
+            "title": "Published article rendered by the Next.js starter.",
+            "required": true,
+            "package": "api",
+            "surface": "frontend",
+            "targetType": "frontend-url",
+            "target": "http://127.0.0.1:18747/journal/choosing-a-desk",
+            "url": "http://127.0.0.1:18747/journal/choosing-a-desk",
+            "scenario": "frontend-page",
+            "waitFor": "[data-page-content]",
+            "colorSchemes": ["light"],
+            "viewport": "desktop",
+            "fullPage": false,
+            "user": false,
+            "expectedStatus": 200,
+            "notes": "The page resolves through the SDK and its public HTML field renders in the starter's article layout.",
+            "useCase": "A developer reads a published Capell page, with its headings and lists, rendered from the API's sanitised HTML field.",
+            "screenshotPath": "packages/api/docs/screenshots/nextjs-starter-article.png",
+            "companion": {
+                "id": "nextjs-starter",
+                "cwd": "packages/api/examples/nextjs",
+                "prepare": [
+                    {
+                        "command": "npm",
+                        "args": ["--prefix", "../../sdk", "run", "build"]
+                    },
+                    {
+                        "command": "npm",
+                        "args": ["run", "build"]
+                    }
+                ],
+                "command": "npm",
+                "args": [
+                    "run",
+                    "start",
+                    "--",
+                    "--hostname",
+                    "127.0.0.1",
+                    "--port",
+                    "{port}"
+                ],
+                "port": 18747,
+                "readinessUrl": "http://127.0.0.1:18747/",
+                "environment": {
+                    "CAPELL_ORIGIN": "{frontendUrl}/harbour-journal",
+                    "NEXT_TELEMETRY_DISABLED": "1"
+                }
+            }
+        },
+        {
             "id": "page-resolve-success-json",
             "title": "JSON response returned for a published page.",
             "package": "api",
@@ -113,5 +263,11 @@
             "user": false,
             "fullPage": true
         }
+    ],
+    "fixtureCommands": ["capell:prepare-api-screenshots"],
+    "fixtureEntryIds": [
+        "nextjs-starter-home",
+        "nextjs-starter-directory",
+        "nextjs-starter-article"
     ]
 }

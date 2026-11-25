@@ -296,6 +296,21 @@
         ],
         "screenshots": [
             {
+                "path": "docs/screenshots/nextjs-starter-home.png",
+                "alt": "Home page titled Notes from Harbour Studio, with an introduction and a card linking to five published pages.",
+                "caption": "A separate Next.js website built from the starter shows a Capell home page and links to the pages it reads from the API."
+            },
+            {
+                "path": "docs/screenshots/nextjs-starter-directory.png",
+                "alt": "Page titled Browse published pages, with a count of nine pages and a list of their titles and addresses.",
+                "caption": "The starter lists every published page the API returns, so a new page appears on the website without a code change."
+            },
+            {
+                "path": "docs/screenshots/nextjs-starter-article.png",
+                "alt": "Article titled Choosing the right desk for your project, with an introduction and short sections under headings.",
+                "caption": "A page's blocks come back from the API as headings and text, and the starter lays them out as an article."
+            },
+            {
                 "path": "docs/screenshots/page-resolve-success-json.png",
                 "alt": "Browser window of formatted data for a home page, with its web address, a title and one line of text.",
                 "caption": "This is what a separate website receives when it asks for a published page by its address."

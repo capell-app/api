@@ -35,10 +35,13 @@ ResolveApiRequestContextAction, BuildPublicPagePayloadAction, and BuildPublicLay
 
 ## Screens And Workflow
 
-![JSON response returned for a published page](docs/screenshots/page-resolve-success-json.png)
+![Studio journal home page rendered by the Next.js starter](docs/screenshots/nextjs-starter-home.png)
 
-![JSON response describing a page layout and the areas it contains](docs/screenshots/page-resolve-layout-json.png)
+![Page directory rendered by the Next.js starter](docs/screenshots/nextjs-starter-directory.png)
 
+- Studio journal home page rendered by the Next.js starter (frontend).
+- Page directory rendered by the Next.js starter (frontend).
+- Published article rendered by the Next.js starter (frontend).
 - JSON response returned for a published page (frontend).
 - JSON response describing a page layout and the areas it contains (frontend).
 - Page resolve forbidden JSON response (frontend).

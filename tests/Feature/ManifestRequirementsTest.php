@@ -157,7 +157,7 @@ it('keeps runner json evidence separate from committed marketplace media', funct
         ))->toBeTrue()
         // The listing leads with the runner's receipt-backed captures rather than
         // copies of them, so the gallery shows evidence that can be re-verified.
-        ->and($marketplacePaths->all())->toBe(['docs/screenshots/page-resolve-success-json.png', 'docs/screenshots/page-resolve-layout-json.png', 'docs/assets/marketplace/extension-card.jpg'])
+        ->and($marketplacePaths->all())->toBe(['docs/screenshots/nextjs-starter-home.png', 'docs/screenshots/nextjs-starter-directory.png', 'docs/screenshots/nextjs-starter-article.png', 'docs/screenshots/page-resolve-success-json.png', 'docs/screenshots/page-resolve-layout-json.png', 'docs/assets/marketplace/extension-card.jpg'])
         ->and($marketplacePaths
             ->filter(static fn (string $path): bool => str_starts_with($path, 'docs/screenshots/'))
             ->map(static fn (string $path): string => 'packages/api/' . $path)
