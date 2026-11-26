@@ -9,3 +9,6 @@
 # SDK test fixtures are source evidence, not Composer runtime assets.
 /sdk/tests export-ignore
 /sdk/fixtures export-ignore
+
+# The Next.js example's own tests are source evidence, not Composer runtime assets.
+/examples/nextjs/tests export-ignore
