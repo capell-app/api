@@ -6,6 +6,7 @@
     "kind": "package",
     "capellApiVersion": "^1.0",
     "version": "1.0.0",
+    "launchStatus": "preview",
     "description": "Lets a separate website or mobile app read your published Capell pages, and can tell it when to refresh.",
     "product": {
         "group": "Capell Publishing",
